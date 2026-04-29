@@ -20,6 +20,7 @@ import {
   type SlainAnimationContract,
   type SlainCardEffect,
 } from "./vfx/slainEffect";
+import { createAbilityEventEffect, type AbilityEventEffect } from "./vfx/abilityEventEffects";
 
 export type SimulationRenderer = {
   applySnapshot: (state: MatchState, options?: { animateEvents?: boolean }) => void;
@@ -118,6 +119,7 @@ export function createSimulationRenderer(
           lastEventSequence,
           previousPoses,
           root,
+          anchors,
           activelyAnimatedCards,
           rendererOptions,
         );
@@ -494,6 +496,7 @@ function enqueueNewEvents(
   lastEventSequence: number,
   previousPoses: Map<CardInstanceId, RenderedCardPose>,
   root: THREE.Group,
+  anchors: BoardAnchors,
   activelyAnimatedCards: Set<CardInstanceId>,
   options: SimulationRendererOptions,
 ) {
@@ -519,15 +522,41 @@ function enqueueNewEvents(
       continue;
     }
 
-    queue.enqueue({
-      id: event.id,
-      event,
-      blocking: event.blocking,
-      durationSeconds: getEventDuration(event),
-      onUpdate: (progress) => animateEvent(renderedCards, state, event, progress),
-      onComplete: () => completeEvent(renderedCards, event),
-    });
+    queue.enqueue(createEventAnimation(renderedCards, root, anchors, state, event));
   }
+}
+
+function createEventAnimation(
+  renderedCards: Map<CardInstanceId, RenderedCard>,
+  root: THREE.Group,
+  anchors: BoardAnchors,
+  state: MatchState,
+  event: GameEvent,
+): VisualAnimation {
+  let abilityEffect: AbilityEventEffect | undefined;
+
+  return {
+    id: event.id,
+    event,
+    blocking: event.blocking,
+    durationSeconds: getEventDuration(event),
+    onStart: () => {
+      abilityEffect = createAbilityEventEffect(event, state, {
+        anchors,
+        boardRoot: root,
+        getCardRoot: (cardInstanceId) => renderedCards.get(cardInstanceId)?.card.root,
+      });
+      abilityEffect?.update(0);
+    },
+    onUpdate: (progress) => {
+      animateEvent(renderedCards, state, event, progress);
+      abilityEffect?.update(progress);
+    },
+    onComplete: () => {
+      abilityEffect?.dispose();
+      completeEvent(renderedCards, event);
+    },
+  };
 }
 
 function createSlainAnimation(
@@ -719,18 +748,22 @@ function getEventDuration(event: GameEvent): number {
     case "card.drawn":
       return 0.22;
     case "card.played":
+      return 0.46;
     case "card.revived":
+      return 0.68;
     case "leader.used":
-      return 0.34;
+      return 0.76;
     case "card.destroyed":
       return 0.48;
     case "weather.applied":
     case "weather.cleared":
+      return 0.68;
     case "row.buff.applied":
-      return 0.28;
+      return 0.62;
     case "round.ended":
+      return 0.82;
     case "match.ended":
-      return 0.55;
+      return 1.08;
     case "phase.changed":
     case "turn.changed":
     case "player.passed":

@@ -363,20 +363,29 @@ Phase 12 output:
 
 ## Phase 13: Other VFX
 
-- [ ] Weather: Biting Frost.
-- [ ] Weather: Impenetrable Fog.
-- [ ] Weather: Torrential Rain.
-- [ ] Clear Weather removal effect.
-- [ ] Commander's Horn row pulse.
-- [ ] Medic revive trail.
-- [ ] Spy shadow transfer.
-- [ ] Muster summon chain.
-- [ ] Tight Bond link effect.
-- [ ] Morale Boost row shimmer.
-- [ ] Hero card immunity glint.
-- [ ] Leader faction emblem burst.
-- [ ] Round win board pulse.
-- [ ] Match win cinematic.
+- [x] Weather: Biting Frost.
+- [x] Weather: Impenetrable Fog.
+- [x] Weather: Torrential Rain.
+- [x] Clear Weather removal effect.
+- [x] Commander's Horn row pulse.
+- [x] Medic revive trail.
+- [x] Spy shadow transfer.
+- [x] Muster summon chain.
+- [x] Tight Bond link effect.
+- [x] Morale Boost row shimmer.
+- [x] Hero card immunity glint.
+- [x] Leader faction emblem burst.
+- [x] Round win board pulse.
+- [x] Match win cinematic.
+
+Phase 13 output:
+
+- Ability/event VFX routing lives in `src/game/renderer/vfx/abilityEventEffects.ts`.
+- Weather VFX now distinguish close-row frost, ranged-row fog, and siege-row rain from simulation `weather.applied` events.
+- Clear Weather, Commander's Horn, Medic, Spy, Muster, Tight Bond, Morale Boost, Hero, Leader, round win, and match win events now create dedicated transient Three.js effects.
+- `src/game/renderer/simulationBridge.ts` now creates and disposes ability VFX inside the event animation queue.
+- Event durations were tuned so ability VFX have enough time to read without changing simulation rules.
+- Ability VFX tests live in `src/game/renderer/vfx/abilityEventEffects.test.ts`.
 
 ## Phase 14: UI And HUD
 
