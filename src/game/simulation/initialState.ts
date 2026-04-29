@@ -18,7 +18,7 @@ export function createInitialMatchPreview(selectedFactionId: FactionId): MatchPr
     rows: ROWS,
     debug: {
       enabled: import.meta.env.DEV,
-      seed: "phase-1-preview",
+      seed: "phase-9-preview",
     },
   };
 }

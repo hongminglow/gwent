@@ -15,7 +15,7 @@ export function createHud(root: HTMLElement, state: MatchPreviewState): Hud {
   hud.innerHTML = `
     <div class="hud__status">
       <h1 class="hud__title">${state.appName}</h1>
-      <p class="hud__meta">Phase 1 foundation preview. Selected faction: ${state.selectedFaction.name}.</p>
+      <p class="hud__meta">Phase 9 board preview. Selected faction: ${state.selectedFaction.name}.</p>
       <p class="hud__meta">${state.selectedFaction.perk}</p>
     </div>
     <div class="hud__strip" aria-label="Match setup">
@@ -36,7 +36,7 @@ export function createHud(root: HTMLElement, state: MatchPreviewState): Hud {
         <span class="hud__chip-value">Best of 3</span>
       </div>
     </div>
-    <div class="hud__hint">Foundation scaffold: renderer, HUD, input, assets, diagnostics, and faction data boundaries are active.</div>
+    <div class="hud__hint">Board foundation active.</div>
   `;
 
   shell.appendChild(hud);

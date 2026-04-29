@@ -259,22 +259,31 @@ Phase 8 output:
 
 ## Phase 9: Three.js Foundation
 
-- [ ] Create renderer bootstrap.
-- [ ] Create scene.
-- [ ] Create perspective camera.
-- [ ] Create camera rig.
-- [ ] Create WebGL renderer.
-- [ ] Create resize handling.
-- [ ] Create lighting setup.
-- [ ] Create 3D board/table.
-- [ ] Create row placement zones.
-- [ ] Create score plate anchors.
-- [ ] Create deck and discard pile anchors.
-- [ ] Create card mesh factory.
-- [ ] Create card material factory.
-- [ ] Create texture loader.
-- [ ] Add render loop.
-- [ ] Add debug camera mode.
+- [x] Create renderer bootstrap.
+- [x] Create scene.
+- [x] Create perspective camera.
+- [x] Create camera rig.
+- [x] Create WebGL renderer.
+- [x] Create resize handling.
+- [x] Create lighting setup.
+- [x] Create 3D board/table.
+- [x] Create row placement zones.
+- [x] Create score plate anchors.
+- [x] Create deck and discard pile anchors.
+- [x] Create card mesh factory.
+- [x] Create card material factory.
+- [x] Create texture loader.
+- [x] Add render loop.
+- [x] Add debug camera mode.
+
+Phase 9 output:
+
+- Three.js app bootstrap, renderer setup, resize handling, render loop, context-loss recovery, and debug camera toggling live in `src/game/renderer/threeApp.ts`.
+- Orbit-control debug camera rig lives in `src/game/renderer/cameraRig.ts`.
+- Board/table geometry, row placement zones, score anchors, hand anchors, and deck/discard/leader anchors live in `src/game/renderer/boardScene.ts`.
+- Card mesh creation lives in `src/game/renderer/cardMesh.ts`.
+- Card material creation lives in `src/game/renderer/materials/cardMaterials.ts`.
+- Texture loading and cache disposal live in `src/game/renderer/loaders/textureLoader.ts`.
 
 ## Phase 10: Renderer And Simulation Bridge
 

@@ -1,78 +1,121 @@
 import * as THREE from "three";
+import { createCardMaterialSet } from "./materials/cardMaterials";
 
 export type CardMeshOptions = {
   label: string;
   accentColor: string;
-  position: THREE.Vector3;
-  rotationY: number;
+  faceColor?: string;
+  frontTexture?: THREE.Texture;
+  position?: THREE.Vector3;
+  rotationY?: number;
 };
 
 export type CardMesh = {
   root: THREE.Group;
   baseY: number;
+  dispose: () => void;
 };
+
+const CARD_WIDTH = 1.42;
+const CARD_HEIGHT = 2.05;
+const CARD_THICKNESS = 0.065;
 
 export function createCardMesh(options: CardMeshOptions): CardMesh {
   const root = new THREE.Group();
-  root.position.copy(options.position);
-  root.rotation.set(-Math.PI / 2 + 0.06, options.rotationY, 0);
+  const position = options.position ?? new THREE.Vector3();
+  root.name = `CardMesh:${options.label}`;
+  root.position.copy(position);
+  root.rotation.set(-Math.PI / 2 + 0.06, options.rotationY ?? 0, 0);
+
+  const captionTexture = createCaptionTexture(options.label);
+  const materials = createCardMaterialSet({
+    accentColor: options.accentColor,
+    faceColor: options.faceColor,
+    captionTexture,
+    frontTexture: options.frontTexture,
+  });
 
   const body = new THREE.Mesh(
-    new THREE.BoxGeometry(1.42, 2.05, 0.06),
-    new THREE.MeshStandardMaterial({
-      color: "#241912",
-      roughness: 0.55,
-      metalness: 0.12,
-    }),
+    new THREE.BoxGeometry(CARD_WIDTH, CARD_HEIGHT, CARD_THICKNESS),
+    materials.body,
   );
+  body.name = "CardBody";
   body.castShadow = true;
   body.receiveShadow = true;
   root.add(body);
 
   const face = new THREE.Mesh(
     new THREE.PlaneGeometry(1.26, 1.84),
-    new THREE.MeshStandardMaterial({
-      color: "#3b2a1d",
-      emissive: options.accentColor,
-      emissiveIntensity: 0.13,
-      roughness: 0.68,
-      metalness: 0.05,
-    }),
+    materials.face,
   );
+  face.name = "CardFace";
   face.position.z = 0.034;
   root.add(face);
 
+  const frame = createCardFrame(options.accentColor);
+  frame.position.z = 0.038;
+  root.add(frame);
+
   const gem = new THREE.Mesh(
     new THREE.CircleGeometry(0.16, 32),
-    new THREE.MeshStandardMaterial({
-      color: options.accentColor,
-      emissive: options.accentColor,
-      emissiveIntensity: 0.32,
-      roughness: 0.45,
-      metalness: 0.22,
-    }),
+    materials.accent,
   );
+  gem.name = "CardPowerGem";
   gem.position.set(0, 0.68, 0.037);
   root.add(gem);
 
-  const captionCanvas = createCaptionCanvas(options.label);
-  const captionTexture = new THREE.CanvasTexture(captionCanvas);
-  captionTexture.colorSpace = THREE.SRGBColorSpace;
-
   const caption = new THREE.Mesh(
     new THREE.PlaneGeometry(1.06, 0.28),
-    new THREE.MeshBasicMaterial({
-      map: captionTexture,
-      transparent: true,
-    }),
+    materials.caption,
   );
+  caption.name = "CardCaption";
   caption.position.set(0, -0.62, 0.039);
   root.add(caption);
 
   return {
     root,
-    baseY: options.position.y,
+    baseY: position.y,
+    dispose() {
+      captionTexture.dispose();
+      materials.dispose();
+      root.traverse((object) => {
+        if (object instanceof THREE.Mesh) {
+          object.geometry.dispose();
+        }
+      });
+    },
   };
+}
+
+function createCardFrame(accentColor: string): THREE.Group {
+  const frame = new THREE.Group();
+  frame.name = "CardFrame";
+  const material = new THREE.MeshBasicMaterial({
+    color: accentColor,
+    transparent: true,
+    opacity: 0.72,
+  });
+  const horizontalGeometry = new THREE.PlaneGeometry(1.18, 0.018);
+  const verticalGeometry = new THREE.PlaneGeometry(0.018, 1.72);
+  const top = new THREE.Mesh(horizontalGeometry, material);
+  const bottom = new THREE.Mesh(horizontalGeometry.clone(), material);
+  const left = new THREE.Mesh(verticalGeometry, material);
+  const right = new THREE.Mesh(verticalGeometry.clone(), material);
+
+  top.position.y = 0.86;
+  bottom.position.y = -0.86;
+  left.position.x = -0.59;
+  right.position.x = 0.59;
+  frame.add(top, bottom, left, right);
+
+  return frame;
+}
+
+function createCaptionTexture(label: string): THREE.CanvasTexture {
+  const texture = new THREE.CanvasTexture(createCaptionCanvas(label));
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 4;
+  return texture;
 }
 
 function createCaptionCanvas(label: string): HTMLCanvasElement {
