@@ -169,6 +169,7 @@ Simulation state must not depend on Three.js objects. The renderer consumes stat
 
 - [Game Spec](./GAME_SPEC.md)
 - [Development Checklist](./DEVELOPMENT_CHECKLIST.md)
+- [Rule Reference](./RULE_REFERENCE.md)
 
 ## Reference Links
 

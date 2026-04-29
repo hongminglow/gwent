@@ -58,24 +58,28 @@ src/
 
 ## Phase 2: Rule Reference Audit
 
-- [ ] Build a local rule notes file from Witcher 3 Gwent references.
-- [ ] Verify base deck requirements.
-- [ ] Verify match start flow.
-- [ ] Verify mulligan/redraw behavior.
-- [ ] Verify pass behavior.
-- [ ] Verify round win and tie behavior.
-- [ ] Verify faction perks.
-- [ ] Verify hero immunity.
-- [ ] Verify weather interaction.
-- [ ] Verify Commander's Horn interaction.
-- [ ] Verify Decoy limitations.
-- [ ] Verify Scorch targeting and tie handling.
-- [ ] Verify Medic limitations.
-- [ ] Verify Muster pulling order and valid zones.
-- [ ] Verify Tight Bond scoring.
-- [ ] Verify Morale Boost scoring.
-- [ ] Verify Agile placement locking.
-- [ ] Mark any rule that needs gameplay testing in the original game.
+- [x] Build a local rule notes file from Witcher 3 Gwent references.
+- [x] Verify base deck requirements.
+- [x] Verify match start flow.
+- [x] Verify mulligan/redraw behavior.
+- [x] Verify pass behavior.
+- [x] Verify round win and tie behavior.
+- [x] Verify faction perks.
+- [x] Verify hero immunity.
+- [x] Verify weather interaction.
+- [x] Verify Commander's Horn interaction.
+- [x] Verify Decoy limitations.
+- [x] Verify Scorch targeting and tie handling.
+- [x] Verify Medic limitations.
+- [x] Verify Muster pulling order and valid zones.
+- [x] Verify Tight Bond scoring.
+- [x] Verify Morale Boost scoring.
+- [x] Verify Agile placement locking.
+- [x] Mark any rule that needs gameplay testing in the original game.
+
+Phase 2 output:
+
+- See [Rule Reference](./RULE_REFERENCE.md).
 
 Rule references:
 

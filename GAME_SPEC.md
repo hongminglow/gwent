@@ -193,8 +193,8 @@ These abilities should be considered the first major rules set.
 | Ability | Effect |
 | --- | --- |
 | Spy | Played on enemy side, then draws cards for owner |
-| Medic | Revives a valid unit from discard |
-| Muster | Summons matching linked cards from deck or hand |
+| Medic | Revives a valid non-hero, non-special unit from discard |
+| Muster | Summons matching linked cards from deck |
 | Morale Boost | Adds power to units in the same row or nearby position |
 | Tight Bond | Same-name units multiply or increase each other's strength |
 | Scorch | Destroys the strongest eligible unit or tied units |
