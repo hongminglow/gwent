@@ -1,4 +1,4 @@
-# Gwent 3D Fan Recreation
+# Oathbound
 
 Private developer hobby project to recreate the play style of Gwent from *The Witcher 3: Wild Hunt* as a cinematic browser game using Three.js.
 
@@ -6,9 +6,41 @@ The goal is a faithful 1v1 Gwent-style experience: four base factions, three bat
 
 ## Project Status
 
-Current phase: planning and product specification.
+Current phase: Phase 1 project foundation.
 
-No playable runtime has been implemented yet. The current repository contains the product spec and development checklist used to guide phase-by-phase implementation.
+The repository now contains the first TypeScript/Vite/Three.js scaffold, product spec, and development checklist used to guide phase-by-phase implementation.
+
+## Run Locally
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the dev server:
+
+```bash
+npm run dev
+```
+
+Build the project:
+
+```bash
+npm run build
+```
+
+Run tests:
+
+```bash
+npm run test
+```
+
+Run linting:
+
+```bash
+npm run lint
+```
 
 ## Credits
 
@@ -124,12 +156,12 @@ The game should keep hard boundaries between systems:
 
 Simulation state must not depend on Three.js objects. The renderer consumes state changes and emits player intents.
 
-## Planned Tech Stack
+## Tech Stack
 
 - TypeScript
 - Vite
 - Three.js
-- DOM or React UI overlay
+- DOM UI overlay
 - JSON or TypeScript card database
 - Reducer/state-machine style simulation
 
@@ -147,4 +179,3 @@ These references are used for rule verification:
 - [Gwent overview and base faction perks - The Official Witcher Wiki](https://witcher-games.fandom.com/wiki/Gwent)
 - [Gwent special cards and abilities - Witcher Wiki](https://witcher.fandom.com/wiki/Gwent_special_cards)
 - [Neutral cards, weather, Decoy, Scorch, Horn - Fextralife](https://thewitcher3.wiki.fextralife.com/Neutral%2BGwent%2BCards)
-

@@ -1,6 +1,6 @@
 # Development Checklist
 
-This checklist tracks the Gwent 3D fan recreation phase by phase. Use it as the main progress board for batching work.
+This checklist tracks Oathbound phase by phase. Use it as the main progress board for batching work.
 
 Legend:
 
@@ -17,23 +17,31 @@ Legend:
 - [x] Add slain / slice card elimination requirement.
 - [x] Create README.
 - [x] Create development checklist.
-- [ ] Confirm whether MVP includes only the four base factions or includes Skellige at launch.
-- [ ] Confirm whether UI overlay should use React or plain DOM.
-- [ ] Confirm whether deck builder is post-MVP or MVP.
-- [ ] Confirm first playable platform priority: desktop only, responsive desktop/tablet, or desktop plus mobile.
+- [x] Confirm whether MVP includes only the four base factions or includes Skellige at launch.
+- [x] Confirm whether UI overlay should use React or plain DOM.
+- [x] Confirm whether deck builder is post-MVP or MVP.
+- [x] Confirm first playable platform priority: desktop only, responsive desktop/tablet, or desktop plus mobile.
 
 ## Phase 1: Project Foundation
 
-- [ ] Initialize TypeScript project.
-- [ ] Add Vite.
-- [ ] Add Three.js.
-- [ ] Decide React vs non-React UI shell.
-- [ ] Add linting and formatting.
-- [ ] Add basic test runner.
-- [ ] Create `src/` module structure.
-- [ ] Add asset folder structure.
-- [ ] Add debug build mode.
-- [ ] Add README run commands after tooling exists.
+- [x] Initialize TypeScript project.
+- [x] Add Vite.
+- [x] Add Three.js.
+- [x] Decide React vs non-React UI shell.
+- [x] Add linting and formatting.
+- [x] Add basic test runner.
+- [x] Create `src/` module structure.
+- [x] Add asset folder structure.
+- [x] Add debug build mode.
+- [x] Add README run commands after tooling exists.
+
+Phase 1 decisions:
+
+- MVP factions: Northern Realms, Nilfgaardian Empire, Scoia'tael, and Monsters.
+- Skellige: post-MVP.
+- UI shell: plain DOM overlay for now.
+- Deck builder: post-MVP.
+- First playable target: desktop-first with responsive scaling.
 
 Expected structure:
 
@@ -395,4 +403,3 @@ Post-MVP abilities:
 - [ ] AI personalities.
 - [ ] Additional board skins.
 - [ ] Controller support.
-

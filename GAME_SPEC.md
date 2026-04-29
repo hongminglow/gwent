@@ -1,4 +1,4 @@
-# Gwent 3D Fan Recreation Product Spec
+# Oathbound Product Spec
 
 ## Status
 
