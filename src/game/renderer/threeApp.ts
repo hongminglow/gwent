@@ -16,6 +16,7 @@ export type ThreeApp = {
   isInputBlocked: () => boolean;
   setDebugCamera: (enabled: boolean) => void;
   setFastAnimations: (enabled: boolean) => void;
+  setPlacementZones: (enabled: boolean) => void;
   start: () => void;
 };
 
@@ -167,6 +168,10 @@ export function createThreeApp(
     },
     setFastAnimations(enabled) {
       debugFlags.fastAnimations = enabled;
+    },
+    setPlacementZones(enabled) {
+      debugFlags.showPlacementZones = enabled;
+      board.setPlacementZonesVisible(enabled);
     },
     start() {
       if (animationFrameActive) {

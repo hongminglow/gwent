@@ -20,6 +20,7 @@ import type {
 
 export type CreateMatchOptions = {
   id: MatchId;
+  opponentFactionId?: FactionId;
   seed: string;
   playerFactionId: FactionId;
 };
@@ -29,18 +30,24 @@ const OPENING_HAND_SIZE = 10;
 export function createMatchFromFaction(options: CreateMatchOptions): MatchState {
   let rng = createRng(options.seed);
   const opponentCandidates = FACTIONS.filter((faction) => faction.id !== options.playerFactionId);
-  const opponentPick = nextInt(rng, opponentCandidates.length);
-  rng = opponentPick.rng;
+  const opponentFactionId = options.opponentFactionId && options.opponentFactionId !== options.playerFactionId
+    ? options.opponentFactionId
+    : undefined;
+  const opponentPick = opponentFactionId ? undefined : nextInt(rng, opponentCandidates.length);
 
-  const opponentFactionId = opponentCandidates[opponentPick.value].id;
-  const startingPlayer = chooseStartingPlayer(options.playerFactionId, opponentFactionId, rng);
+  if (opponentPick) {
+    rng = opponentPick.rng;
+  }
+
+  const resolvedOpponentFactionId = opponentFactionId ?? opponentCandidates[opponentPick?.value ?? 0].id;
+  const startingPlayer = chooseStartingPlayer(options.playerFactionId, resolvedOpponentFactionId, rng);
   rng = startingPlayer.rng;
 
   let state = createEmptyMatchState({
     id: options.id,
     seed: options.seed,
     playerFactionId: options.playerFactionId,
-    opponentFactionId,
+    opponentFactionId: resolvedOpponentFactionId,
     activePlayerId: startingPlayer.playerId,
   });
 
@@ -50,7 +57,7 @@ export function createMatchFromFaction(options: CreateMatchOptions): MatchState 
   };
 
   state = attachStarterDeck(state, "player", options.playerFactionId);
-  state = attachStarterDeck(state, "opponent", opponentFactionId);
+  state = attachStarterDeck(state, "opponent", resolvedOpponentFactionId);
   state = shuffleDeck(state, "player");
   state = shuffleDeck(state, "opponent");
   state = drawCards(state, "player", OPENING_HAND_SIZE, "opening-hand");

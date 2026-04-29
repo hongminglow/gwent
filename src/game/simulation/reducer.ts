@@ -1,5 +1,13 @@
 import type { GameAction } from "./actions";
 import { appendEvent } from "./events";
+import {
+  debugForceHand,
+  debugSkipRound,
+  debugSpawnCard,
+  debugTriggerAbility,
+  debugTriggerScorch,
+  debugTriggerSlain,
+} from "./debugTools";
 import { finishRedraw, passRound, playCard, redrawCard, useLeaderAbility } from "./matchFlow";
 import type { MatchState, PlayerId } from "./types";
 
@@ -34,6 +42,36 @@ export function matchReducer(state: MatchState, action: GameAction): MatchState 
 
     case "use-leader":
       return useLeaderAbility(state, action.playerId, action.rowId);
+
+    case "debug-force-hand":
+      return debugForceHand(state, action.playerId, action.definitionIds);
+
+    case "debug-spawn-card":
+      return debugSpawnCard(state, {
+        definitionId: action.definitionId,
+        playerId: action.playerId,
+        rowId: action.rowId,
+        zone: action.zone,
+      });
+
+    case "debug-trigger-ability":
+      return debugTriggerAbility(state, {
+        abilityId: action.abilityId,
+        playerId: action.playerId,
+        rowId: action.rowId,
+      });
+
+    case "debug-trigger-scorch":
+      return debugTriggerScorch(state, action.playerId, action.rowId);
+
+    case "debug-trigger-slain":
+      return debugTriggerSlain(state, action.playerId, action.rowId);
+
+    case "debug-skip-round":
+      return debugSkipRound(state, action.winnerId);
+
+    case "debug-start-match":
+      return state;
 
     default:
       return assertNever(action);

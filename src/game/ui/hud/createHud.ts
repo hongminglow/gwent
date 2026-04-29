@@ -1,8 +1,10 @@
+import { ALL_CARD_DEFINITIONS } from "../../data/cards";
 import { FACTIONS } from "../../data/factions";
 import { debugFlags } from "../../diagnostics/debugFlags";
 import { createImmediateAction, type CardInteractionHudState } from "../../renderer/cardInteraction";
 import type { GameAction } from "../../simulation/actions";
 import { chooseAiAction } from "../../simulation/aiOpponent";
+import { DEBUG_HAND_PRESETS } from "../../simulation/debugTools";
 import { calculateScoreBreakdown } from "../../simulation/scoring";
 import type {
   AbilityId,
@@ -22,13 +24,30 @@ export type Hud = {
 };
 
 export type HudOptions = {
+  onDebugStartMatch?: (playerFactionId: FactionId, opponentFactionId: FactionId) => void;
   onExitToMenu?: () => void;
   onIntent: (action: GameAction) => void;
+  onToggleAiAutoplay?: (enabled: boolean) => void;
   onToggleDebugCamera?: (enabled: boolean) => void;
   onToggleFastAnimations?: (enabled: boolean) => void;
+  onTogglePlacementZones?: (enabled: boolean) => void;
 };
 
 const ROWS: RowId[] = ["close", "ranged", "siege"];
+const ABILITIES: AbilityId[] = [
+  "agile",
+  "clear-weather",
+  "commanders-horn",
+  "decoy",
+  "hero",
+  "medic",
+  "morale-boost",
+  "muster",
+  "scorch",
+  "spy",
+  "tight-bond",
+  "weather",
+];
 
 export function createHud(root: HTMLElement, state: MatchState, options: HudOptions): Hud {
   const shell = document.createElement("main");
@@ -61,6 +80,7 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
   const passButton = createButton("Pass");
   const aiStepButton = createButton("AI Step");
   const settingsButton = createButton("Settings");
+  const debugButton = createButton("Debug");
   const menuButton = createButton("Menu");
   controls.append(
     finishRedrawButton,
@@ -69,6 +89,7 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     passButton,
     aiStepButton,
     settingsButton,
+    debugButton,
     menuButton,
   );
 
@@ -135,6 +156,23 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     },
   });
 
+  const debugToolsDrawer = createDebugToolsDrawer({
+    onDebugStartMatch: (playerFactionId, opponentFactionId) => {
+      options.onDebugStartMatch?.(playerFactionId, opponentFactionId);
+    },
+    onIntent: options.onIntent,
+    onToggleAiAutoplay: (enabled) => {
+      debugAiAutoplayEnabled = enabled;
+      options.onToggleAiAutoplay?.(enabled);
+      renderDebugToolsDrawer();
+    },
+    onTogglePlacementZones: (enabled) => {
+      debugFlags.showPlacementZones = enabled;
+      options.onTogglePlacementZones?.(enabled);
+      renderDebugToolsDrawer();
+    },
+  });
+
   const debugOverlay = document.createElement("aside");
   debugOverlay.className = "hud__debug";
   debugOverlay.setAttribute("aria-label", "Debug overlay");
@@ -151,6 +189,7 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     hint,
     modal,
     settingsDrawer.root,
+    debugToolsDrawer.root,
     debugOverlay,
   );
   shell.appendChild(hud);
@@ -163,6 +202,8 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
   };
   let dismissedRoundSequence = -1;
   let settingsOpen = false;
+  let debugToolsOpen = false;
+  let debugAiAutoplayEnabled = false;
   let debugOverlayVisible = debugFlags.showPerf;
 
   finishRedrawButton.addEventListener("click", () => {
@@ -211,7 +252,20 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
 
   settingsButton.addEventListener("click", () => {
     settingsOpen = !settingsOpen;
+    if (settingsOpen) {
+      debugToolsOpen = false;
+    }
     renderSettingsDrawer();
+    renderDebugToolsDrawer();
+  });
+
+  debugButton.addEventListener("click", () => {
+    debugToolsOpen = !debugToolsOpen;
+    if (debugToolsOpen) {
+      settingsOpen = false;
+    }
+    renderSettingsDrawer();
+    renderDebugToolsDrawer();
   });
 
   menuButton.addEventListener("click", () => {
@@ -223,6 +277,14 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     settingsDrawer.fastAnimationsInput.checked = debugFlags.fastAnimations;
     settingsDrawer.debugCameraInput.checked = debugFlags.debugCamera;
     settingsDrawer.showDebugInput.checked = debugFlags.showPerf;
+  };
+
+  const renderDebugToolsDrawer = () => {
+    debugToolsDrawer.root.hidden = !debugToolsOpen;
+    debugToolsDrawer.update(latestState, {
+      aiAutoplayEnabled: debugAiAutoplayEnabled,
+      placementZonesVisible: debugFlags.showPlacementZones,
+    });
   };
 
   const renderDebugOverlay = (
@@ -264,7 +326,7 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     const leaderAction = getLeaderAction(nextState);
     const redrawPlayer = getNextRedrawPlayer(nextState);
 
-    phase.textContent = `Phase 14 UI and HUD. ${formatPhase(nextState.phase)}.`;
+    phase.textContent = `Phase 15 debug tools. ${formatPhase(nextState.phase)}.`;
     detail.textContent = `${formatFaction(nextState.players.player.factionId)} vs ${formatFaction(
       nextState.players.opponent.factionId,
     )}. Active: ${formatPlayer(activePlayer)} / ${formatFaction(activeFaction)}. Round ${nextState.round.number}.`;
@@ -301,7 +363,9 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     aiStepButton.disabled = inputBlocked || !suggestedAction;
     menuButton.disabled = inputBlocked && nextState.phase !== "match-complete";
     settingsButton.setAttribute("aria-expanded", String(settingsOpen));
+    debugButton.setAttribute("aria-expanded", String(debugToolsOpen));
     renderSettingsDrawer();
+    renderDebugToolsDrawer();
     renderDebugOverlay(nextState, inputBlocked, latestInteraction);
   };
 
@@ -355,6 +419,195 @@ function createSettingsDrawer(options: {
   };
 }
 
+function createDebugToolsDrawer(options: {
+  onDebugStartMatch: (playerFactionId: FactionId, opponentFactionId: FactionId) => void;
+  onIntent: (action: GameAction) => void;
+  onToggleAiAutoplay: (enabled: boolean) => void;
+  onTogglePlacementZones: (enabled: boolean) => void;
+}) {
+  const root = document.createElement("aside");
+  root.className = "hud__debug-tools";
+  root.hidden = true;
+  root.setAttribute("aria-label", "Debug tools");
+
+  const title = document.createElement("h2");
+  title.className = "hud__drawer-title";
+  title.textContent = "Debug Tools";
+
+  const matchGroup = createDebugGroup("Match");
+  const playerFactionSelect = createSelect("Debug player faction", FACTIONS.map((faction) => ({
+    label: faction.name,
+    value: faction.id,
+  })));
+  const opponentFactionSelect = createSelect("Debug opponent faction", FACTIONS.map((faction) => ({
+    label: faction.name,
+    value: faction.id,
+  })));
+  opponentFactionSelect.value = "monsters";
+  const startMatchButton = createDebugButton("Start Match");
+  startMatchButton.addEventListener("click", () => {
+    const playerFactionId = getFactionId(playerFactionSelect.value) ?? "northern-realms";
+    let opponentFactionId = getFactionId(opponentFactionSelect.value) ?? "monsters";
+
+    if (opponentFactionId === playerFactionId) {
+      opponentFactionId = FACTIONS.find((faction) => faction.id !== playerFactionId)?.id ?? "monsters";
+    }
+
+    options.onDebugStartMatch(playerFactionId, opponentFactionId);
+  });
+  matchGroup.append(
+    createDebugField("Player", playerFactionSelect),
+    createDebugField("Opponent", opponentFactionSelect),
+    startMatchButton,
+  );
+
+  const stateGroup = createDebugGroup("State");
+  const playerTargetSelect = createSelect("Debug target player", [
+    { label: "Player", value: "player" },
+    { label: "Opponent", value: "opponent" },
+  ]);
+  const rowSelect = createSelect("Debug target row", ROWS.map((rowId) => ({
+    label: formatRow(rowId),
+    value: rowId,
+  })));
+  const cardSelect = createSelect("Debug card ID", ALL_CARD_DEFINITIONS.map((definition) => ({
+    label: `${definition.name} (${definition.id})`,
+    value: definition.id,
+  })));
+  cardSelect.value = "neutral-scorch";
+  const abilitySelect = createSelect("Debug ability ID", ABILITIES.map((abilityId) => ({
+    label: formatAbility(abilityId),
+    value: abilityId,
+  })));
+  abilitySelect.value = "weather";
+  const forcePlayerHandButton = createDebugButton("Force Player Hand");
+  forcePlayerHandButton.addEventListener("click", () => {
+    options.onIntent({
+      type: "debug-force-hand",
+      definitionIds: DEBUG_HAND_PRESETS.player,
+      playerId: "player",
+    });
+  });
+  const forceOpponentHandButton = createDebugButton("Force Opponent Hand");
+  forceOpponentHandButton.addEventListener("click", () => {
+    options.onIntent({
+      type: "debug-force-hand",
+      definitionIds: DEBUG_HAND_PRESETS.opponent,
+      playerId: "opponent",
+    });
+  });
+  const spawnHandButton = createDebugButton("Spawn To Hand");
+  spawnHandButton.addEventListener("click", () => {
+    options.onIntent({
+      type: "debug-spawn-card",
+      definitionId: cardSelect.value,
+      playerId: getPlayerId(playerTargetSelect.value) ?? "player",
+      zone: "hand",
+    });
+  });
+  const spawnBoardButton = createDebugButton("Spawn To Board");
+  spawnBoardButton.addEventListener("click", () => {
+    options.onIntent({
+      type: "debug-spawn-card",
+      definitionId: cardSelect.value,
+      playerId: getPlayerId(playerTargetSelect.value) ?? "player",
+      rowId: getRowId(rowSelect.value) ?? "close",
+      zone: "board",
+    });
+  });
+  const triggerAbilityButton = createDebugButton("Trigger Ability");
+  triggerAbilityButton.addEventListener("click", () => {
+    const abilityId = getAbilityId(abilitySelect.value);
+
+    if (!abilityId) {
+      return;
+    }
+
+    options.onIntent({
+      type: "debug-trigger-ability",
+      abilityId,
+      playerId: getPlayerId(playerTargetSelect.value) ?? "player",
+      rowId: getRowId(rowSelect.value) ?? "close",
+    });
+  });
+  stateGroup.append(
+    createDebugField("Target", playerTargetSelect),
+    createDebugField("Row", rowSelect),
+    createDebugField("Card", cardSelect),
+    createDebugField("Ability", abilitySelect),
+    createDebugButtonRow(forcePlayerHandButton, forceOpponentHandButton),
+    createDebugButtonRow(spawnHandButton, spawnBoardButton),
+    triggerAbilityButton,
+  );
+
+  const scenariosGroup = createDebugGroup("Scenarios");
+  const scorchButton = createDebugButton("Scorch Test");
+  scorchButton.addEventListener("click", () => {
+    options.onIntent({
+      type: "debug-trigger-scorch",
+      playerId: getPlayerId(playerTargetSelect.value) ?? "player",
+      rowId: getRowId(rowSelect.value) ?? "close",
+    });
+  });
+  const slainButton = createDebugButton("Slain VFX Test");
+  slainButton.addEventListener("click", () => {
+    options.onIntent({
+      type: "debug-trigger-slain",
+      playerId: getPlayerId(playerTargetSelect.value) ?? "player",
+      rowId: getRowId(rowSelect.value) ?? "close",
+    });
+  });
+  const skipRoundButton = createDebugButton("Skip Round Result");
+  skipRoundButton.addEventListener("click", () => {
+    options.onIntent({
+      type: "debug-skip-round",
+      winnerId: getPlayerId(playerTargetSelect.value),
+    });
+  });
+  const aiAutoplay = createToggle("AI autoplay", false);
+  aiAutoplay.input.addEventListener("change", () => {
+    options.onToggleAiAutoplay(aiAutoplay.input.checked);
+  });
+  const placementZones = createToggle("Hitbox zones", debugFlags.showPlacementZones);
+  placementZones.input.addEventListener("change", () => {
+    options.onTogglePlacementZones(placementZones.input.checked);
+  });
+  scenariosGroup.append(
+    createDebugButtonRow(scorchButton, slainButton),
+    skipRoundButton,
+    aiAutoplay.root,
+    placementZones.root,
+  );
+
+  const outputGroup = createDebugGroup("Readout");
+  const outputModeSelect = createSelect("Debug output mode", [
+    { label: "Score Breakdown", value: "score" },
+    { label: "Match State JSON", value: "state" },
+  ]);
+  const output = document.createElement("pre");
+  output.className = "hud__debug-output";
+  outputGroup.append(createDebugField("Show", outputModeSelect), output);
+  outputModeSelect.addEventListener("change", () => {
+    output.dataset.mode = outputModeSelect.value;
+  });
+
+  root.append(title, matchGroup, stateGroup, scenariosGroup, outputGroup);
+
+  return {
+    root,
+    update(state: MatchState, flags: {
+      aiAutoplayEnabled: boolean;
+      placementZonesVisible: boolean;
+    }) {
+      aiAutoplay.input.checked = flags.aiAutoplayEnabled;
+      placementZones.input.checked = flags.placementZonesVisible;
+      output.textContent = outputModeSelect.value === "state"
+        ? JSON.stringify(state, null, 2)
+        : formatScoreBreakdown(state);
+    },
+  };
+}
+
 function createToggle(label: string, checked: boolean): { input: HTMLInputElement; root: HTMLLabelElement } {
   const root = document.createElement("label");
   root.className = "hud__toggle";
@@ -368,6 +621,55 @@ function createToggle(label: string, checked: boolean): { input: HTMLInputElemen
     input,
     root,
   };
+}
+
+function createDebugGroup(title: string): HTMLElement {
+  const group = document.createElement("section");
+  group.className = "hud__debug-group";
+  const heading = document.createElement("h3");
+  heading.textContent = title;
+  group.appendChild(heading);
+  return group;
+}
+
+function createDebugField(label: string, control: HTMLElement): HTMLElement {
+  const field = document.createElement("label");
+  field.className = "hud__debug-field";
+  const text = document.createElement("span");
+  text.textContent = label;
+  field.append(text, control);
+  return field;
+}
+
+function createSelect(
+  label: string,
+  options: Array<{ label: string; value: string }>,
+): HTMLSelectElement {
+  const select = document.createElement("select");
+  select.className = "hud__debug-select";
+  select.setAttribute("aria-label", label);
+
+  for (const option of options) {
+    const item = document.createElement("option");
+    item.value = option.value;
+    item.textContent = option.label;
+    select.appendChild(item);
+  }
+
+  return select;
+}
+
+function createDebugButton(label: string): HTMLButtonElement {
+  const button = createButton(label);
+  button.classList.add("hud__button--debug");
+  return button;
+}
+
+function createDebugButtonRow(...buttons: HTMLButtonElement[]): HTMLElement {
+  const row = document.createElement("div");
+  row.className = "hud__debug-button-row";
+  row.append(...buttons);
+  return row;
 }
 
 function renderRoundMarkers(root: HTMLElement, state: MatchState) {
@@ -755,7 +1057,7 @@ function getLeaderButtonLabel(state: MatchState): string {
     return "Leader";
   }
 
-  return `Leader: ${getCardDefinition(state, player.leaderCardId).name.split(":")[0]}`;
+  return `Leader: ${formatLeaderShortName(getCardDefinition(state, player.leaderCardId).name)}`;
 }
 
 function getCardDefinition(state: MatchState, cardInstanceId: CardInstanceId): CardDefinition {
@@ -808,6 +1110,40 @@ function isPlayerId(value: unknown): value is PlayerId {
   return value === "player" || value === "opponent";
 }
 
+function getPlayerId(value: string): PlayerId | undefined {
+  return isPlayerId(value) ? value : undefined;
+}
+
+function getFactionId(value: string): FactionId | undefined {
+  return FACTIONS.some((faction) => faction.id === value) ? value as FactionId : undefined;
+}
+
+function getRowId(value: string): RowId | undefined {
+  return value === "close" || value === "ranged" || value === "siege" ? value : undefined;
+}
+
+function getAbilityId(value: string): AbilityId | undefined {
+  return ABILITIES.includes(value as AbilityId) ? value as AbilityId : undefined;
+}
+
+function formatScoreBreakdown(state: MatchState): string {
+  const breakdown = calculateScoreBreakdown(state);
+
+  return (["opponent", "player"] as const).map((playerId) => {
+    const player = breakdown[playerId];
+    const rows = ROWS.map((rowId) => {
+      const row = player.rows[rowId];
+      const modifiers = [
+        row.weatherActive ? "weather" : undefined,
+        row.hornActive ? "horn" : undefined,
+      ].filter(Boolean).join(", ");
+      return `${formatRow(rowId)}: ${row.total} (${row.cards.length} cards${modifiers ? `, ${modifiers}` : ""})`;
+    }).join("\n  ");
+
+    return `${formatPlayer(playerId)} total ${player.total}\n  ${rows}`;
+  }).join("\n\n");
+}
+
 function formatWinner(winnerIds: PlayerId[]): string {
   if (winnerIds.length === 0) {
     return "Draw";
@@ -848,4 +1184,8 @@ function formatAbility(ability: string): string {
     .split("-")
     .map((part) => part[0].toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function formatLeaderShortName(name: string): string {
+  return name.split(":")[0].trim().split(" ")[0] ?? name;
 }

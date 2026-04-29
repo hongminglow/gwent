@@ -830,6 +830,13 @@ function getActionSortKey(action: GameAction): string {
     case "pass-round":
     case "start-redraw":
     case "clear-event-log":
+    case "debug-force-hand":
+    case "debug-spawn-card":
+    case "debug-trigger-ability":
+    case "debug-trigger-scorch":
+    case "debug-trigger-slain":
+    case "debug-skip-round":
+    case "debug-start-match":
       return action.type;
     case "use-leader":
       return `${action.type}:${action.rowId ?? ""}`;

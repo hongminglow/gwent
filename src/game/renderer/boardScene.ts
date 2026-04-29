@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { debugFlags } from "../diagnostics/debugFlags";
 import type { PlayerId, RowId } from "../simulation/types";
 
 export type BoardAnchors = {
@@ -21,6 +22,7 @@ export type BoardScene = {
   root: THREE.Group;
   anchors: BoardAnchors;
   getInteractiveRowObjects: () => THREE.Object3D[];
+  setPlacementZonesVisible: (visible: boolean) => void;
   setRowHighlights: (state: {
     validRows: RowInteractionTarget[];
     hoveredRow?: RowInteractionTarget;
@@ -63,6 +65,7 @@ export function createBoardScene(): BoardScene {
     hoveredRow: undefined as RowInteractionTarget | undefined,
     rejectedRow: undefined as RowInteractionTarget | undefined,
   };
+  let placementZonesVisible = debugFlags.showPlacementZones;
 
   root.add(createTable());
   root.add(createPlaymat());
@@ -110,11 +113,14 @@ export function createBoardScene(): BoardScene {
           ? sameRow(rowTarget, rowHighlightState.rejectedRow)
           : false;
 
-        material.opacity = isValid || isHovered || isRejected ? 0.98 : 0.82;
+        material.opacity = isValid || isHovered || isRejected
+          ? 0.98
+          : placementZonesVisible ? 0.82 : 0.46;
         material.color.set(isRejected ? "#49201d" : zone.userData.playerId === "player" ? "#1f2b2a" : "#2a1f20");
         material.emissive.set(isRejected ? "#b93022" : isHovered ? "#d8bc72" : isValid ? "#6fbf9b" : zone.userData.playerId === "player" ? "#244c45" : "#532a2d");
         material.emissiveIntensity = (isHovered ? 0.38 : isValid ? 0.26 : isRejected ? 0.45 : 0.08)
           + Math.sin(elapsed * 1.45 + zone.position.z) * 0.024;
+        material.wireframe = placementZonesVisible;
       }
     }
 
@@ -126,6 +132,9 @@ export function createBoardScene(): BoardScene {
     anchors,
     getInteractiveRowObjects() {
       return rowZoneMeshes;
+    },
+    setPlacementZonesVisible(visible) {
+      placementZonesVisible = visible;
     },
     setRowHighlights(nextState) {
       rowHighlightState.validRows = nextState.validRows;

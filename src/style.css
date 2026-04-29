@@ -389,6 +389,7 @@ input:focus-visible {
 .hud__inspect,
 .hud__hint,
 .hud__drawer,
+.hud__debug-tools,
 .hud__debug,
 .hud__modal-panel {
   border: 1px solid var(--ui-border-soft);
@@ -751,6 +752,23 @@ input:focus-visible {
   display: none;
 }
 
+.hud__debug-tools {
+  position: absolute;
+  top: 132px;
+  right: 18px;
+  display: grid;
+  gap: 12px;
+  width: min(380px, calc(100vw - 36px));
+  max-height: calc(100vh - 168px);
+  overflow: auto;
+  padding: 12px;
+  pointer-events: auto;
+}
+
+.hud__debug-tools[hidden] {
+  display: none;
+}
+
 .hud__drawer-title {
   margin: 0;
   color: var(--ui-gold);
@@ -770,6 +788,66 @@ input:focus-visible {
   width: 16px;
   height: 16px;
   accent-color: var(--ui-gold);
+}
+
+.hud__debug-group {
+  display: grid;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hud__debug-group h3 {
+  margin: 0;
+  color: rgba(242, 207, 123, 0.88);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.hud__debug-field {
+  display: grid;
+  gap: 5px;
+  color: var(--ui-muted);
+  font-size: 12px;
+}
+
+.hud__debug-select {
+  width: 100%;
+  min-height: 34px;
+  padding: 7px 9px;
+  border: 1px solid var(--ui-border-soft);
+  border-radius: 8px;
+  background: rgba(22, 22, 21, 0.94);
+  color: var(--ui-text);
+}
+
+.hud__debug-button-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.hud__button--debug {
+  width: 100%;
+  max-width: none;
+  min-height: 40px;
+  overflow: visible;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+.hud__debug-output {
+  max-height: 220px;
+  margin: 0;
+  overflow: auto;
+  padding: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.26);
+  color: rgba(226, 232, 226, 0.82);
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: pre-wrap;
 }
 
 .hud__debug {
@@ -959,6 +1037,13 @@ input:focus-visible {
     top: 318px;
     right: 12px;
     width: min(236px, calc(100vw - 24px));
+  }
+
+  .hud__debug-tools {
+    top: 318px;
+    right: 12px;
+    width: calc(100vw - 24px);
+    max-height: calc(100vh - 340px);
   }
 
   .hud__debug {

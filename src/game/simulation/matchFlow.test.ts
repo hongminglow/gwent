@@ -21,6 +21,18 @@ describe("match flow", () => {
     expect(state.players.opponent.deck.cards).toHaveLength(getRemainingDeckCount(state, "opponent"));
   });
 
+  it("creates a match with an explicitly selected opponent faction", () => {
+    const state = createMatchFromFaction({
+      id: "match-selected-opponent",
+      seed: "selected-opponent-seed",
+      playerFactionId: "northern-realms",
+      opponentFactionId: "monsters",
+    });
+
+    expect(state.players.player.factionId).toBe("northern-realms");
+    expect(state.players.opponent.factionId).toBe("monsters");
+  });
+
   it("uses Scoia'tael first-turn control when either side has that faction", () => {
     const playerScoiatael = createMatchFromFaction({
       id: "match-scoiatael-player",

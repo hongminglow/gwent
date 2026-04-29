@@ -419,20 +419,28 @@ Phase 14 output:
 
 ## Phase 15: Debug Tools
 
-- [ ] Start match with selected factions.
-- [ ] Force player hand.
-- [ ] Force opponent hand.
-- [ ] Spawn card by ID.
-- [ ] Trigger ability by ID.
-- [ ] Trigger Scorch test.
-- [ ] Trigger slain VFX test.
-- [ ] Skip to round result.
-- [ ] Show match state JSON.
-- [ ] Show score breakdown.
-- [ ] Toggle AI autoplay.
-- [ ] Toggle animation speed.
-- [ ] Toggle camera debug.
-- [ ] Toggle hitbox/placement zone view.
+- [x] Start match with selected factions.
+- [x] Force player hand.
+- [x] Force opponent hand.
+- [x] Spawn card by ID.
+- [x] Trigger ability by ID.
+- [x] Trigger Scorch test.
+- [x] Trigger slain VFX test.
+- [x] Skip to round result.
+- [x] Show match state JSON.
+- [x] Show score breakdown.
+- [x] Toggle AI autoplay.
+- [x] Toggle animation speed.
+- [x] Toggle camera debug.
+- [x] Toggle hitbox/placement zone view.
+
+Phase 15 output:
+
+- Debug match actions now live in `src/game/simulation/debugTools.ts` and are routed through `src/game/simulation/reducer.ts`.
+- The HUD Debug drawer in `src/game/ui/hud/createHud.ts` can start selected-faction matches, force hands, spawn cards, trigger ability/scenario shortcuts, inspect state JSON, inspect score breakdowns, toggle AI autoplay, and toggle hitbox zones.
+- `src/main.ts` now supports HUD-controlled selected opponent factions and AI autoplay.
+- `src/game/renderer/threeApp.ts` and `src/game/renderer/boardScene.ts` expose placement-zone visibility for hitbox debugging.
+- Debug tool regression tests live in `src/game/simulation/debugTools.test.ts`.
 
 ## Phase 16: Testing
 

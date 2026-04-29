@@ -2,9 +2,10 @@ import "./style.css";
 import type { CardInteractionHudState } from "./game/renderer/cardInteraction";
 import { createThreeApp, type ThreeApp } from "./game/renderer/threeApp";
 import { createMatchStore, type MatchStore } from "./game/runtime/matchStore";
-import type { GameAction } from "./game/simulation/actions";
+import { isDebugAction, type GameAction } from "./game/simulation/actions";
+import { chooseAiAction } from "./game/simulation/aiOpponent";
 import { createMatchFromFaction } from "./game/simulation/matchFlow";
-import type { FactionId } from "./game/simulation/types";
+import type { FactionId, MatchState, PlayerId } from "./game/simulation/types";
 import { createHud, type Hud } from "./game/ui/hud/createHud";
 import { createMainMenu } from "./game/ui/menu/createMainMenu";
 
@@ -26,6 +27,8 @@ type GameSession = {
 
 let activeSession: GameSession | undefined;
 let startTimerId: number | undefined;
+let aiAutoplayEnabled = false;
+let aiAutoplayTimerId: number | undefined;
 
 const menu = createMainMenu(root, {
   onStartMatch: (factionId) => {
@@ -40,12 +43,13 @@ const menu = createMainMenu(root, {
   },
 });
 
-function startMatch(playerFactionId: FactionId) {
+function startMatch(playerFactionId: FactionId, opponentFactionId?: FactionId) {
   disposeSession();
 
   const matchSeed = `${playerFactionId}-${Date.now()}`;
   const initialState = createMatchFromFaction({
     id: `match-${Date.now()}`,
+    opponentFactionId,
     playerFactionId,
     seed: matchSeed,
   });
@@ -57,7 +61,7 @@ function startMatch(playerFactionId: FactionId) {
     store,
   };
   const dispatchIntent = (action: GameAction) => {
-    if (session.threeApp?.isInputBlocked()) {
+    if (!isDebugAction(action) && session.threeApp?.isInputBlocked()) {
       return;
     }
 
@@ -68,10 +72,15 @@ function startMatch(playerFactionId: FactionId) {
     }
   };
   const hud = createHud(root, initialState, {
+    onDebugStartMatch: (nextPlayerFactionId, nextOpponentFactionId) => {
+      startMatch(nextPlayerFactionId, nextOpponentFactionId);
+    },
     onExitToMenu: showMainMenu,
     onIntent: dispatchIntent,
+    onToggleAiAutoplay: setAiAutoplay,
     onToggleDebugCamera: (enabled) => session.threeApp?.setDebugCamera(enabled),
     onToggleFastAnimations: (enabled) => session.threeApp?.setFastAnimations(enabled),
+    onTogglePlacementZones: (enabled) => session.threeApp?.setPlacementZones(enabled),
   });
   const threeApp = createThreeApp(root, initialState, {
     onInputBlockedChange: (blocked) => {
@@ -86,6 +95,7 @@ function startMatch(playerFactionId: FactionId) {
   const unsubscribe = store.subscribe((state) => {
     threeApp.applyMatchState(state);
     hud.update(state, threeApp.isInputBlocked(), session.interactionState);
+    scheduleAiAutoplay();
   }, false);
 
   session.hud = hud;
@@ -95,9 +105,11 @@ function startMatch(playerFactionId: FactionId) {
   menu.hideLoading();
   menu.hide();
   threeApp.start();
+  scheduleAiAutoplay();
 }
 
 function showMainMenu() {
+  setAiAutoplay(false);
   disposeSession();
   menu.show();
 }
@@ -113,11 +125,81 @@ function disposeSession() {
   activeSession = undefined;
 }
 
+function setAiAutoplay(enabled: boolean) {
+  aiAutoplayEnabled = enabled;
+
+  if (!enabled && aiAutoplayTimerId !== undefined) {
+    window.clearTimeout(aiAutoplayTimerId);
+    aiAutoplayTimerId = undefined;
+  }
+
+  if (enabled) {
+    scheduleAiAutoplay();
+  }
+}
+
+function scheduleAiAutoplay() {
+  if (!aiAutoplayEnabled || !activeSession || aiAutoplayTimerId !== undefined) {
+    return;
+  }
+
+  aiAutoplayTimerId = window.setTimeout(() => {
+    aiAutoplayTimerId = undefined;
+    runAiAutoplayStep();
+  }, 460);
+}
+
+function runAiAutoplayStep() {
+  const session = activeSession;
+
+  if (!aiAutoplayEnabled || !session) {
+    return;
+  }
+
+  if (session.threeApp.isInputBlocked()) {
+    scheduleAiAutoplay();
+    return;
+  }
+
+  const state = session.store.getState();
+  const playerId = getAutoplayPlayer(state);
+  const suggestion = playerId ? chooseAiAction(state, playerId)?.action : undefined;
+
+  if (suggestion) {
+    try {
+      session.store.dispatch(suggestion);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  scheduleAiAutoplay();
+}
+
+function getAutoplayPlayer(state: MatchState): PlayerId | undefined {
+  if (state.phase === "redraw") {
+    if (!state.players.player.hand.redrawComplete) {
+      return "player";
+    }
+
+    if (!state.players.opponent.hand.redrawComplete) {
+      return "opponent";
+    }
+  }
+
+  if (state.phase === "playing") {
+    return state.round.activePlayerId;
+  }
+
+  return undefined;
+}
+
 window.addEventListener("beforeunload", () => {
   if (startTimerId !== undefined) {
     window.clearTimeout(startTimerId);
   }
 
   disposeSession();
+  setAiAutoplay(false);
   menu.dispose();
 });
