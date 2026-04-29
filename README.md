@@ -6,9 +6,9 @@ The goal is a faithful 1v1 Gwent-style experience: four base factions, three bat
 
 ## Project Status
 
-Current phase: Phase 1 project foundation.
+Current phase: Phase 7 faction data complete.
 
-The repository now contains the first TypeScript/Vite/Three.js scaffold, product spec, and development checklist used to guide phase-by-phase implementation.
+The repository now contains the TypeScript/Vite/Three.js scaffold, product spec, rule reference, serializable simulation core, match flow, scoring system, ability engine, curated MVP faction cards, starter decks, and validation tests. Phase 8 starts the AI opponent.
 
 ## Run Locally
 
@@ -34,6 +34,12 @@ Run tests:
 
 ```bash
 npm run test
+```
+
+Validate card and starter-deck data:
+
+```bash
+npm run validate:data
 ```
 
 Run linting:
@@ -180,3 +186,7 @@ These references are used for rule verification:
 - [Gwent overview and base faction perks - The Official Witcher Wiki](https://witcher-games.fandom.com/wiki/Gwent)
 - [Gwent special cards and abilities - Witcher Wiki](https://witcher.fandom.com/wiki/Gwent_special_cards)
 - [Neutral cards, weather, Decoy, Scorch, Horn - Fextralife](https://thewitcher3.wiki.fextralife.com/Neutral%2BGwent%2BCards)
+- [Northern Realms deck - Witcher Wiki](https://witcher.fandom.com/wiki/Northern_Realms_Gwent_deck)
+- [Nilfgaardian Empire deck - Witcher Wiki](https://witcher.fandom.com/wiki/Nilfgaardian_Empire_Gwent_deck)
+- [Scoia'tael deck - Witcher Wiki](https://witcher.fandom.com/wiki/Scoia%27tael_Gwent_deck)
+- [Monsters deck - Witcher Wiki](https://witcher.fandom.com/wiki/Monsters_Gwent_deck)

@@ -1,6 +1,6 @@
 import { FACTIONS } from "../data/factions";
 import { resolveCardPlay } from "./abilityEngine";
-import { createGeneratedStarterDeck } from "./deckFactory";
+import { createStarterDeck } from "./deckFactory";
 import { appendEvent } from "./events";
 import { createEmptyBoard, createEmptyMatchState } from "./matchState";
 import { createRng, nextInt, shuffleWithRng } from "./random";
@@ -48,8 +48,8 @@ export function createMatchFromFaction(options: CreateMatchOptions): MatchState 
     rng,
   };
 
-  state = attachGeneratedDeck(state, "player", options.playerFactionId);
-  state = attachGeneratedDeck(state, "opponent", opponentFactionId);
+  state = attachStarterDeck(state, "player", options.playerFactionId);
+  state = attachStarterDeck(state, "opponent", opponentFactionId);
   state = shuffleDeck(state, "player");
   state = shuffleDeck(state, "opponent");
   state = drawCards(state, "player", OPENING_HAND_SIZE, "opening-hand");
@@ -213,13 +213,13 @@ export function passRound(state: MatchState, playerId: PlayerId): MatchState {
   return advanceAfterAction(nextState, playerId);
 }
 
-function attachGeneratedDeck(
+function attachStarterDeck(
   state: MatchState,
   playerId: PlayerId,
   factionId: FactionId,
 ): MatchState {
-  const generatedDeck = createGeneratedStarterDeck(factionId);
-  const definitions = [generatedDeck.leader, ...generatedDeck.deck];
+  const starterDeck = createStarterDeck(factionId);
+  const definitions = [starterDeck.leader, ...starterDeck.deck];
   const cardDefinitions = {
     ...state.cardDefinitions,
     ...Object.fromEntries(definitions.map((definition) => [definition.id, definition])),
@@ -231,14 +231,14 @@ function attachGeneratedDeck(
   nextCardInstanceSequence += 1;
   cardInstances[leaderInstanceId] = {
     id: leaderInstanceId,
-    definitionId: generatedDeck.leader.id,
+    definitionId: starterDeck.leader.id,
     ownerId: playerId,
     controllerId: playerId,
     zone: "leader",
     createdSequence: nextCardInstanceSequence - 1,
   };
 
-  const deckInstanceIds = generatedDeck.deck.map((definition) => {
+  const deckInstanceIds = starterDeck.deck.map((definition) => {
     const instanceId = createCardInstanceId(playerId, nextCardInstanceSequence);
     cardInstances[instanceId] = {
       id: instanceId,

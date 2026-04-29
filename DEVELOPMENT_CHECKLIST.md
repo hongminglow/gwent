@@ -210,19 +210,27 @@ Post-MVP abilities:
 
 ## Phase 7: Faction Data
 
-- [ ] Create Northern Realms faction definition.
-- [ ] Create Nilfgaardian Empire faction definition.
-- [ ] Create Scoia'tael faction definition.
-- [ ] Create Monsters faction definition.
-- [ ] Add faction perks.
-- [ ] Add leader card definitions.
-- [ ] Add starter deck for each faction.
-- [ ] Verify each starter deck has at least 22 unit cards.
-- [ ] Verify each starter deck has no more than 10 special cards.
-- [ ] Add neutral cards needed for MVP.
-- [ ] Add card art manifest keys.
-- [ ] Add VFX manifest keys.
-- [ ] Add card data validation script.
+- [x] Create Northern Realms faction definition.
+- [x] Create Nilfgaardian Empire faction definition.
+- [x] Create Scoia'tael faction definition.
+- [x] Create Monsters faction definition.
+- [x] Add faction perks.
+- [x] Add leader card definitions.
+- [x] Add starter deck for each faction.
+- [x] Verify each starter deck has at least 22 unit cards.
+- [x] Verify each starter deck has no more than 10 special cards.
+- [x] Add neutral cards needed for MVP.
+- [x] Add card art manifest keys.
+- [x] Add VFX manifest keys.
+- [x] Add card data validation script.
+
+Phase 7 output:
+
+- Curated MVP card definitions live in `src/game/data/cards.ts`.
+- Starter deck definitions live in `src/game/data/starterDecks.ts`.
+- Match creation now uses curated starter decks instead of generated placeholders.
+- Card art and VFX placeholder asset keys are generated from the card data in `src/game/assets/manifest.ts`.
+- Card data validation lives in `src/game/data/validateCardData.ts` and can be run with `npm run validate:data`.
 
 ## Phase 8: AI Opponent
 

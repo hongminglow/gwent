@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { STARTER_DECKS } from "../data/starterDecks";
 import { createMatchFromFaction } from "./matchFlow";
 import { matchReducer } from "./reducer";
 import type { CardInstanceId, MatchState, PlayerId } from "./types";
@@ -16,8 +17,8 @@ describe("match flow", () => {
     expect(state.players.opponent.factionId).not.toBe("northern-realms");
     expect(state.players.player.hand.cards).toHaveLength(10);
     expect(state.players.opponent.hand.cards).toHaveLength(10);
-    expect(state.players.player.deck.cards).toHaveLength(19);
-    expect(state.players.opponent.deck.cards).toHaveLength(19);
+    expect(state.players.player.deck.cards).toHaveLength(getRemainingDeckCount(state, "player"));
+    expect(state.players.opponent.deck.cards).toHaveLength(getRemainingDeckCount(state, "opponent"));
   });
 
   it("uses Scoia'tael first-turn control when either side has that faction", () => {
@@ -230,4 +231,9 @@ function findPlayableUnit(state: MatchState, playerId: PlayerId): CardInstanceId
   }
 
   return cardId;
+}
+
+function getRemainingDeckCount(state: MatchState, playerId: PlayerId): number {
+  const starterDeck = STARTER_DECKS[state.players[playerId].factionId];
+  return starterDeck.unitIds.length + starterDeck.specialIds.length - 10;
 }
