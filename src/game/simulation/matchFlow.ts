@@ -6,6 +6,7 @@ import { createEmptyBoard, createEmptyMatchState } from "./matchState";
 import { createRng, nextInt, shuffleWithRng } from "./random";
 import { calculateScores } from "./scoring";
 import type {
+  CardDefinition,
   CardInstance,
   CardInstanceId,
   FactionId,
@@ -213,6 +214,65 @@ export function passRound(state: MatchState, playerId: PlayerId): MatchState {
   return advanceAfterAction(nextState, playerId);
 }
 
+export function useLeaderAbility(
+  state: MatchState,
+  playerId: PlayerId,
+  rowId?: RowId,
+): MatchState {
+  assertPhase(state, "playing");
+  assertActivePlayer(state, playerId);
+  assertPlayerCanAct(state, playerId);
+
+  const player = state.players[playerId];
+
+  if (player.leaderUsed) {
+    throw new Error(`${playerId} has already used their leader ability.`);
+  }
+
+  if (!player.leaderCardId) {
+    throw new Error(`${playerId} has no leader card.`);
+  }
+
+  const leaderDefinition = state.cardDefinitions[state.cards[player.leaderCardId].definitionId];
+
+  if (leaderDefinition.type !== "leader") {
+    throw new Error(`${leaderDefinition.name} is not a leader card.`);
+  }
+
+  let nextState: MatchState = {
+    ...state,
+    players: {
+      ...state.players,
+      [playerId]: {
+        ...player,
+        leaderUsed: true,
+      },
+    },
+  };
+
+  nextState = appendEvent(
+    nextState,
+    "leader.used",
+    {
+      playerId,
+      leaderCardInstanceId: player.leaderCardId,
+      leaderDefinitionId: leaderDefinition.id,
+      rowId,
+    },
+    true,
+  );
+
+  if (leaderDefinition.abilities.includes("weather")) {
+    nextState = applyLeaderWeather(nextState, leaderDefinition, rowId);
+  }
+
+  if (leaderDefinition.tags.includes("leader:draw-extra-card")) {
+    nextState = drawCards(nextState, playerId, 1, "leader");
+  }
+
+  return advanceAfterAction(nextState, playerId);
+}
+
 function attachStarterDeck(
   state: MatchState,
   playerId: PlayerId,
@@ -271,6 +331,40 @@ function attachStarterDeck(
       },
     },
   };
+}
+
+function applyLeaderWeather(
+  state: MatchState,
+  leaderDefinition: CardDefinition,
+  rowId?: RowId,
+): MatchState {
+  const affectedRows = leaderDefinition.rows.length > 0 ? leaderDefinition.rows : rowId ? [rowId] : [];
+
+  if (affectedRows.length === 0) {
+    throw new Error(`${leaderDefinition.name} requires a weather row target.`);
+  }
+
+  let nextState = state;
+
+  for (const affectedRowId of affectedRows) {
+    nextState = {
+      ...nextState,
+      board: {
+        ...nextState.board,
+        weather: {
+          ...nextState.board.weather,
+          [affectedRowId]: true,
+        },
+      },
+    };
+    nextState = appendEvent(nextState, "weather.applied", {
+      rowId: affectedRowId,
+      sourceCardId: leaderDefinition.id,
+      sourceType: "leader",
+    });
+  }
+
+  return nextState;
 }
 
 function shuffleDeck(state: MatchState, playerId: PlayerId): MatchState {

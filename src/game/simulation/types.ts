@@ -139,6 +139,7 @@ export type GameEventType =
   | "card.played"
   | "card.destroyed"
   | "card.revived"
+  | "leader.used"
   | "weather.applied"
   | "weather.cleared"
   | "row.buff.applied"

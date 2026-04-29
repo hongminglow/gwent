@@ -13,4 +13,4 @@ export type GameAction =
       targetCardInstanceId?: CardInstanceId;
     }
   | { type: "pass-round"; playerId: PlayerId }
-  | { type: "use-leader"; playerId: PlayerId };
+  | { type: "use-leader"; playerId: PlayerId; rowId?: RowId };

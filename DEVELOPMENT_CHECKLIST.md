@@ -143,7 +143,7 @@ Phase 3 output:
 
 Phase 4 output:
 
-- Generated starter-deck factory in `src/game/simulation/deckFactory.ts`.
+- Starter-deck factory adapter in `src/game/simulation/deckFactory.ts`.
 - Match creation and turn flow in `src/game/simulation/matchFlow.ts`.
 - Basic score snapshot in `src/game/simulation/scoring.ts`.
 - Match-flow reducer integration in `src/game/simulation/reducer.ts`.
@@ -234,20 +234,28 @@ Phase 7 output:
 
 ## Phase 8: AI Opponent
 
-- [ ] Build legal action generator.
-- [ ] Build score projection helper.
-- [ ] Build simple card value evaluator.
-- [ ] Add pass decision logic.
-- [ ] Add round sacrifice logic.
-- [ ] Add leader ability usage logic.
-- [ ] Add Spy usage logic.
-- [ ] Add Medic usage logic.
-- [ ] Add Scorch usage logic.
-- [ ] Add Weather usage logic.
-- [ ] Add faction-specific priorities.
-- [ ] Add AI difficulty config.
-- [ ] Add AI autoplay debug mode.
-- [ ] Add simulation tests for AI actions.
+- [x] Build legal action generator.
+- [x] Build score projection helper.
+- [x] Build simple card value evaluator.
+- [x] Add pass decision logic.
+- [x] Add round sacrifice logic.
+- [x] Add leader ability usage logic.
+- [x] Add Spy usage logic.
+- [x] Add Medic usage logic.
+- [x] Add Scorch usage logic.
+- [x] Add Weather usage logic.
+- [x] Add faction-specific priorities.
+- [x] Add AI difficulty config.
+- [x] Add AI autoplay debug mode.
+- [x] Add simulation tests for AI actions.
+
+Phase 8 output:
+
+- AI legal action generation, scoring, action selection, and autoplay live in `src/game/simulation/aiOpponent.ts`.
+- Leader abilities now resolve through the reducer via `use-leader`, including leader VFX events, weather leaders, and the Scoia'tael draw leader.
+- AI difficulty tuning supports `easy`, `standard`, and `hard` profiles.
+- AI autoplay can control the opponent only or both players for deterministic simulation/debug runs.
+- AI tests live in `src/game/simulation/aiOpponent.test.ts`, including a full AI-vs-AI match completion test.
 
 ## Phase 9: Three.js Foundation
 

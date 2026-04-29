@@ -1,6 +1,6 @@
 import type { GameAction } from "./actions";
 import { appendEvent } from "./events";
-import { finishRedraw, passRound, playCard, redrawCard } from "./matchFlow";
+import { finishRedraw, passRound, playCard, redrawCard, useLeaderAbility } from "./matchFlow";
 import type { MatchState, PlayerId } from "./types";
 
 export function matchReducer(state: MatchState, action: GameAction): MatchState {
@@ -33,10 +33,7 @@ export function matchReducer(state: MatchState, action: GameAction): MatchState 
       );
 
     case "use-leader":
-      return appendEvent(state, "phase.changed", {
-        reason: "action-not-implemented-in-phase-3",
-        actionType: action.type,
-      });
+      return useLeaderAbility(state, action.playerId, action.rowId);
 
     default:
       return assertNever(action);
