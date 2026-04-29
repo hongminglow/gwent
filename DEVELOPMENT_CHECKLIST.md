@@ -151,19 +151,26 @@ Phase 4 output:
 
 ## Phase 5: Scoring System
 
-- [ ] Calculate base unit strength.
-- [ ] Apply weather row strength.
-- [ ] Apply Clear Weather.
-- [ ] Apply Commander's Horn.
-- [ ] Apply Tight Bond.
-- [ ] Apply Morale Boost.
-- [ ] Apply hero immunity.
-- [ ] Apply row totals.
-- [ ] Apply player total.
-- [ ] Add score breakdown debug output.
-- [ ] Add tests for each scoring modifier.
-- [ ] Add tests for stacked modifiers.
-- [ ] Add tests for hero immunity against buffs and debuffs.
+- [x] Calculate base unit strength.
+- [x] Apply weather row strength.
+- [x] Apply Clear Weather.
+- [x] Apply Commander's Horn.
+- [x] Apply Tight Bond.
+- [x] Apply Morale Boost.
+- [x] Apply hero immunity.
+- [x] Apply row totals.
+- [x] Apply player total.
+- [x] Add score breakdown debug output.
+- [x] Add tests for each scoring modifier.
+- [x] Add tests for stacked modifiers.
+- [x] Add tests for hero immunity against buffs and debuffs.
+
+Phase 5 output:
+
+- Breakdown-based scorer in `src/game/simulation/scoring.ts`.
+- Scoring modifier tests in `src/game/simulation/scoring.test.ts`.
+- Score order: weather, Tight Bond, Commander's Horn, then Morale Boost.
+- Hero cards return base power and ignore weather, Horn, Tight Bond, and Morale Boost.
 
 ## Phase 6: Card Ability Engine
 
