@@ -13,7 +13,15 @@ export type CardMeshOptions = {
 export type CardMesh = {
   root: THREE.Group;
   baseY: number;
+  setInteractionState: (state: CardMeshInteractionState) => void;
   dispose: () => void;
+};
+
+export type CardMeshInteractionState = {
+  hovered?: boolean;
+  selected?: boolean;
+  dragging?: boolean;
+  rejected?: boolean;
 };
 
 const CARD_WIDTH = 1.42;
@@ -56,6 +64,22 @@ export function createCardMesh(options: CardMeshOptions): CardMesh {
   frame.position.z = 0.038;
   root.add(frame);
 
+  const highlightMaterial = new THREE.MeshBasicMaterial({
+    color: "#f8e6bb",
+    depthWrite: false,
+    opacity: 0,
+    side: THREE.DoubleSide,
+    transparent: true,
+  });
+  const highlight = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.38, 1.96),
+    highlightMaterial,
+  );
+  highlight.name = "CardInteractionHighlight";
+  highlight.position.z = 0.04;
+  highlight.visible = false;
+  root.add(highlight);
+
   const gem = new THREE.Mesh(
     new THREE.CircleGeometry(0.16, 32),
     materials.accent,
@@ -75,6 +99,21 @@ export function createCardMesh(options: CardMeshOptions): CardMesh {
   return {
     root,
     baseY: position.y,
+    setInteractionState(state) {
+      const opacity = state.rejected
+        ? 0.38
+        : state.dragging
+          ? 0.34
+          : state.selected
+            ? 0.28
+            : state.hovered
+              ? 0.18
+              : 0;
+
+      highlight.visible = opacity > 0;
+      highlightMaterial.opacity = opacity;
+      highlightMaterial.color.set(state.rejected ? "#e55d4f" : state.dragging ? "#f0d290" : "#f8e6bb");
+    },
     dispose() {
       captionTexture.dispose();
       materials.dispose();

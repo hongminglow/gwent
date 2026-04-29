@@ -309,19 +309,28 @@ Phase 10 output:
 
 ## Phase 11: Card Interaction
 
-- [ ] Raycast cards.
-- [ ] Hover lift animation.
-- [ ] Hover highlight.
-- [ ] Select card.
-- [ ] Inspect card.
-- [ ] Drag card to valid row.
-- [ ] Click card then click row placement.
-- [ ] Show valid placement zones.
-- [ ] Reject invalid placement with clear feedback.
-- [ ] Play card-to-row animation.
-- [ ] Animate draw from deck.
-- [ ] Animate discard movement.
-- [ ] Animate leader ability use.
+- [x] Raycast cards.
+- [x] Hover lift animation.
+- [x] Hover highlight.
+- [x] Select card.
+- [x] Inspect card.
+- [x] Drag card to valid row.
+- [x] Click card then click row placement.
+- [x] Show valid placement zones.
+- [x] Reject invalid placement with clear feedback.
+- [x] Play card-to-row animation.
+- [x] Animate draw from deck.
+- [x] Animate discard movement.
+- [x] Animate leader ability use.
+
+Phase 11 output:
+
+- Pointer-driven card interaction lives in `src/game/renderer/cardInteraction.ts`.
+- The renderer now exposes card raycast targets, inspection data, and card interaction state from `src/game/renderer/simulationBridge.ts`.
+- Row placement zones expose raycast targets and valid/hover/reject highlights from `src/game/renderer/boardScene.ts`.
+- Card meshes now support hover, selected, dragging, and rejected glow states from `src/game/renderer/cardMesh.ts`.
+- The HUD now shows live card inspection details and interaction feedback from `src/game/ui/hud/createHud.ts`.
+- Interaction helper tests live in `src/game/renderer/cardInteraction.test.ts`.
 
 ## Phase 12: Slain / Slice VFX
 

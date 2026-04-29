@@ -5,6 +5,7 @@ import type { GameAction } from "../simulation/actions";
 import type { MatchState } from "../simulation/types";
 import { createVisualAnimationQueue } from "./animationQueue";
 import { createBoardScene } from "./boardScene";
+import { createCardInteractionController, type CardInteractionHudState } from "./cardInteraction";
 import { createCameraRig } from "./cameraRig";
 import { createGameTextureLoader } from "./loaders/textureLoader";
 import { createSimulationRenderer } from "./simulationBridge";
@@ -17,6 +18,7 @@ export type ThreeApp = {
 };
 
 export type ThreeAppOptions = {
+  onInteractionChange?: (state: CardInteractionHudState) => void;
   onIntent?: (action: GameAction) => void;
   onInputBlockedChange?: (blocked: boolean) => void;
 };
@@ -43,14 +45,28 @@ export function createThreeApp(
   const board = createBoardScene();
   scene.add(board.root);
   const animationQueue = createVisualAnimationQueue();
+  let latestState = initialState;
+  let latestInputBlocked = animationQueue.isBlocking();
   const simulationRenderer = createSimulationRenderer(board.root, board.anchors, animationQueue);
   simulationRenderer.applySnapshot(initialState, { animateEvents: false });
+  const cardInteraction = createCardInteractionController({
+    board,
+    camera: cameraRig.camera,
+    domElement: renderer.domElement,
+    getState: () => latestState,
+    isInputBlocked: () => animationQueue.isBlocking(),
+    onInteractionChange: (interactionState) => options.onInteractionChange?.(interactionState),
+    onIntent: (action) => {
+      if (!animationQueue.isBlocking()) {
+        options.onIntent?.(action);
+      }
+    },
+    simulationRenderer,
+  });
   addLighting(scene);
 
   const clock = new THREE.Clock();
   let animationFrameActive = false;
-  let latestState = initialState;
-  let latestInputBlocked = animationQueue.isBlocking();
 
   const resize = () => {
     const width = sceneLayer.clientWidth || window.innerWidth;
@@ -71,6 +87,7 @@ export function createThreeApp(
     if (inputBlocked !== latestInputBlocked) {
       latestInputBlocked = inputBlocked;
       options.onInputBlockedChange?.(inputBlocked);
+      cardInteraction.refresh();
     }
 
     renderer.render(scene, cameraRig.camera);
@@ -134,6 +151,7 @@ export function createThreeApp(
     applyMatchState(state, applyOptions = {}) {
       latestState = state;
       simulationRenderer.applySnapshot(state, applyOptions);
+      cardInteraction.refresh();
     },
     isInputBlocked() {
       return animationQueue.isBlocking();
@@ -154,6 +172,7 @@ export function createThreeApp(
       renderer.domElement.removeEventListener("webglcontextlost", onContextLost);
       renderer.domElement.removeEventListener("webglcontextrestored", onContextRestored);
       resizeObserver.disconnect();
+      cardInteraction.dispose();
       cameraRig.dispose();
       simulationRenderer.dispose();
       board.dispose();

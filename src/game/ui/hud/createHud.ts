@@ -2,9 +2,11 @@ import { chooseAiAction } from "../../simulation/aiOpponent";
 import type { GameAction } from "../../simulation/actions";
 import { calculateScores } from "../../simulation/scoring";
 import type { MatchState, PlayerId } from "../../simulation/types";
+import type { CardInteractionHudState } from "../../renderer/cardInteraction";
 
 export type Hud = {
-  update: (state: MatchState, inputBlocked: boolean) => void;
+  setInteraction: (interaction: CardInteractionHudState) => void;
+  update: (state: MatchState, inputBlocked: boolean, interaction?: CardInteractionHudState) => void;
   dispose: () => void;
 };
 
@@ -53,12 +55,26 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
   const hint = document.createElement("div");
   hint.className = "hud__hint";
 
-  hud.append(status, controls, strip, hint);
+  const inspect = document.createElement("aside");
+  inspect.className = "hud__inspect";
+  inspect.setAttribute("aria-label", "Card inspection");
+  const inspectTitle = document.createElement("h2");
+  inspectTitle.className = "hud__inspect-title";
+  const inspectMeta = document.createElement("p");
+  inspectMeta.className = "hud__inspect-meta";
+  const inspectAbilities = document.createElement("p");
+  inspectAbilities.className = "hud__inspect-meta";
+  inspect.append(inspectTitle, inspectMeta, inspectAbilities);
+
+  hud.append(status, controls, strip, inspect, hint);
   shell.appendChild(hud);
   root.appendChild(shell);
 
   let latestState = state;
   let latestInputBlocked = false;
+  let latestInteraction: CardInteractionHudState = {
+    validRows: [],
+  };
 
   finishRedrawButton.addEventListener("click", () => {
     const playerId = getNextRedrawPlayer(latestState);
@@ -93,38 +109,92 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     }
   });
 
-  const update = (nextState: MatchState, inputBlocked: boolean) => {
+  const update = (
+    nextState: MatchState,
+    inputBlocked: boolean,
+    interaction?: CardInteractionHudState,
+  ) => {
     latestState = nextState;
     latestInputBlocked = inputBlocked;
+    latestInteraction = interaction ?? latestInteraction;
     const scores = calculateScores(nextState);
     const activePlayer = nextState.round.activePlayerId;
     const activeFaction = nextState.players[activePlayer].factionId;
+    const suggestedAction = getSuggestedAction(nextState);
 
-    phase.textContent = `Phase 10 live bridge. ${formatPhase(nextState.phase)}.`;
+    phase.textContent = `Phase 11 card interaction. ${formatPhase(nextState.phase)}.`;
     detail.textContent = `Active: ${formatPlayer(activePlayer)} / ${activeFaction}. Round ${nextState.round.number}.`;
     phaseChip.value.textContent = formatPhase(nextState.phase);
     turnChip.value.textContent = formatPlayer(activePlayer);
     playerScoreChip.value.textContent = `${scores.player}`;
     opponentScoreChip.value.textContent = `${scores.opponent}`;
     handChip.value.textContent = `${nextState.players.player.hand.cards.length} / ${nextState.players.opponent.hand.cards.length}`;
-    hint.textContent = inputBlocked
-      ? "Animation queue blocking input."
-      : "Simulation snapshots are driving renderer objects.";
+    hint.textContent = getHintText(inputBlocked, latestInteraction);
+    updateInspection(inspect, inspectTitle, inspectMeta, inspectAbilities, latestInteraction);
 
     finishRedrawButton.disabled = inputBlocked || nextState.phase !== "redraw" || !getNextRedrawPlayer(nextState);
-    suggestedButton.disabled = inputBlocked || !getSuggestedAction(nextState);
+    suggestedButton.disabled = inputBlocked || !suggestedAction;
     passButton.disabled = inputBlocked || nextState.phase !== "playing";
-    aiStepButton.disabled = inputBlocked || !getSuggestedAction(nextState);
+    aiStepButton.disabled = inputBlocked || !suggestedAction;
   };
 
   update(state, false);
 
   return {
+    setInteraction(interaction) {
+      update(latestState, latestInputBlocked, interaction);
+    },
     update,
     dispose() {
       shell.remove();
     },
   };
+}
+
+function updateInspection(
+  root: HTMLElement,
+  title: HTMLElement,
+  meta: HTMLElement,
+  abilities: HTMLElement,
+  interaction: CardInteractionHudState,
+) {
+  const inspection = interaction.inspection;
+  root.hidden = !inspection;
+
+  if (!inspection) {
+    return;
+  }
+
+  title.textContent = inspection.name;
+  meta.textContent = [
+    inspection.type.toUpperCase(),
+    `Power ${inspection.basePower}`,
+    inspection.rows.length > 0 ? `Rows ${inspection.rows.join("/")}` : "No row target",
+    `Zone ${inspection.zone}`,
+  ].join(" | ");
+  abilities.textContent = inspection.abilities.length > 0
+    ? `Abilities: ${inspection.abilities.join(", ")}`
+    : "Abilities: none";
+}
+
+function getHintText(inputBlocked: boolean, interaction: CardInteractionHudState): string {
+  if (interaction.feedback) {
+    return interaction.feedback;
+  }
+
+  if (inputBlocked) {
+    return "Animation queue blocking input.";
+  }
+
+  if (interaction.selectedCardId && interaction.validRows.length > 0) {
+    return "Choose a highlighted row or drag the selected card onto it.";
+  }
+
+  if (interaction.inspection) {
+    return "Card inspected. Click again to use immediate specials or choose a valid row.";
+  }
+
+  return "Hover, click, or drag cards to interact.";
 }
 
 function createChip(label: string): { root: HTMLElement; value: HTMLElement } {

@@ -1,4 +1,5 @@
 import "./style.css";
+import type { CardInteractionHudState } from "./game/renderer/cardInteraction";
 import { createThreeApp } from "./game/renderer/threeApp";
 import { createMatchStore } from "./game/runtime/matchStore";
 import type { GameAction } from "./game/simulation/actions";
@@ -31,15 +32,22 @@ const dispatchIntent = (action: GameAction) => {
 const hud = createHud(root, initialState, {
   onIntent: dispatchIntent,
 });
+let interactionState: CardInteractionHudState = {
+  validRows: [],
+};
 const threeApp = createThreeApp(root, initialState, {
+  onInteractionChange: (nextInteractionState) => {
+    interactionState = nextInteractionState;
+    hud.setInteraction(nextInteractionState);
+  },
   onIntent: dispatchIntent,
   onInputBlockedChange: (blocked) => {
-    hud.update(store.getState(), blocked);
+    hud.update(store.getState(), blocked, interactionState);
   },
 });
 const unsubscribe = store.subscribe((state) => {
   threeApp.applyMatchState(state);
-  hud.update(state, threeApp.isInputBlocked());
+  hud.update(state, threeApp.isInputBlocked(), interactionState);
 }, false);
 
 threeApp.start();

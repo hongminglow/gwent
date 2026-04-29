@@ -205,10 +205,50 @@ textarea {
   font-size: 12px;
 }
 
+.hud__inspect {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  display: grid;
+  gap: 5px;
+  width: min(360px, calc(100vw - 36px));
+  padding: 11px 13px;
+  border: 1px solid rgba(245, 217, 149, 0.26);
+  border-radius: 8px;
+  background: rgba(12, 10, 7, 0.76);
+  color: #f7efe1;
+  backdrop-filter: blur(9px);
+}
+
+.hud__inspect[hidden] {
+  display: none;
+}
+
+.hud__inspect-title {
+  margin: 0;
+  color: #f8e6bb;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.hud__inspect-meta {
+  margin: 0;
+  color: rgba(247, 239, 225, 0.74);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
 @media (max-width: 760px) {
   .hud__hint {
     bottom: 152px;
     max-width: calc(100vw - 36px);
     white-space: nowrap;
+  }
+
+  .hud__inspect {
+    left: 18px;
+    right: 18px;
+    bottom: 262px;
+    width: auto;
   }
 }

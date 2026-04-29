@@ -17,8 +17,32 @@ import { createCardMesh, type CardMesh } from "./cardMesh";
 
 export type SimulationRenderer = {
   applySnapshot: (state: MatchState, options?: { animateEvents?: boolean }) => void;
+  getCardInstanceIdFromObject: (object: THREE.Object3D) => CardInstanceId | undefined;
+  getCardInspection: (cardInstanceId: CardInstanceId) => CardInspection | undefined;
+  getInteractiveCardObjects: () => THREE.Object3D[];
+  setInteractionState: (state: RenderInteractionState) => void;
   update: (deltaSeconds: number) => void;
   dispose: () => void;
+};
+
+export type CardInspection = {
+  cardInstanceId: CardInstanceId;
+  name: string;
+  type: CardDefinition["type"];
+  basePower: number;
+  rows: RowId[];
+  abilities: string[];
+  zone: CardInstance["zone"];
+  ownerId: PlayerId;
+  controllerId: PlayerId;
+};
+
+export type RenderInteractionState = {
+  hoveredCardId?: CardInstanceId;
+  selectedCardId?: CardInstanceId;
+  draggedCardId?: CardInstanceId;
+  rejectedCardId?: CardInstanceId;
+  dragPreviewPosition?: THREE.Vector3;
 };
 
 type RenderedCard = {
@@ -46,11 +70,15 @@ export function createSimulationRenderer(
 ): SimulationRenderer {
   const renderedCards = new Map<CardInstanceId, RenderedCard>();
   let lastEventSequence = Number.NEGATIVE_INFINITY;
+  let latestState: MatchState | undefined;
+  let interactionState: RenderInteractionState = {};
 
   return {
     applySnapshot(state, options = {}) {
+      latestState = state;
       ensureRenderedCards(root, renderedCards, state);
       syncCardTargets(root, anchors, renderedCards, state);
+      applyCardInteractionState(renderedCards, interactionState);
 
       const animateEvents = options.animateEvents ?? true;
       if (animateEvents) {
@@ -65,7 +93,30 @@ export function createSimulationRenderer(
     },
     update(deltaSeconds) {
       queue.update(deltaSeconds);
-      settleRenderedCards(renderedCards, debugFlags.fastAnimations ? 1 : Math.min(deltaSeconds * 12, 1));
+      settleRenderedCards(
+        renderedCards,
+        debugFlags.fastAnimations ? 1 : Math.min(deltaSeconds * 12, 1),
+        interactionState,
+      );
+    },
+    getCardInstanceIdFromObject(object) {
+      return getCardInstanceIdFromObject(object);
+    },
+    getCardInspection(cardInstanceId) {
+      if (!latestState) {
+        return undefined;
+      }
+
+      return createCardInspection(latestState, cardInstanceId);
+    },
+    getInteractiveCardObjects() {
+      return [...renderedCards.values()]
+        .filter((renderedCard) => renderedCard.card.root.visible)
+        .map((renderedCard) => renderedCard.card.root);
+    },
+    setInteractionState(state) {
+      interactionState = state;
+      applyCardInteractionState(renderedCards, interactionState);
     },
     dispose() {
       for (const renderedCard of renderedCards.values()) {
@@ -91,6 +142,7 @@ function ensureRenderedCards(
 
     const definition = state.cardDefinitions[card.definitionId];
     const renderedCard = createRenderedCard(card, definition);
+    markInteractiveCard(renderedCard.card.root, card.id);
     renderedCards.set(card.id, renderedCard);
     root.add(renderedCard.card.root);
   }
@@ -302,14 +354,76 @@ function snapRenderedCards(renderedCards: Map<CardInstanceId, RenderedCard>) {
 function settleRenderedCards(
   renderedCards: Map<CardInstanceId, RenderedCard>,
   alpha: number,
+  interactionState: RenderInteractionState,
 ) {
-  for (const renderedCard of renderedCards.values()) {
-    renderedCard.card.root.position.lerp(renderedCard.targetPosition, alpha);
+  for (const [cardInstanceId, renderedCard] of renderedCards) {
+    const targetPosition = getInteractionPosition(cardInstanceId, renderedCard, interactionState);
+    const targetScale = getInteractionScale(cardInstanceId, renderedCard, interactionState);
+    renderedCard.card.root.position.lerp(targetPosition, alpha);
     renderedCard.card.root.rotation.x = THREE.MathUtils.lerp(renderedCard.card.root.rotation.x, renderedCard.targetRotation.x, alpha);
     renderedCard.card.root.rotation.y = THREE.MathUtils.lerp(renderedCard.card.root.rotation.y, renderedCard.targetRotation.y, alpha);
     renderedCard.card.root.rotation.z = THREE.MathUtils.lerp(renderedCard.card.root.rotation.z, renderedCard.targetRotation.z, alpha);
-    const scale = THREE.MathUtils.lerp(renderedCard.card.root.scale.x, renderedCard.targetScale, alpha);
+    const scale = THREE.MathUtils.lerp(renderedCard.card.root.scale.x, targetScale, alpha);
     renderedCard.card.root.scale.setScalar(scale);
+  }
+}
+
+function getInteractionPosition(
+  cardInstanceId: CardInstanceId,
+  renderedCard: RenderedCard,
+  interactionState: RenderInteractionState,
+): THREE.Vector3 {
+  if (interactionState.draggedCardId === cardInstanceId && interactionState.dragPreviewPosition) {
+    return new THREE.Vector3(
+      interactionState.dragPreviewPosition.x,
+      interactionState.dragPreviewPosition.y + 0.22,
+      interactionState.dragPreviewPosition.z,
+    );
+  }
+
+  const lifted = interactionState.hoveredCardId === cardInstanceId
+    || interactionState.selectedCardId === cardInstanceId
+    || interactionState.draggedCardId === cardInstanceId;
+  const position = renderedCard.targetPosition.clone();
+
+  if (lifted) {
+    position.y += interactionState.selectedCardId === cardInstanceId ? 0.18 : 0.12;
+  }
+
+  return position;
+}
+
+function getInteractionScale(
+  cardInstanceId: CardInstanceId,
+  renderedCard: RenderedCard,
+  interactionState: RenderInteractionState,
+): number {
+  if (interactionState.draggedCardId === cardInstanceId) {
+    return renderedCard.targetScale + 0.12;
+  }
+
+  if (interactionState.selectedCardId === cardInstanceId) {
+    return renderedCard.targetScale + 0.08;
+  }
+
+  if (interactionState.hoveredCardId === cardInstanceId) {
+    return renderedCard.targetScale + 0.05;
+  }
+
+  return renderedCard.targetScale;
+}
+
+function applyCardInteractionState(
+  renderedCards: Map<CardInstanceId, RenderedCard>,
+  interactionState: RenderInteractionState,
+) {
+  for (const [cardInstanceId, renderedCard] of renderedCards) {
+    renderedCard.card.setInteractionState({
+      hovered: interactionState.hoveredCardId === cardInstanceId,
+      selected: interactionState.selectedCardId === cardInstanceId,
+      dragging: interactionState.draggedCardId === cardInstanceId,
+      rejected: interactionState.rejectedCardId === cardInstanceId,
+    });
   }
 }
 
@@ -433,6 +547,54 @@ function lastInitialEventSequence(): number {
 function getPayloadString(event: GameEvent, key: string): string | undefined {
   const value = event.payload[key];
   return typeof value === "string" ? value : undefined;
+}
+
+function markInteractiveCard(root: THREE.Object3D, cardInstanceId: CardInstanceId) {
+  root.traverse((object) => {
+    object.userData.cardInstanceId = cardInstanceId;
+    object.userData.interactionType = "card";
+  });
+}
+
+function getCardInstanceIdFromObject(object: THREE.Object3D): CardInstanceId | undefined {
+  let current: THREE.Object3D | null = object;
+
+  while (current) {
+    const cardInstanceId = current.userData.cardInstanceId;
+
+    if (typeof cardInstanceId === "string") {
+      return cardInstanceId;
+    }
+
+    current = current.parent;
+  }
+
+  return undefined;
+}
+
+function createCardInspection(
+  state: MatchState,
+  cardInstanceId: CardInstanceId,
+): CardInspection | undefined {
+  const card = state.cards[cardInstanceId];
+
+  if (!card) {
+    return undefined;
+  }
+
+  const definition = state.cardDefinitions[card.definitionId];
+
+  return {
+    cardInstanceId,
+    name: definition.name,
+    type: definition.type,
+    basePower: definition.basePower,
+    rows: definition.rows,
+    abilities: definition.abilities,
+    zone: card.zone,
+    ownerId: card.ownerId,
+    controllerId: card.controllerId,
+  };
 }
 
 function assertNever(value: never): never {

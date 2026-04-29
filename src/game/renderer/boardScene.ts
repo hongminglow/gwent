@@ -12,9 +12,20 @@ export type BoardAnchors = {
   hands: Record<PlayerId, THREE.Group>;
 };
 
+export type RowInteractionTarget = {
+  playerId: PlayerId;
+  rowId: RowId;
+};
+
 export type BoardScene = {
   root: THREE.Group;
   anchors: BoardAnchors;
+  getInteractiveRowObjects: () => THREE.Object3D[];
+  setRowHighlights: (state: {
+    validRows: RowInteractionTarget[];
+    hoveredRow?: RowInteractionTarget;
+    rejectedRow?: RowInteractionTarget;
+  }) => void;
   update: (deltaSeconds: number) => void;
   dispose: () => void;
 };
@@ -47,6 +58,11 @@ export function createBoardScene(): BoardScene {
   const root = new THREE.Group();
   root.name = "OathboundBoardFoundation";
   const anchors = createEmptyAnchors();
+  const rowHighlightState = {
+    validRows: [] as RowInteractionTarget[],
+    hoveredRow: undefined as RowInteractionTarget | undefined,
+    rejectedRow: undefined as RowInteractionTarget | undefined,
+  };
 
   root.add(createTable());
   root.add(createPlaymat());
@@ -85,7 +101,20 @@ export function createBoardScene(): BoardScene {
       const material = zone.material;
 
       if (material instanceof THREE.MeshStandardMaterial) {
-        material.emissiveIntensity = 0.08 + Math.sin(elapsed * 1.45 + zone.position.z) * 0.024;
+        const rowTarget = getRowTargetFromObject(zone);
+        const isValid = rowTarget ? hasRow(rowHighlightState.validRows, rowTarget) : false;
+        const isHovered = rowTarget && rowHighlightState.hoveredRow
+          ? sameRow(rowTarget, rowHighlightState.hoveredRow)
+          : false;
+        const isRejected = rowTarget && rowHighlightState.rejectedRow
+          ? sameRow(rowTarget, rowHighlightState.rejectedRow)
+          : false;
+
+        material.opacity = isValid || isHovered || isRejected ? 0.98 : 0.82;
+        material.color.set(isRejected ? "#49201d" : zone.userData.playerId === "player" ? "#1f2b2a" : "#2a1f20");
+        material.emissive.set(isRejected ? "#b93022" : isHovered ? "#d8bc72" : isValid ? "#6fbf9b" : zone.userData.playerId === "player" ? "#244c45" : "#532a2d");
+        material.emissiveIntensity = (isHovered ? 0.38 : isValid ? 0.26 : isRejected ? 0.45 : 0.08)
+          + Math.sin(elapsed * 1.45 + zone.position.z) * 0.024;
       }
     }
 
@@ -95,6 +124,14 @@ export function createBoardScene(): BoardScene {
   return {
     root,
     anchors,
+    getInteractiveRowObjects() {
+      return rowZoneMeshes;
+    },
+    setRowHighlights(nextState) {
+      rowHighlightState.validRows = nextState.validRows;
+      rowHighlightState.hoveredRow = nextState.hoveredRow;
+      rowHighlightState.rejectedRow = nextState.rejectedRow;
+    },
     update,
     dispose() {
       root.traverse((object) => {
@@ -215,6 +252,11 @@ function createRowZone(
     }),
   );
   zoneMesh.name = "PlacementZoneSurface";
+  zoneMesh.userData = {
+    interactionType: "row-zone",
+    playerId,
+    rowId,
+  };
   zoneMesh.position.y = 0.12;
   zoneMesh.receiveShadow = true;
   group.add(zoneMesh);
@@ -237,6 +279,36 @@ function createRowZone(
     anchor,
     zoneMesh,
   };
+}
+
+function getRowTargetFromObject(object: THREE.Object3D): RowInteractionTarget | undefined {
+  const playerId = object.userData.playerId;
+  const rowId = object.userData.rowId;
+
+  if (isPlayerId(playerId) && isRowId(rowId)) {
+    return {
+      playerId,
+      rowId,
+    };
+  }
+
+  return undefined;
+}
+
+function hasRow(rows: RowInteractionTarget[], target: RowInteractionTarget): boolean {
+  return rows.some((row) => sameRow(row, target));
+}
+
+function sameRow(a: RowInteractionTarget, b: RowInteractionTarget): boolean {
+  return a.playerId === b.playerId && a.rowId === b.rowId;
+}
+
+function isPlayerId(value: unknown): value is PlayerId {
+  return value === "player" || value === "opponent";
+}
+
+function isRowId(value: unknown): value is RowId {
+  return value === "close" || value === "ranged" || value === "siege";
 }
 
 function createZoneBorder(color: string): THREE.Group {
