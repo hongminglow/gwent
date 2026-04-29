@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { assetManifest } from "../assets/manifest";
 import { FACTIONS } from "../data/factions";
 import { debugFlags } from "../diagnostics/debugFlags";
 import { calculateScores } from "../simulation/scoring";
@@ -40,6 +41,7 @@ export type RendererAudioCue = {
 };
 
 export type SimulationRendererOptions = {
+  loadCardTexture?: (url: string) => THREE.Texture;
   onAudioCue?: (cue: RendererAudioCue) => void;
   onCameraFocus?: (worldPosition: THREE.Vector3, intensity: number) => void;
   prefersReducedMotion?: () => boolean;
@@ -106,7 +108,7 @@ export function createSimulationRenderer(
     applySnapshot(state, applyOptions = {}) {
       const previousPoses = snapshotRenderedCardPoses(renderedCards);
       latestState = state;
-      ensureRenderedCards(root, renderedCards, state);
+      ensureRenderedCards(root, renderedCards, state, rendererOptions);
       syncCardTargets(root, anchors, renderedCards, state);
       applyCardInteractionState(renderedCards, interactionState);
 
@@ -176,6 +178,7 @@ function ensureRenderedCards(
   root: THREE.Group,
   renderedCards: Map<CardInstanceId, RenderedCard>,
   state: MatchState,
+  rendererOptions: SimulationRendererOptions,
 ) {
   for (const card of Object.values(state.cards)) {
     if (renderedCards.has(card.id)) {
@@ -183,19 +186,25 @@ function ensureRenderedCards(
     }
 
     const definition = state.cardDefinitions[card.definitionId];
-    const renderedCard = createRenderedCard(card, definition);
+    const renderedCard = createRenderedCard(card, definition, rendererOptions);
     markInteractiveCard(renderedCard.card.root, card.id);
     renderedCards.set(card.id, renderedCard);
     root.add(renderedCard.card.root);
   }
 }
 
-function createRenderedCard(card: CardInstance, definition: CardDefinition): RenderedCard {
+function createRenderedCard(
+  card: CardInstance,
+  definition: CardDefinition,
+  options: SimulationRendererOptions,
+): RenderedCard {
   const accentColor = FACTION_ACCENTS[definition.faction] ?? "#d6bb73";
+  const artUrl = assetManifest.cards[definition.artKey];
   const cardMesh = createCardMesh({
     label: definition.name,
     accentColor,
     faceColor: definition.type === "hero" ? "#41301c" : undefined,
+    frontTexture: artUrl ? options.loadCardTexture?.(artUrl) : undefined,
     powerLabel: definition.type === "special" || definition.type === "leader" ? "" : `${definition.basePower}`,
     typeLabel: formatCardType(definition),
   });

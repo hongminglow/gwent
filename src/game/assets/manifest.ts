@@ -16,7 +16,7 @@ const VFX_KEYS = Array.from(
 
 export const assetManifest: AssetManifest = {
   cards: Object.fromEntries(
-    ALL_CARD_DEFINITIONS.map((card) => [card.artKey, `/assets/cards/${card.id}.webp`]),
+    ALL_CARD_DEFINITIONS.map((card) => [card.artKey, `/assets/cards/${card.id}.png`]),
   ),
   boards: {
     "boards.default": "/assets/boards/default-table.glb",

@@ -56,6 +56,7 @@ export function createThreeApp(
   let latestState = initialState;
   let latestInputBlocked = animationQueue.isBlocking();
   const simulationRenderer = createSimulationRenderer(board.root, board.anchors, animationQueue, {
+    loadCardTexture: (url) => textureLoader.loadTexture(url),
     onAudioCue: (cue) => emitRendererAudioCue(cue, options.onAudioCue),
     onCameraFocus: (worldPosition, intensity) => cameraRig.focusAt(worldPosition, intensity),
   });

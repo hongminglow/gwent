@@ -9,6 +9,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "dist:compress": "node scripts/compress-dist.mjs",
     "analyze:bundle": "node scripts/analyze-dist.mjs",
+    "art:plan": "node scripts/card-art-plan.mjs",
     "package:verify": "npm run lint && npm run test && npm run validate:data && npm run build && npm run analyze:bundle",
     "test": "vitest run",
     "validate:data": "vitest run src/game/data/cardData.test.ts",

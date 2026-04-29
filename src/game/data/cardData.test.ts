@@ -27,7 +27,7 @@ describe("card data", () => {
 
   it("declares asset manifest keys for every card art and ability VFX hook", () => {
     for (const card of ALL_CARD_DEFINITIONS) {
-      expect(assetManifest.cards[card.artKey]).toBe(`/assets/cards/${card.id}.webp`);
+      expect(assetManifest.cards[card.artKey]).toBe(`/assets/cards/${card.id}.png`);
 
       if (card.vfxKey) {
         expect(assetManifest.fx[card.vfxKey]).toBeTruthy();

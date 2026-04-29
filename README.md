@@ -44,6 +44,12 @@ Analyze the built bundle:
 npm run analyze:bundle
 ```
 
+Generate card-art prompts:
+
+```bash
+npm run art:plan
+```
+
 Run the full package verification suite:
 
 ```bash
@@ -72,13 +78,15 @@ npm run lint
 
 Production builds split Three.js into a dedicated vendor chunk. Generated card textures are smaller and cached by card label/type/accent/power, card meshes share static geometries, and production rendering uses lower shadow/pixel-ratio settings than development.
 
+Card art loads from `public/assets/cards/<card-id>.png`. Missing images fall back to generated placeholder textures, so the art replacement pass can be completed card by card. The full art workflow is documented in `docs/CARD_ART_PIPELINE.md`.
+
 Latest package report:
 
 | Metric | Size |
 | --- | ---: |
-| Raw dist payload | 626.00 kB |
-| Gzip payload | 163.22 kB |
-| Brotli payload | 136.26 kB |
+| Raw dist payload | 626.45 kB |
+| Gzip payload | 164.04 kB |
+| Brotli payload | 136.44 kB |
 
 Suggested first-playable tag after committing this packaging snapshot:
 
@@ -89,7 +97,7 @@ git tag -a v0.1.0-first-playable -m "Oathbound first playable"
 ## Known Limitations
 
 - Headless Edge performance in this workspace is still below target: latest production preview sample averaged 15.96 FPS with p95 frame time 66.8 ms. The next optimization pass should reduce card draw calls further and consider merging static card submeshes.
-- Card art is generated placeholder/fallback art, not final illustrated card assets.
+- Card art replacement has started with `mo-fiend.png`; the remaining cards still use fallback textures until their generated art is approved and saved.
 - No deck builder, collection progression, save/load, replay system, online multiplayer, Skellige faction, or post-MVP ability set yet.
 - This is a private, non-commercial fan/developer hobby project that intentionally follows Witcher 3 Gwent-style rules and naming.
 

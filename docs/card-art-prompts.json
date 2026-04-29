@@ -1,0 +1,692 @@
+[
+  {
+    "id": "northern-realms-foltest-king-of-temeria",
+    "name": "Foltest: King of Temeria",
+    "output": "public/assets/cards/northern-realms-foltest-king-of-temeria.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Foltest: King of Temeria.\nSubject: Foltest: King of Temeria, an imposing faction leader portrait with a commanding stance.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: leader card, rows ranged, power 0. Visual hint for ability: weather.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nilfgaard-emhyr-his-imperial-majesty",
+    "name": "Emhyr var Emreis: His Imperial Majesty",
+    "output": "public/assets/cards/nilfgaard-emhyr-his-imperial-majesty.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Emhyr var Emreis: His Imperial Majesty.\nSubject: Emhyr var Emreis: His Imperial Majesty, an imposing faction leader portrait with a commanding stance.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: leader card, rows siege, power 0. Visual hint for ability: weather.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "scoiatael-francesca-daisy-of-the-valley",
+    "name": "Francesca Findabair: Daisy of the Valley",
+    "output": "public/assets/cards/scoiatael-francesca-daisy-of-the-valley.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Francesca Findabair: Daisy of the Valley.\nSubject: Francesca Findabair: Daisy of the Valley, an imposing faction leader portrait with a commanding stance.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: leader card, rows none, power 0. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "monsters-eredin-king-of-the-wild-hunt",
+    "name": "Eredin: King of the Wild Hunt",
+    "output": "public/assets/cards/monsters-eredin-king-of-the-wild-hunt.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Eredin: King of the Wild Hunt.\nSubject: Eredin: King of the Wild Hunt, an imposing faction leader portrait with a commanding stance.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: leader card, rows none, power 0. Visual hint for ability: weather.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "neutral-biting-frost",
+    "name": "Biting Frost",
+    "output": "public/assets/cards/neutral-biting-frost.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Biting Frost.\nSubject: Biting Frost, represented as a dramatic magical or tactical effect rather than a character.\nFaction direction: neutral battlefield magic or equipment, readable tactical fantasy prop, strong atmospheric lighting.\nGameplay hint: special card, rows close, power 0. Visual hint for ability: weather.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "neutral-impenetrable-fog",
+    "name": "Impenetrable Fog",
+    "output": "public/assets/cards/neutral-impenetrable-fog.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Impenetrable Fog.\nSubject: Impenetrable Fog, represented as a dramatic magical or tactical effect rather than a character.\nFaction direction: neutral battlefield magic or equipment, readable tactical fantasy prop, strong atmospheric lighting.\nGameplay hint: special card, rows ranged, power 0. Visual hint for ability: weather.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "neutral-torrential-rain",
+    "name": "Torrential Rain",
+    "output": "public/assets/cards/neutral-torrential-rain.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Torrential Rain.\nSubject: Torrential Rain, represented as a dramatic magical or tactical effect rather than a character.\nFaction direction: neutral battlefield magic or equipment, readable tactical fantasy prop, strong atmospheric lighting.\nGameplay hint: special card, rows siege, power 0. Visual hint for ability: weather.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "neutral-clear-weather",
+    "name": "Clear Weather",
+    "output": "public/assets/cards/neutral-clear-weather.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Clear Weather.\nSubject: Clear Weather, represented as a dramatic magical or tactical effect rather than a character.\nFaction direction: neutral battlefield magic or equipment, readable tactical fantasy prop, strong atmospheric lighting.\nGameplay hint: special card, rows none, power 0. Visual hint for ability: clear-weather.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "neutral-commanders-horn",
+    "name": "Commander's Horn",
+    "output": "public/assets/cards/neutral-commanders-horn.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Commander's Horn.\nSubject: Commander's Horn, represented as a dramatic magical or tactical effect rather than a character.\nFaction direction: neutral battlefield magic or equipment, readable tactical fantasy prop, strong atmospheric lighting.\nGameplay hint: special card, rows none, power 0. Visual hint for ability: commanders-horn.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "neutral-decoy",
+    "name": "Decoy",
+    "output": "public/assets/cards/neutral-decoy.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Decoy.\nSubject: Decoy, represented as a dramatic magical or tactical effect rather than a character.\nFaction direction: neutral battlefield magic or equipment, readable tactical fantasy prop, strong atmospheric lighting.\nGameplay hint: special card, rows none, power 0. Visual hint for ability: decoy.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "neutral-scorch",
+    "name": "Scorch",
+    "output": "public/assets/cards/neutral-scorch.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Scorch.\nSubject: Scorch, represented as a dramatic magical or tactical effect rather than a character.\nFaction direction: neutral battlefield magic or equipment, readable tactical fantasy prop, strong atmospheric lighting.\nGameplay hint: special card, rows none, power 0. Visual hint for ability: scorch.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-ballista",
+    "name": "Ballista",
+    "output": "public/assets/cards/nr-ballista.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Ballista.\nSubject: Ballista, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows siege, power 6. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-blue-stripes-commando",
+    "name": "Blue Stripes Commando",
+    "output": "public/assets/cards/nr-blue-stripes-commando.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Blue Stripes Commando.\nSubject: Blue Stripes Commando, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows close, power 4. Visual hint for ability: tight-bond.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-catapult",
+    "name": "Catapult",
+    "output": "public/assets/cards/nr-catapult.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Catapult.\nSubject: Catapult, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows siege, power 8. Visual hint for ability: tight-bond.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-crinfrid-reavers-dragon-hunter",
+    "name": "Crinfrid Reavers Dragon Hunter",
+    "output": "public/assets/cards/nr-crinfrid-reavers-dragon-hunter.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Crinfrid Reavers Dragon Hunter.\nSubject: Crinfrid Reavers Dragon Hunter, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows ranged, power 5. Visual hint for ability: tight-bond.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-dethmold",
+    "name": "Dethmold",
+    "output": "public/assets/cards/nr-dethmold.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Dethmold.\nSubject: Dethmold, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows ranged, power 6. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-dun-banner-medic",
+    "name": "Dun Banner Medic",
+    "output": "public/assets/cards/nr-dun-banner-medic.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Dun Banner Medic.\nSubject: Dun Banner Medic, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows siege, power 5. Visual hint for ability: medic.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-esterad-thyssen",
+    "name": "Esterad Thyssen",
+    "output": "public/assets/cards/nr-esterad-thyssen.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Esterad Thyssen.\nSubject: Esterad Thyssen, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows close, power 10. Visual hint for ability: hero.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-kaedweni-siege-expert",
+    "name": "Kaedweni Siege Expert",
+    "output": "public/assets/cards/nr-kaedweni-siege-expert.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Kaedweni Siege Expert.\nSubject: Kaedweni Siege Expert, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows siege, power 1. Visual hint for ability: morale-boost.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-keira-metz",
+    "name": "Keira Metz",
+    "output": "public/assets/cards/nr-keira-metz.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Keira Metz.\nSubject: Keira Metz, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows ranged, power 5. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-philippa-eilhart",
+    "name": "Philippa Eilhart",
+    "output": "public/assets/cards/nr-philippa-eilhart.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Philippa Eilhart.\nSubject: Philippa Eilhart, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows ranged, power 10. Visual hint for ability: hero.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-poor-infantry",
+    "name": "Poor Fucking Infantry",
+    "output": "public/assets/cards/nr-poor-infantry.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Poor Fucking Infantry.\nSubject: Poor Fucking Infantry, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows close, power 1. Visual hint for ability: tight-bond.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-prince-stennis",
+    "name": "Prince Stennis",
+    "output": "public/assets/cards/nr-prince-stennis.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Prince Stennis.\nSubject: Prince Stennis, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows close, power 5. Visual hint for ability: spy.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-redanian-foot-soldier",
+    "name": "Redanian Foot Soldier",
+    "output": "public/assets/cards/nr-redanian-foot-soldier.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Redanian Foot Soldier.\nSubject: Redanian Foot Soldier, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows close, power 1. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-sabrina-glevissig",
+    "name": "Sabrina Glevissig",
+    "output": "public/assets/cards/nr-sabrina-glevissig.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Sabrina Glevissig.\nSubject: Sabrina Glevissig, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows ranged, power 4. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-sheala-de-tancarville",
+    "name": "Sheala de Tancarville",
+    "output": "public/assets/cards/nr-sheala-de-tancarville.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Sheala de Tancarville.\nSubject: Sheala de Tancarville, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows ranged, power 5. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-siege-tower",
+    "name": "Siege Tower",
+    "output": "public/assets/cards/nr-siege-tower.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Siege Tower.\nSubject: Siege Tower, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows siege, power 6. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-siegfried-of-denesle",
+    "name": "Siegfried of Denesle",
+    "output": "public/assets/cards/nr-siegfried-of-denesle.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Siegfried of Denesle.\nSubject: Siegfried of Denesle, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows close, power 5. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-sigismund-dijkstra",
+    "name": "Sigismund Dijkstra",
+    "output": "public/assets/cards/nr-sigismund-dijkstra.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Sigismund Dijkstra.\nSubject: Sigismund Dijkstra, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows close, power 4. Visual hint for ability: spy.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-thaler",
+    "name": "Thaler",
+    "output": "public/assets/cards/nr-thaler.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Thaler.\nSubject: Thaler, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows siege, power 1. Visual hint for ability: spy.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-trebuchet",
+    "name": "Trebuchet",
+    "output": "public/assets/cards/nr-trebuchet.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Trebuchet.\nSubject: Trebuchet, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows siege, power 6. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-vernon-roche",
+    "name": "Vernon Roche",
+    "output": "public/assets/cards/nr-vernon-roche.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Vernon Roche.\nSubject: Vernon Roche, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows close, power 10. Visual hint for ability: hero.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-ves",
+    "name": "Ves",
+    "output": "public/assets/cards/nr-ves.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Ves.\nSubject: Ves, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows close, power 5. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "nr-yarpen-zigrin",
+    "name": "Yarpen Zigrin",
+    "output": "public/assets/cards/nr-yarpen-zigrin.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Yarpen Zigrin.\nSubject: Yarpen Zigrin, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: war-torn northern medieval army, blue and steel accents, banners, siege smoke, disciplined battlefield realism.\nGameplay hint: unit card, rows close, power 2. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-albrich",
+    "name": "Albrich",
+    "output": "public/assets/cards/ng-albrich.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Albrich.\nSubject: Albrich, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows ranged, power 2. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-assire-var-anahid",
+    "name": "Assire var Anahid",
+    "output": "public/assets/cards/ng-assire-var-anahid.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Assire var Anahid.\nSubject: Assire var Anahid, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows ranged, power 6. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-black-infantry-archer",
+    "name": "Black Infantry Archer",
+    "output": "public/assets/cards/ng-black-infantry-archer.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Black Infantry Archer.\nSubject: Black Infantry Archer, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows ranged, power 10. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-cahir",
+    "name": "Cahir Mawr Dyffryn aep Ceallach",
+    "output": "public/assets/cards/ng-cahir.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Cahir Mawr Dyffryn aep Ceallach.\nSubject: Cahir Mawr Dyffryn aep Ceallach, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows close, power 6. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-cynthia",
+    "name": "Cynthia",
+    "output": "public/assets/cards/ng-cynthia.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Cynthia.\nSubject: Cynthia, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows ranged, power 4. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-etolian-auxiliary-archers",
+    "name": "Etolian Auxiliary Archers",
+    "output": "public/assets/cards/ng-etolian-auxiliary-archers.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Etolian Auxiliary Archers.\nSubject: Etolian Auxiliary Archers, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows ranged, power 1. Visual hint for ability: medic.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-fringilla-vigo",
+    "name": "Fringilla Vigo",
+    "output": "public/assets/cards/ng-fringilla-vigo.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Fringilla Vigo.\nSubject: Fringilla Vigo, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows ranged, power 6. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-heavy-zerrikanian-fire-scorpion",
+    "name": "Heavy Zerrikanian Fire Scorpion",
+    "output": "public/assets/cards/ng-heavy-zerrikanian-fire-scorpion.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Heavy Zerrikanian Fire Scorpion.\nSubject: Heavy Zerrikanian Fire Scorpion, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows siege, power 10. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-impera-brigade-guard",
+    "name": "Impera Brigade Guard",
+    "output": "public/assets/cards/ng-impera-brigade-guard.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Impera Brigade Guard.\nSubject: Impera Brigade Guard, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows close, power 3. Visual hint for ability: tight-bond.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-letho",
+    "name": "Letho of Gulet",
+    "output": "public/assets/cards/ng-letho.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Letho of Gulet.\nSubject: Letho of Gulet, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows close, power 10. Visual hint for ability: hero.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-menno-coehoorn",
+    "name": "Menno Coehoorn",
+    "output": "public/assets/cards/ng-menno-coehoorn.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Menno Coehoorn.\nSubject: Menno Coehoorn, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows close, power 10. Visual hint for ability: hero, medic.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-morteisen",
+    "name": "Morteisen",
+    "output": "public/assets/cards/ng-morteisen.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Morteisen.\nSubject: Morteisen, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows close, power 3. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-morvran-voorhis",
+    "name": "Morvran Voorhis",
+    "output": "public/assets/cards/ng-morvran-voorhis.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Morvran Voorhis.\nSubject: Morvran Voorhis, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows siege, power 10. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-nausicaa-cavalry-rider",
+    "name": "Nausicaa Cavalry Rider",
+    "output": "public/assets/cards/ng-nausicaa-cavalry-rider.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Nausicaa Cavalry Rider.\nSubject: Nausicaa Cavalry Rider, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows close, power 2. Visual hint for ability: tight-bond.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-puttkammer",
+    "name": "Puttkammer",
+    "output": "public/assets/cards/ng-puttkammer.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Puttkammer.\nSubject: Puttkammer, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows ranged, power 3. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-rainfarn",
+    "name": "Rainfarn",
+    "output": "public/assets/cards/ng-rainfarn.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Rainfarn.\nSubject: Rainfarn, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows close, power 4. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-renuald-aep-matsen",
+    "name": "Renuald aep Matsen",
+    "output": "public/assets/cards/ng-renuald-aep-matsen.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Renuald aep Matsen.\nSubject: Renuald aep Matsen, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows ranged, power 5. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-rotten-mangonel",
+    "name": "Rotten Mangonel",
+    "output": "public/assets/cards/ng-rotten-mangonel.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Rotten Mangonel.\nSubject: Rotten Mangonel, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows siege, power 3. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-shilard-fitz-oesterlen",
+    "name": "Shilard Fitz-Oesterlen",
+    "output": "public/assets/cards/ng-shilard-fitz-oesterlen.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Shilard Fitz-Oesterlen.\nSubject: Shilard Fitz-Oesterlen, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows close, power 7. Visual hint for ability: spy.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-siege-engineer",
+    "name": "Siege Engineer",
+    "output": "public/assets/cards/ng-siege-engineer.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Siege Engineer.\nSubject: Siege Engineer, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows siege, power 6. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-stefan-skellen",
+    "name": "Stefan Skellen",
+    "output": "public/assets/cards/ng-stefan-skellen.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Stefan Skellen.\nSubject: Stefan Skellen, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows close, power 9. Visual hint for ability: spy.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-sweers",
+    "name": "Sweers",
+    "output": "public/assets/cards/ng-sweers.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Sweers.\nSubject: Sweers, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows ranged, power 2. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-tibor-eggebracht",
+    "name": "Tibor Eggebracht",
+    "output": "public/assets/cards/ng-tibor-eggebracht.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Tibor Eggebracht.\nSubject: Tibor Eggebracht, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows ranged, power 10. Visual hint for ability: hero.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-vanhemar",
+    "name": "Vanhemar",
+    "output": "public/assets/cards/ng-vanhemar.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Vanhemar.\nSubject: Vanhemar, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows ranged, power 4. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-vattier-de-rideaux",
+    "name": "Vattier de Rideaux",
+    "output": "public/assets/cards/ng-vattier-de-rideaux.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Vattier de Rideaux.\nSubject: Vattier de Rideaux, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows close, power 4. Visual hint for ability: spy.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "ng-vreemde",
+    "name": "Vreemde",
+    "output": "public/assets/cards/ng-vreemde.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Vreemde.\nSubject: Vreemde, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: black-and-gold imperial military, polished armor, strict hierarchy, controlled menace, sunless court intrigue.\nGameplay hint: unit card, rows close, power 2. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-barclay-els",
+    "name": "Barclay Els",
+    "output": "public/assets/cards/st-barclay-els.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Barclay Els.\nSubject: Barclay Els, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows close/ranged, power 6. Visual hint for ability: agile.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-ciaran",
+    "name": "Ciaran aep Easnillien",
+    "output": "public/assets/cards/st-ciaran.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Ciaran aep Easnillien.\nSubject: Ciaran aep Easnillien, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows close/ranged, power 3. Visual hint for ability: agile.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-dennis-cranmer",
+    "name": "Dennis Cranmer",
+    "output": "public/assets/cards/st-dennis-cranmer.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Dennis Cranmer.\nSubject: Dennis Cranmer, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows close, power 6. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-dol-blathanna-archer",
+    "name": "Dol Blathanna Archer",
+    "output": "public/assets/cards/st-dol-blathanna-archer.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Dol Blathanna Archer.\nSubject: Dol Blathanna Archer, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows ranged, power 4. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-dol-blathanna-scout",
+    "name": "Dol Blathanna Scout",
+    "output": "public/assets/cards/st-dol-blathanna-scout.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Dol Blathanna Scout.\nSubject: Dol Blathanna Scout, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows close/ranged, power 6. Visual hint for ability: agile.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-dwarven-skirmisher",
+    "name": "Dwarven Skirmisher",
+    "output": "public/assets/cards/st-dwarven-skirmisher.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Dwarven Skirmisher.\nSubject: Dwarven Skirmisher, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows close, power 3. Visual hint for ability: muster.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-eithne",
+    "name": "Eithne",
+    "output": "public/assets/cards/st-eithne.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Eithne.\nSubject: Eithne, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows ranged, power 10. Visual hint for ability: hero.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-elven-skirmisher",
+    "name": "Elven Skirmisher",
+    "output": "public/assets/cards/st-elven-skirmisher.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Elven Skirmisher.\nSubject: Elven Skirmisher, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows ranged, power 2. Visual hint for ability: muster.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-filavandrel",
+    "name": "Filavandrel aen Fidhail",
+    "output": "public/assets/cards/st-filavandrel.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Filavandrel aen Fidhail.\nSubject: Filavandrel aen Fidhail, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows close/ranged, power 6. Visual hint for ability: agile.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-havekar-healer",
+    "name": "Havekar Healer",
+    "output": "public/assets/cards/st-havekar-healer.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Havekar Healer.\nSubject: Havekar Healer, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows ranged, power 0. Visual hint for ability: medic.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-havekar-smuggler",
+    "name": "Havekar Smuggler",
+    "output": "public/assets/cards/st-havekar-smuggler.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Havekar Smuggler.\nSubject: Havekar Smuggler, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows close, power 5. Visual hint for ability: muster.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-ida-emean",
+    "name": "Ida Emean aep Sivney",
+    "output": "public/assets/cards/st-ida-emean.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Ida Emean aep Sivney.\nSubject: Ida Emean aep Sivney, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows ranged, power 6. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-iorveth",
+    "name": "Iorveth",
+    "output": "public/assets/cards/st-iorveth.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Iorveth.\nSubject: Iorveth, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows ranged, power 10. Visual hint for ability: hero.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-isengrim",
+    "name": "Isengrim Faoiltiarna",
+    "output": "public/assets/cards/st-isengrim.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Isengrim Faoiltiarna.\nSubject: Isengrim Faoiltiarna, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows close, power 10. Visual hint for ability: hero, morale-boost.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-mahakaman-defender",
+    "name": "Mahakaman Defender",
+    "output": "public/assets/cards/st-mahakaman-defender.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Mahakaman Defender.\nSubject: Mahakaman Defender, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows close, power 5. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-milva",
+    "name": "Milva",
+    "output": "public/assets/cards/st-milva.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Milva.\nSubject: Milva, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows ranged, power 10. Visual hint for ability: morale-boost.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-riordain",
+    "name": "Riordain",
+    "output": "public/assets/cards/st-riordain.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Riordain.\nSubject: Riordain, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows ranged, power 1. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-saesenthessis",
+    "name": "Saesenthessis",
+    "output": "public/assets/cards/st-saesenthessis.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Saesenthessis.\nSubject: Saesenthessis, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows ranged, power 10. Visual hint for ability: hero.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-toruviel",
+    "name": "Toruviel",
+    "output": "public/assets/cards/st-toruviel.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Toruviel.\nSubject: Toruviel, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows ranged, power 2. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-vrihedd-brigade-recruit",
+    "name": "Vrihedd Brigade Recruit",
+    "output": "public/assets/cards/st-vrihedd-brigade-recruit.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Vrihedd Brigade Recruit.\nSubject: Vrihedd Brigade Recruit, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows ranged, power 4. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-vrihedd-brigade-veteran",
+    "name": "Vrihedd Brigade Veteran",
+    "output": "public/assets/cards/st-vrihedd-brigade-veteran.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Vrihedd Brigade Veteran.\nSubject: Vrihedd Brigade Veteran, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows close/ranged, power 5. Visual hint for ability: agile.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "st-yaevinn",
+    "name": "Yaevinn",
+    "output": "public/assets/cards/st-yaevinn.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Yaevinn.\nSubject: Yaevinn, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: forest insurgents, elves and dwarves, green/brown leather, woodland ambush mood, old stone and autumn light.\nGameplay hint: unit card, rows close/ranged, power 6. Visual hint for ability: agile.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-arachas",
+    "name": "Arachas",
+    "output": "public/assets/cards/mo-arachas.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Arachas.\nSubject: Arachas, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 4. Visual hint for ability: muster.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-arachas-behemoth",
+    "name": "Arachas Behemoth",
+    "output": "public/assets/cards/mo-arachas-behemoth.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Arachas Behemoth.\nSubject: Arachas Behemoth, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows siege, power 6. Visual hint for ability: muster.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-botchling",
+    "name": "Botchling",
+    "output": "public/assets/cards/mo-botchling.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Botchling.\nSubject: Botchling, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 4. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-celaeno-harpy",
+    "name": "Celaeno Harpy",
+    "output": "public/assets/cards/mo-celaeno-harpy.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Celaeno Harpy.\nSubject: Celaeno Harpy, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close/ranged, power 2. Visual hint for ability: agile.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-cockatrice",
+    "name": "Cockatrice",
+    "output": "public/assets/cards/mo-cockatrice.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Cockatrice.\nSubject: Cockatrice, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows ranged, power 2. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-crone-brewess",
+    "name": "Crone: Brewess",
+    "output": "public/assets/cards/mo-crone-brewess.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Crone: Brewess.\nSubject: Crone: Brewess, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 6. Visual hint for ability: muster.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-crone-weavess",
+    "name": "Crone: Weavess",
+    "output": "public/assets/cards/mo-crone-weavess.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Crone: Weavess.\nSubject: Crone: Weavess, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 6. Visual hint for ability: muster.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-crone-whispess",
+    "name": "Crone: Whispess",
+    "output": "public/assets/cards/mo-crone-whispess.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Crone: Whispess.\nSubject: Crone: Whispess, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 6. Visual hint for ability: muster.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-draug",
+    "name": "Draug",
+    "output": "public/assets/cards/mo-draug.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Draug.\nSubject: Draug, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 10. Visual hint for ability: hero.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-earth-elemental",
+    "name": "Earth Elemental",
+    "output": "public/assets/cards/mo-earth-elemental.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Earth Elemental.\nSubject: Earth Elemental, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows siege, power 6. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-endrega",
+    "name": "Endrega",
+    "output": "public/assets/cards/mo-endrega.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Endrega.\nSubject: Endrega, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows ranged, power 2. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-fiend",
+    "name": "Fiend",
+    "output": "public/assets/cards/mo-fiend.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Fiend.\nSubject: Fiend, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 6. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-fire-elemental",
+    "name": "Fire Elemental",
+    "output": "public/assets/cards/mo-fire-elemental.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Fire Elemental.\nSubject: Fire Elemental, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows siege, power 6. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-foglet",
+    "name": "Foglet",
+    "output": "public/assets/cards/mo-foglet.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Foglet.\nSubject: Foglet, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 2. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-forktail",
+    "name": "Forktail",
+    "output": "public/assets/cards/mo-forktail.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Forktail.\nSubject: Forktail, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 5. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-frightener",
+    "name": "Frightener",
+    "output": "public/assets/cards/mo-frightener.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Frightener.\nSubject: Frightener, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 5. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-gargoyle",
+    "name": "Gargoyle",
+    "output": "public/assets/cards/mo-gargoyle.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Gargoyle.\nSubject: Gargoyle, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows ranged, power 2. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-ghoul",
+    "name": "Ghoul",
+    "output": "public/assets/cards/mo-ghoul.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Ghoul.\nSubject: Ghoul, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 1. Visual hint for ability: muster.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-grave-hag",
+    "name": "Grave Hag",
+    "output": "public/assets/cards/mo-grave-hag.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Grave Hag.\nSubject: Grave Hag, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows ranged, power 5. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-griffin",
+    "name": "Griffin",
+    "output": "public/assets/cards/mo-griffin.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Griffin.\nSubject: Griffin, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 5. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-harpy",
+    "name": "Harpy",
+    "output": "public/assets/cards/mo-harpy.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Harpy.\nSubject: Harpy, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close/ranged, power 2. Visual hint for ability: agile.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-ice-giant",
+    "name": "Ice Giant",
+    "output": "public/assets/cards/mo-ice-giant.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Ice Giant.\nSubject: Ice Giant, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows siege, power 5. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-imlerith",
+    "name": "Imlerith",
+    "output": "public/assets/cards/mo-imlerith.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Imlerith.\nSubject: Imlerith, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 10. Visual hint for ability: hero.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-kayran",
+    "name": "Kayran",
+    "output": "public/assets/cards/mo-kayran.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Kayran.\nSubject: Kayran, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close/ranged, power 8. Visual hint for ability: hero, morale-boost.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-nekker",
+    "name": "Nekker",
+    "output": "public/assets/cards/mo-nekker.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Nekker.\nSubject: Nekker, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 2. Visual hint for ability: muster.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-plague-maiden",
+    "name": "Plague Maiden",
+    "output": "public/assets/cards/mo-plague-maiden.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Plague Maiden.\nSubject: Plague Maiden, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 5. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-vampire-bruxa",
+    "name": "Vampire: Bruxa",
+    "output": "public/assets/cards/mo-vampire-bruxa.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Vampire: Bruxa.\nSubject: Vampire: Bruxa, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 4. Visual hint for ability: muster.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-vampire-ekimmara",
+    "name": "Vampire: Ekimmara",
+    "output": "public/assets/cards/mo-vampire-ekimmara.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Vampire: Ekimmara.\nSubject: Vampire: Ekimmara, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 4. Visual hint for ability: muster.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-vampire-fleder",
+    "name": "Vampire: Fleder",
+    "output": "public/assets/cards/mo-vampire-fleder.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Vampire: Fleder.\nSubject: Vampire: Fleder, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 4. Visual hint for ability: muster.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-vampire-garkain",
+    "name": "Vampire: Garkain",
+    "output": "public/assets/cards/mo-vampire-garkain.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Vampire: Garkain.\nSubject: Vampire: Garkain, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 4. Visual hint for ability: muster.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-vampire-katakan",
+    "name": "Vampire: Katakan",
+    "output": "public/assets/cards/mo-vampire-katakan.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Vampire: Katakan.\nSubject: Vampire: Katakan, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 5. Visual hint for ability: muster.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-werewolf",
+    "name": "Werewolf",
+    "output": "public/assets/cards/mo-werewolf.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Werewolf.\nSubject: Werewolf, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows close, power 5. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  },
+  {
+    "id": "mo-wyvern",
+    "name": "Wyvern",
+    "output": "public/assets/cards/mo-wyvern.png",
+    "prompt": "Use case: stylized-concept\nAsset type: fantasy trading card artwork, vertical portrait art without card frame or UI text\nPrimary request: original premium card art for Wyvern.\nSubject: Wyvern, interpreted as an original faction-appropriate character, unit, creature, or war machine.\nFaction direction: dark Slavic-fantasy creature horror, bogs, ruins, cold mist, sickly glow, predatory silhouette.\nGameplay hint: unit card, rows ranged, power 2. No explicit ability iconography; focus on identity and faction mood.\nComposition: vertical 2:3 card-art crop, centered readable silhouette, strong face/weapon/creature focus, enough background detail for a premium card.\nStyle: high-end dark fantasy concept art, realistic painterly rendering, dramatic rim light, detailed materials, cinematic atmosphere.\nAvoid: no text, no numbers, no logos, no watermark, no card border, no UI, no direct copy of existing copyrighted artwork."
+  }
+]
