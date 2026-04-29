@@ -1,4 +1,5 @@
 import "./style.css";
+import { createAudioEngine } from "./game/audio/audioEngine";
 import type { CardInteractionHudState } from "./game/renderer/cardInteraction";
 import { createThreeApp, type ThreeApp } from "./game/renderer/threeApp";
 import { createMatchStore, type MatchStore } from "./game/runtime/matchStore";
@@ -29,6 +30,7 @@ let activeSession: GameSession | undefined;
 let startTimerId: number | undefined;
 let aiAutoplayEnabled = false;
 let aiAutoplayTimerId: number | undefined;
+const audio = createAudioEngine(root);
 
 const menu = createMainMenu(root, {
   onStartMatch: (factionId) => {
@@ -53,6 +55,7 @@ function startMatch(playerFactionId: FactionId, opponentFactionId?: FactionId) {
     playerFactionId,
     seed: matchSeed,
   });
+  audio.beginMatch(initialState);
   const store = createMatchStore(initialState);
   const session: Partial<GameSession> = {
     interactionState: {
@@ -72,6 +75,9 @@ function startMatch(playerFactionId: FactionId, opponentFactionId?: FactionId) {
     }
   };
   const hud = createHud(root, initialState, {
+    audioSettings: audio.getSettings(),
+    onAudioMutedChange: audio.setMuted,
+    onAudioVolumeChange: audio.setMasterVolume,
     onDebugStartMatch: (nextPlayerFactionId, nextOpponentFactionId) => {
       startMatch(nextPlayerFactionId, nextOpponentFactionId);
     },
@@ -83,6 +89,7 @@ function startMatch(playerFactionId: FactionId, opponentFactionId?: FactionId) {
     onTogglePlacementZones: (enabled) => session.threeApp?.setPlacementZones(enabled),
   });
   const threeApp = createThreeApp(root, initialState, {
+    onAudioCue: audio.playRendererCue,
     onInputBlockedChange: (blocked) => {
       hud.update(store.getState(), blocked, session.interactionState);
     },
@@ -95,6 +102,7 @@ function startMatch(playerFactionId: FactionId, opponentFactionId?: FactionId) {
   const unsubscribe = store.subscribe((state) => {
     threeApp.applyMatchState(state);
     hud.update(state, threeApp.isInputBlocked(), session.interactionState);
+    audio.handleMatchState(state);
     scheduleAiAutoplay();
   }, false);
 
@@ -201,5 +209,6 @@ window.addEventListener("beforeunload", () => {
 
   disposeSession();
   setAiAutoplay(false);
+  audio.dispose();
   menu.dispose();
 });

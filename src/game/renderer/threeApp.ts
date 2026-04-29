@@ -5,10 +5,14 @@ import type { GameAction } from "../simulation/actions";
 import type { MatchState } from "../simulation/types";
 import { createVisualAnimationQueue } from "./animationQueue";
 import { createBoardScene } from "./boardScene";
-import { createCardInteractionController, type CardInteractionHudState } from "./cardInteraction";
+import {
+  createCardInteractionController,
+  type CardInteractionHudState,
+  type InteractionAudioCue,
+} from "./cardInteraction";
 import { createCameraRig } from "./cameraRig";
 import { createGameTextureLoader } from "./loaders/textureLoader";
-import { createSimulationRenderer } from "./simulationBridge";
+import { createSimulationRenderer, type RendererAudioCue } from "./simulationBridge";
 
 export type ThreeApp = {
   applyMatchState: (state: MatchState, options?: { animateEvents?: boolean }) => void;
@@ -21,6 +25,7 @@ export type ThreeApp = {
 };
 
 export type ThreeAppOptions = {
+  onAudioCue?: (cue: RendererAudioCue | InteractionAudioCue) => void;
   onInteractionChange?: (state: CardInteractionHudState) => void;
   onIntent?: (action: GameAction) => void;
   onInputBlockedChange?: (blocked: boolean) => void;
@@ -51,7 +56,7 @@ export function createThreeApp(
   let latestState = initialState;
   let latestInputBlocked = animationQueue.isBlocking();
   const simulationRenderer = createSimulationRenderer(board.root, board.anchors, animationQueue, {
-    onAudioCue: emitRendererAudioCue,
+    onAudioCue: (cue) => emitRendererAudioCue(cue, options.onAudioCue),
     onCameraFocus: (worldPosition, intensity) => cameraRig.focusAt(worldPosition, intensity),
   });
   simulationRenderer.applySnapshot(initialState, { animateEvents: false });
@@ -61,6 +66,7 @@ export function createThreeApp(
     domElement: renderer.domElement,
     getState: () => latestState,
     isInputBlocked: () => animationQueue.isBlocking(),
+    onAudioCue: (cue) => emitRendererAudioCue(cue, options.onAudioCue),
     onInteractionChange: (interactionState) => options.onInteractionChange?.(interactionState),
     onIntent: (action) => {
       if (!animationQueue.isBlocking()) {
@@ -275,7 +281,11 @@ function addLighting(scene: THREE.Scene) {
   scene.add(rowGlow);
 }
 
-function emitRendererAudioCue(cue: unknown) {
+function emitRendererAudioCue(
+  cue: RendererAudioCue | InteractionAudioCue,
+  onAudioCue?: (cue: RendererAudioCue | InteractionAudioCue) => void,
+) {
+  onAudioCue?.(cue);
   window.dispatchEvent(new CustomEvent("oathbound:audio-cue", {
     detail: cue,
   }));

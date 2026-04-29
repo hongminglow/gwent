@@ -4,6 +4,11 @@ import type { CardInstanceId, MatchState, PlayerId, RowId } from "../simulation/
 import type { BoardScene, RowInteractionTarget } from "./boardScene";
 import type { CardInspection, SimulationRenderer } from "./simulationBridge";
 
+export type InteractionAudioCue = {
+  cardInstanceId: CardInstanceId;
+  cue: "card.hover";
+};
+
 export type CardInteractionHudState = {
   feedback?: string;
   inspection?: CardInspection;
@@ -22,6 +27,7 @@ export type CardInteractionControllerOptions = {
   domElement: HTMLElement;
   getState: () => MatchState;
   isInputBlocked: () => boolean;
+  onAudioCue?: (cue: InteractionAudioCue) => void;
   onInteractionChange: (state: CardInteractionHudState) => void;
   onIntent: (action: GameAction) => void;
   simulationRenderer: SimulationRenderer;
@@ -107,7 +113,7 @@ export function createCardInteractionController(
       return;
     }
 
-    hoveredCardId = pickCard(options.simulationRenderer, raycaster);
+    setHoveredCardId(pickCard(options.simulationRenderer, raycaster));
     hoveredRow = selectedCardId ? pickRow(options.board, raycaster) : undefined;
     syncVisualState();
   };
@@ -127,7 +133,7 @@ export function createCardInteractionController(
 
     if (cardInstanceId) {
       selectedCardId = cardInstanceId;
-      hoveredCardId = cardInstanceId;
+      setHoveredCardId(cardInstanceId, false);
       clearRejection();
       syncVisualState();
     }
@@ -160,7 +166,7 @@ export function createCardInteractionController(
         clearSelection();
       } else {
         selectedCardId = cardInstanceId;
-        hoveredCardId = cardInstanceId;
+        setHoveredCardId(cardInstanceId, false);
       }
 
       clearDrag();
@@ -237,6 +243,17 @@ export function createCardInteractionController(
   const clearHover = () => {
     hoveredCardId = undefined;
     hoveredRow = undefined;
+  };
+
+  const setHoveredCardId = (cardInstanceId: CardInstanceId | undefined, audible = true) => {
+    if (audible && cardInstanceId && cardInstanceId !== hoveredCardId) {
+      options.onAudioCue?.({
+        cardInstanceId,
+        cue: "card.hover",
+      });
+    }
+
+    hoveredCardId = cardInstanceId;
   };
 
   const clearSelection = () => {

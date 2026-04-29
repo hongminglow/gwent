@@ -473,18 +473,28 @@ Phase 16 output:
 
 ## Phase 17: Audio
 
-- [ ] Card hover sound.
-- [ ] Card draw sound.
-- [ ] Card play sound.
-- [ ] Pass sound.
-- [ ] Round win/loss sound.
-- [ ] Leader ability sound.
-- [ ] Weather ambience.
-- [ ] Scorch burn sound.
-- [ ] Slain slash sound.
-- [ ] UI click sounds.
-- [ ] Audio settings.
-- [ ] Mute toggle.
+- [x] Card hover sound.
+- [x] Card draw sound.
+- [x] Card play sound.
+- [x] Pass sound.
+- [x] Round win/loss sound.
+- [x] Leader ability sound.
+- [x] Weather ambience.
+- [x] Scorch burn sound.
+- [x] Slain slash sound.
+- [x] UI click sounds.
+- [x] Audio settings.
+- [x] Mute toggle.
+
+Phase 17 output:
+
+- Web Audio synthesis lives in `src/game/audio/audioEngine.ts`; it creates distinct procedural cue profiles for UI clicks, card hover/draw/play, pass, leader, weather, Horn, Medic, Muster, Spy, Scorch, slain slash, round outcomes, and match outcomes.
+- Simulation event routing now maps match events into audio cues without putting audio state inside the simulation model.
+- Renderer cue routing now sends card-hover and slain-slash cues through the Three.js app into the audio engine while keeping the existing `oathbound:audio-cue` diagnostic browser event.
+- Weather ambience starts while weather rows are active and fades out when weather clears or audio is muted.
+- The Settings drawer now includes a master volume slider and mute toggle.
+- Audio cue routing tests live in `src/game/audio/audioEngine.test.ts`.
+- Browser QA confirmed settings controls, UI click cues, card-play cues, pass cue, weather ambience, and slain slash diagnostics. Screenshots were saved under `.codex/phase17-audio-*.png`.
 
 ## Phase 18: Polish
 

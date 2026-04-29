@@ -790,6 +790,29 @@ input:focus-visible {
   accent-color: var(--ui-gold);
 }
 
+.hud__range {
+  display: grid;
+  gap: 7px;
+  color: var(--ui-muted);
+  font-size: 13px;
+}
+
+.hud__range span {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.hud__range strong {
+  color: var(--ui-text);
+  font-size: 12px;
+}
+
+.hud__range input {
+  width: 100%;
+  accent-color: var(--ui-gold);
+}
+
 .hud__debug-group {
   display: grid;
   gap: 8px;

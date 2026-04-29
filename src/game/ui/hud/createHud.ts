@@ -1,5 +1,6 @@
 import { ALL_CARD_DEFINITIONS } from "../../data/cards";
 import { FACTIONS } from "../../data/factions";
+import { DEFAULT_AUDIO_SETTINGS, type AudioSettings } from "../../audio/audioEngine";
 import { debugFlags } from "../../diagnostics/debugFlags";
 import { createImmediateAction, type CardInteractionHudState } from "../../renderer/cardInteraction";
 import type { GameAction } from "../../simulation/actions";
@@ -24,6 +25,9 @@ export type Hud = {
 };
 
 export type HudOptions = {
+  audioSettings?: AudioSettings;
+  onAudioMutedChange?: (muted: boolean) => void;
+  onAudioVolumeChange?: (volume: number) => void;
   onDebugStartMatch?: (playerFactionId: FactionId, opponentFactionId: FactionId) => void;
   onExitToMenu?: () => void;
   onIntent: (action: GameAction) => void;
@@ -50,6 +54,10 @@ const ABILITIES: AbilityId[] = [
 ];
 
 export function createHud(root: HTMLElement, state: MatchState, options: HudOptions): Hud {
+  let audioSettings: AudioSettings = {
+    ...DEFAULT_AUDIO_SETTINGS,
+    ...options.audioSettings,
+  };
   const shell = document.createElement("main");
   shell.className = "app-shell";
 
@@ -141,6 +149,23 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
   modal.hidden = true;
 
   const settingsDrawer = createSettingsDrawer({
+    audioSettings,
+    onAudioMutedChange: (muted) => {
+      audioSettings = {
+        ...audioSettings,
+        muted,
+      };
+      options.onAudioMutedChange?.(muted);
+      renderSettingsDrawer();
+    },
+    onAudioVolumeChange: (volume) => {
+      audioSettings = {
+        ...audioSettings,
+        masterVolume: volume,
+      };
+      options.onAudioVolumeChange?.(volume);
+      renderSettingsDrawer();
+    },
     onDebugCameraChange: (enabled) => {
       debugFlags.debugCamera = enabled;
       options.onToggleDebugCamera?.(enabled);
@@ -277,6 +302,9 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     settingsDrawer.fastAnimationsInput.checked = debugFlags.fastAnimations;
     settingsDrawer.debugCameraInput.checked = debugFlags.debugCamera;
     settingsDrawer.showDebugInput.checked = debugFlags.showPerf;
+    settingsDrawer.muteAudioInput.checked = audioSettings.muted;
+    settingsDrawer.volumeInput.value = `${Math.round(audioSettings.masterVolume * 100)}`;
+    settingsDrawer.volumeValue.textContent = `${Math.round(audioSettings.masterVolume * 100)}%`;
   };
 
   const renderDebugToolsDrawer = () => {
@@ -383,6 +411,9 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
 }
 
 function createSettingsDrawer(options: {
+  audioSettings: AudioSettings;
+  onAudioMutedChange: (muted: boolean) => void;
+  onAudioVolumeChange: (volume: number) => void;
   onDebugCameraChange: (enabled: boolean) => void;
   onFastAnimationsChange: (enabled: boolean) => void;
   onShowDebugChange: (enabled: boolean) => void;
@@ -395,10 +426,18 @@ function createSettingsDrawer(options: {
   const title = document.createElement("h2");
   title.className = "hud__drawer-title";
   title.textContent = "Settings";
+  const muteAudio = createToggle("Mute audio", options.audioSettings.muted);
+  const volume = createRange("Master volume", Math.round(options.audioSettings.masterVolume * 100));
   const fastAnimations = createToggle("Fast animations", debugFlags.fastAnimations);
   const debugCamera = createToggle("Debug camera", debugFlags.debugCamera);
   const showDebug = createToggle("Debug overlay", debugFlags.showPerf);
 
+  muteAudio.input.addEventListener("change", () => {
+    options.onAudioMutedChange(muteAudio.input.checked);
+  });
+  volume.input.addEventListener("input", () => {
+    options.onAudioVolumeChange(Number(volume.input.value) / 100);
+  });
   fastAnimations.input.addEventListener("change", () => {
     options.onFastAnimationsChange(fastAnimations.input.checked);
   });
@@ -409,13 +448,16 @@ function createSettingsDrawer(options: {
     options.onShowDebugChange(showDebug.input.checked);
   });
 
-  root.append(title, fastAnimations.root, debugCamera.root, showDebug.root);
+  root.append(title, muteAudio.root, volume.root, fastAnimations.root, debugCamera.root, showDebug.root);
 
   return {
     debugCameraInput: debugCamera.input,
     fastAnimationsInput: fastAnimations.input,
+    muteAudioInput: muteAudio.input,
     root,
     showDebugInput: showDebug.input,
+    volumeInput: volume.input,
+    volumeValue: volume.value,
   };
 }
 
@@ -620,6 +662,33 @@ function createToggle(label: string, checked: boolean): { input: HTMLInputElemen
   return {
     input,
     root,
+  };
+}
+
+function createRange(
+  label: string,
+  value: number,
+): { input: HTMLInputElement; root: HTMLLabelElement; value: HTMLElement } {
+  const root = document.createElement("label");
+  root.className = "hud__range";
+  const header = document.createElement("span");
+  const text = document.createElement("span");
+  text.textContent = label;
+  const valueLabel = document.createElement("strong");
+  valueLabel.textContent = `${value}%`;
+  header.append(text, valueLabel);
+  const input = document.createElement("input");
+  input.type = "range";
+  input.min = "0";
+  input.max = "100";
+  input.step = "1";
+  input.value = `${value}`;
+  root.append(header, input);
+
+  return {
+    input,
+    root,
+    value: valueLabel,
   };
 }
 

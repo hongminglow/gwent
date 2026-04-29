@@ -1,0 +1,137 @@
+import { describe, expect, it } from "vitest";
+import { createEvent } from "../simulation/events";
+import { createEmptyMatchState } from "../simulation/matchState";
+import type { CardDefinition, MatchState } from "../simulation/types";
+import {
+  clampVolume,
+  getAudioCueFromRendererCue,
+  getAudioCuesForGameEvent,
+  normalizeSettings,
+} from "./audioEngine";
+
+describe("audio engine cue routing", () => {
+  it("maps core match events to distinct audio cues", () => {
+    const state = createAudioState();
+
+    expect(getAudioCuesForGameEvent(createEvent(1, "card.drawn"), state)).toEqual(["card.draw"]);
+    expect(getAudioCuesForGameEvent(createEvent(2, "player.passed"), state)).toEqual(["pass"]);
+    expect(getAudioCuesForGameEvent(createEvent(3, "leader.used"), state)).toEqual(["leader"]);
+    expect(getAudioCuesForGameEvent(createEvent(4, "weather.applied"), state)).toEqual(["weather"]);
+    expect(getAudioCuesForGameEvent(createEvent(5, "weather.cleared"), state)).toEqual(["clear-weather"]);
+    expect(getAudioCuesForGameEvent(createEvent(6, "row.buff.applied"), state)).toEqual(["horn"]);
+  });
+
+  it("maps card abilities and destruction to specialty cues", () => {
+    const state = createAudioState();
+
+    expect(getAudioCuesForGameEvent(createEvent(1, "card.played", {
+      cardInstanceId: "spy-card",
+    }), state)).toEqual(["card.play", "spy"]);
+    expect(getAudioCuesForGameEvent(createEvent(2, "card.played", {
+      cardInstanceId: "muster-card",
+      reason: "muster",
+    }), state)).toEqual(["card.play", "muster"]);
+    expect(getAudioCuesForGameEvent(createEvent(3, "card.revived"), state)).toEqual(["medic"]);
+    expect(getAudioCuesForGameEvent(createEvent(4, "card.destroyed", {
+      reason: "scorch",
+    }), state)).toEqual(["scorch"]);
+  });
+
+  it("maps round and match outcomes from the player perspective", () => {
+    const state = createAudioState();
+
+    expect(getAudioCuesForGameEvent(createEvent(1, "round.ended", {
+      winnerIds: ["player"],
+    }), state)).toEqual(["round.win"]);
+    expect(getAudioCuesForGameEvent(createEvent(2, "round.ended", {
+      winnerIds: ["opponent"],
+    }), state)).toEqual(["round.loss"]);
+    expect(getAudioCuesForGameEvent(createEvent(3, "round.ended", {
+      winnerIds: [],
+    }), state)).toEqual(["round.draw"]);
+    expect(getAudioCuesForGameEvent(createEvent(4, "match.ended", {
+      winnerId: "player",
+    }), state)).toEqual(["match.win"]);
+    expect(getAudioCuesForGameEvent(createEvent(5, "match.ended", {
+      winnerId: "opponent",
+    }), state)).toEqual(["match.loss"]);
+  });
+
+  it("maps renderer and interaction audio cues", () => {
+    expect(getAudioCueFromRendererCue({
+      cue: "slain-slash",
+    })).toBe("slain-slash");
+    expect(getAudioCueFromRendererCue({
+      cardInstanceId: "card-1",
+      cue: "card.hover",
+    })).toBe("card.hover");
+    expect(getAudioCueFromRendererCue({
+      cue: "unknown",
+    })).toBeUndefined();
+  });
+
+  it("normalizes audio settings", () => {
+    expect(clampVolume(-1)).toBe(0);
+    expect(clampVolume(2)).toBe(1);
+    expect(normalizeSettings({
+      masterVolume: Number.NaN,
+      muted: true,
+    })).toEqual({
+      masterVolume: 0.72,
+      muted: true,
+    });
+  });
+});
+
+function createAudioState(): MatchState {
+  const spy = definition("spy-unit", ["spy"]);
+  const muster = definition("muster-unit", ["muster"]);
+
+  return {
+    ...createEmptyMatchState({
+      id: "audio-test",
+      opponentFactionId: "monsters",
+      playerFactionId: "northern-realms",
+      seed: "audio-seed",
+    }),
+    cardDefinitions: {
+      [spy.id]: spy,
+      [muster.id]: muster,
+    },
+    cards: {
+      "muster-card": {
+        controllerId: "player",
+        definitionId: muster.id,
+        id: "muster-card",
+        ownerId: "player",
+        zone: "hand",
+        createdSequence: 1,
+      },
+      "spy-card": {
+        controllerId: "player",
+        definitionId: spy.id,
+        id: "spy-card",
+        ownerId: "player",
+        zone: "hand",
+        createdSequence: 2,
+      },
+    },
+  };
+}
+
+function definition(id: string, abilities: CardDefinition["abilities"]): CardDefinition {
+  return {
+    abilities,
+    audioKey: id,
+    artKey: id,
+    basePower: 4,
+    faction: "neutral",
+    id,
+    name: id,
+    rarity: "common",
+    rows: ["close"],
+    tags: [],
+    type: "unit",
+    vfxKey: id,
+  };
+}
