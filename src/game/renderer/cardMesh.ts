@@ -6,8 +6,10 @@ export type CardMeshOptions = {
   accentColor: string;
   faceColor?: string;
   frontTexture?: THREE.Texture;
+  powerLabel?: string;
   position?: THREE.Vector3;
   rotationY?: number;
+  typeLabel?: string;
 };
 
 export type CardMesh = {
@@ -35,12 +37,14 @@ export function createCardMesh(options: CardMeshOptions): CardMesh {
   root.position.copy(position);
   root.rotation.set(-Math.PI / 2 + 0.06, options.rotationY ?? 0, 0);
 
-  const captionTexture = createCaptionTexture(options.label);
+  const faceTexture = options.frontTexture ?? createFaceTexture(options.label, options.accentColor, options.typeLabel);
+  const captionTexture = createCaptionTexture(options.label, options.typeLabel);
+  const powerTexture = createPowerTexture(options.powerLabel ?? "");
   const materials = createCardMaterialSet({
     accentColor: options.accentColor,
     faceColor: options.faceColor,
     captionTexture,
-    frontTexture: options.frontTexture,
+    frontTexture: faceTexture,
   });
 
   const body = new THREE.Mesh(
@@ -81,19 +85,30 @@ export function createCardMesh(options: CardMeshOptions): CardMesh {
   root.add(highlight);
 
   const gem = new THREE.Mesh(
-    new THREE.CircleGeometry(0.16, 32),
+    new THREE.CircleGeometry(0.18, 36),
     materials.accent,
   );
   gem.name = "CardPowerGem";
   gem.position.set(0, 0.68, 0.037);
   root.add(gem);
 
+  const power = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.31, 0.2),
+    new THREE.MeshBasicMaterial({
+      map: powerTexture,
+      transparent: true,
+    }),
+  );
+  power.name = "CardPowerLabel";
+  power.position.set(0, 0.68, 0.041);
+  root.add(power);
+
   const caption = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.06, 0.28),
+    new THREE.PlaneGeometry(1.12, 0.32),
     materials.caption,
   );
   caption.name = "CardCaption";
-  caption.position.set(0, -0.62, 0.039);
+  caption.position.set(0, -0.62, 0.042);
   root.add(caption);
 
   return {
@@ -115,7 +130,11 @@ export function createCardMesh(options: CardMeshOptions): CardMesh {
       highlightMaterial.color.set(state.rejected ? "#e55d4f" : state.dragging ? "#f0d290" : "#f8e6bb");
     },
     dispose() {
+      if (!options.frontTexture) {
+        faceTexture.dispose();
+      }
       captionTexture.dispose();
+      powerTexture.dispose();
       materials.dispose();
       root.traverse((object) => {
         if (object instanceof THREE.Mesh) {
@@ -133,7 +152,7 @@ function createCardFrame(accentColor: string): THREE.Group {
   const material = new THREE.MeshBasicMaterial({
     color: accentColor,
     transparent: true,
-    opacity: 0.72,
+    opacity: 0.82,
   });
   const horizontalGeometry = new THREE.PlaneGeometry(1.18, 0.018);
   const verticalGeometry = new THREE.PlaneGeometry(0.018, 1.72);
@@ -151,14 +170,14 @@ function createCardFrame(accentColor: string): THREE.Group {
   return frame;
 }
 
-function createCaptionTexture(label: string): THREE.CanvasTexture {
-  const texture = new THREE.CanvasTexture(createCaptionCanvas(label));
+function createCaptionTexture(label: string, typeLabel?: string): THREE.CanvasTexture {
+  const texture = new THREE.CanvasTexture(createCaptionCanvas(label, typeLabel));
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 4;
   return texture;
 }
 
-function createCaptionCanvas(label: string): HTMLCanvasElement {
+function createCaptionCanvas(label: string, typeLabel?: string): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
   canvas.width = 512;
   canvas.height = 128;
@@ -170,16 +189,141 @@ function createCaptionCanvas(label: string): HTMLCanvasElement {
   }
 
   context.clearRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = "rgba(10, 8, 6, 0.82)";
-  roundRect(context, 18, 22, 476, 84, 18);
+  context.fillStyle = "rgba(10, 8, 6, 0.9)";
+  roundRect(context, 18, 16, 476, 96, 18);
   context.fill();
+  context.strokeStyle = "rgba(247, 239, 225, 0.16)";
+  context.lineWidth = 3;
+  context.stroke();
   context.fillStyle = "#f7efe1";
-  context.font = "700 38px system-ui, sans-serif";
+  context.font = "800 31px system-ui, sans-serif";
   context.textAlign = "center";
-  context.textBaseline = "middle";
-  context.fillText(label, canvas.width / 2, canvas.height / 2, 430);
+  context.textBaseline = "alphabetic";
+  context.fillText(label, canvas.width / 2, typeLabel ? 58 : 75, 432);
+
+  if (typeLabel) {
+    context.fillStyle = "rgba(242, 207, 123, 0.84)";
+    context.font = "700 18px system-ui, sans-serif";
+    context.fillText(typeLabel, canvas.width / 2, 87, 420);
+  }
 
   return canvas;
+}
+
+function createFaceTexture(label: string, accentColor: string, typeLabel?: string): THREE.CanvasTexture {
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 768;
+  const context = canvas.getContext("2d");
+
+  if (!context) {
+    throw new Error("Unable to create card face canvas.");
+  }
+
+  const gradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
+  gradient.addColorStop(0, "#352416");
+  gradient.addColorStop(0.42, "#191613");
+  gradient.addColorStop(1, "#0b0a08");
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+
+  context.strokeStyle = accentColor;
+  context.lineWidth = 12;
+  roundRect(context, 34, 32, 444, 704, 28);
+  context.stroke();
+
+  context.globalAlpha = 0.22;
+  context.fillStyle = accentColor;
+  for (let index = 0; index < 9; index += 1) {
+    const y = 108 + index * 64;
+    context.beginPath();
+    context.ellipse(256, y, 150 - index * 7, 26, 0.18, 0, Math.PI * 2);
+    context.fill();
+  }
+  context.globalAlpha = 1;
+
+  context.fillStyle = "rgba(247, 239, 225, 0.86)";
+  context.font = "800 46px system-ui, sans-serif";
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  drawWrappedText(context, label, 256, 334, 370, 52, 3);
+
+  if (typeLabel) {
+    context.fillStyle = "rgba(242, 207, 123, 0.84)";
+    context.font = "700 26px system-ui, sans-serif";
+    context.fillText(typeLabel, 256, 510, 380);
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 8;
+  return texture;
+}
+
+function createPowerTexture(powerLabel: string): THREE.CanvasTexture {
+  const canvas = document.createElement("canvas");
+  canvas.width = 160;
+  canvas.height = 112;
+  const context = canvas.getContext("2d");
+
+  if (!context) {
+    throw new Error("Unable to create card power canvas.");
+  }
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  if (powerLabel) {
+    context.fillStyle = "#fff8df";
+    context.font = "900 62px system-ui, sans-serif";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.shadowColor = "rgba(0, 0, 0, 0.75)";
+    context.shadowBlur = 10;
+    context.fillText(powerLabel, canvas.width / 2, canvas.height / 2 + 4, 130);
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 4;
+  return texture;
+}
+
+function drawWrappedText(
+  context: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number,
+  maxLines: number,
+) {
+  const words = text.split(" ");
+  const lines: string[] = [];
+  let line = "";
+
+  for (const word of words) {
+    const nextLine = line ? `${line} ${word}` : word;
+    if (context.measureText(nextLine).width <= maxWidth || line.length === 0) {
+      line = nextLine;
+      continue;
+    }
+
+    lines.push(line);
+    line = word;
+    if (lines.length === maxLines - 1) {
+      break;
+    }
+  }
+
+  if (line) {
+    lines.push(line);
+  }
+
+  const visibleLines = lines.slice(0, maxLines);
+  const startY = y - ((visibleLines.length - 1) * lineHeight) / 2;
+
+  visibleLines.forEach((visibleLine, index) => {
+    context.fillText(visibleLine, x, startY + index * lineHeight, maxWidth);
+  });
 }
 
 function roundRect(

@@ -40,7 +40,11 @@ const menu = createMainMenu(root, {
 
     startTimerId = window.setTimeout(() => {
       startTimerId = undefined;
-      startMatch(factionId);
+      try {
+        startMatch(factionId);
+      } catch (error) {
+        handleStartError(error);
+      }
     }, 420);
   },
 });
@@ -114,6 +118,13 @@ function startMatch(playerFactionId: FactionId, opponentFactionId?: FactionId) {
   menu.hide();
   threeApp.start();
   scheduleAiAutoplay();
+}
+
+function handleStartError(error: unknown) {
+  console.error(error);
+  disposeSession();
+  setAiAutoplay(false);
+  menu.showError(error instanceof Error ? error.message : "The renderer failed while preparing the match.");
 }
 
 function showMainMenu() {

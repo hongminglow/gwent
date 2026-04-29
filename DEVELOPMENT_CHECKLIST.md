@@ -498,18 +498,32 @@ Phase 17 output:
 
 ## Phase 18: Polish
 
-- [ ] Improve board lighting.
-- [ ] Improve card readability.
-- [ ] Improve card material quality.
-- [ ] Improve camera transitions.
-- [ ] Improve faction selection presentation.
-- [ ] Improve hand layout.
-- [ ] Improve opponent side readability.
-- [ ] Improve timing between chained animations.
-- [ ] Improve VFX intensity balance.
-- [ ] Improve mobile/tablet layout if in scope.
-- [ ] Add loading progress.
-- [ ] Add error fallback for missing assets.
+- [x] Improve board lighting.
+- [x] Improve card readability.
+- [x] Improve card material quality.
+- [x] Improve camera transitions.
+- [x] Improve faction selection presentation.
+- [x] Improve hand layout.
+- [x] Improve opponent side readability.
+- [x] Improve timing between chained animations.
+- [x] Improve VFX intensity balance.
+- [x] Improve mobile/tablet layout if in scope.
+- [x] Add loading progress.
+- [x] Add error fallback for missing assets.
+
+Phase 18 output:
+
+- Board lighting now uses hemisphere, key, rim, card-fill, and row-glow lights with tuned fog/exposure for clearer card silhouettes.
+- Card meshes now generate richer fallback face art, stronger captions, power labels, and refined materials for better tabletop readability before final card art exists.
+- Camera rig focus pulses are smoother, viewport-aware, and better framed on desktop and tall/mobile screens.
+- Hand placement spacing, scale, and fan angles were tuned so player cards stay readable above the bottom HUD while preserving opponent readability.
+- Animation durations were slightly lengthened for draw/play/leader/weather/round events so chained effects read less abruptly.
+- Weather and slain VFX intensity was reduced to avoid hiding card state while still reading as cinematic.
+- Main menu faction cards now have faction crests, stronger selection treatment, and a faction-marked deck preview.
+- Match loading now shows staged progress, and match startup failures fall back to a recoverable menu error overlay.
+- Texture loading now creates an in-engine missing-art fallback texture and logs the missing asset path.
+- The app now ships an inline favicon so browser smoke tests do not hit a default missing favicon request.
+- Mobile and short-height HUD breakpoints were tightened to preserve the center playfield.
 
 ## Phase 19: Packaging
 

@@ -119,7 +119,7 @@ function createWeatherEffect(
 
   return createEffect(root, kind, (progress) => {
     const p = clamp01(progress);
-    const opacity = Math.sin(p * Math.PI) * (kind === "weather-fog" ? 0.38 : 0.32);
+    const opacity = Math.sin(p * Math.PI) * (kind === "weather-fog" ? 0.3 : 0.26);
 
     root.children.forEach((child, index) => {
       child.position.y += Math.sin(p * Math.PI + index) * 0.0015;

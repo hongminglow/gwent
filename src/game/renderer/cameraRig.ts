@@ -13,9 +13,10 @@ export type CameraRig = {
   dispose: () => void;
 };
 
-const DEFAULT_CAMERA_POSITION = new THREE.Vector3(0, 8.8, 11.8);
+const DEFAULT_CAMERA_POSITION = new THREE.Vector3(0, 9.15, 12.55);
+const TALL_CAMERA_POSITION = new THREE.Vector3(0, 9.8, 13.6);
 const DEBUG_CAMERA_POSITION = new THREE.Vector3(0, 9.8, 13.2);
-const CAMERA_TARGET = new THREE.Vector3(0, 0, 0);
+const CAMERA_TARGET = new THREE.Vector3(0, 0, 0.42);
 
 export function createCameraRig(domElement: HTMLElement): CameraRig {
   const root = new THREE.Group();
@@ -39,6 +40,8 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
 
   let debugMode = false;
   let elapsed = 0;
+  let viewportAspect = 1;
+  const currentLookTarget = CAMERA_TARGET.clone();
   let focusPulse: {
     durationSeconds: number;
     elapsedSeconds: number;
@@ -53,10 +56,11 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
     if (enabled) {
       camera.position.copy(DEBUG_CAMERA_POSITION);
     } else {
-      camera.position.copy(DEFAULT_CAMERA_POSITION);
+      camera.position.copy(getDefaultCameraPosition(viewportAspect));
     }
 
     controls.target.copy(CAMERA_TARGET);
+    currentLookTarget.copy(CAMERA_TARGET);
     controls.update();
   };
 
@@ -84,7 +88,9 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
       return debugMode;
     },
     resize(width, height) {
-      camera.aspect = width / Math.max(height, 1);
+      viewportAspect = width / Math.max(height, 1);
+      camera.aspect = viewportAspect;
+      camera.fov = viewportAspect < 0.82 ? 48 : 42;
       camera.updateProjectionMatrix();
     },
     update(deltaSeconds) {
@@ -96,31 +102,47 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
       }
 
       const breathe = Math.sin(elapsed * 0.35) * 0.08;
+      const basePosition = getDefaultCameraPosition(viewportAspect);
       const cameraTargetPosition = new THREE.Vector3(
-        DEFAULT_CAMERA_POSITION.x,
-        DEFAULT_CAMERA_POSITION.y + breathe,
-        DEFAULT_CAMERA_POSITION.z,
+        basePosition.x,
+        basePosition.y + breathe,
+        basePosition.z,
       );
       const lookTarget = CAMERA_TARGET.clone();
 
       if (focusPulse) {
         focusPulse.elapsedSeconds += deltaSeconds;
         const progress = Math.min(focusPulse.elapsedSeconds / Math.max(focusPulse.durationSeconds, 0.001), 1);
-        const pulse = Math.sin(progress * Math.PI) * focusPulse.intensity;
-        lookTarget.lerp(focusPulse.target, Math.min(pulse * 0.42, 0.48));
-        cameraTargetPosition.x += focusPulse.target.x * pulse * 0.035;
-        cameraTargetPosition.z -= pulse * 0.28;
+        const pulse = easeInOutSine(Math.sin(progress * Math.PI)) * focusPulse.intensity;
+        lookTarget.lerp(focusPulse.target, Math.min(pulse * 0.5, 0.54));
+        cameraTargetPosition.x += focusPulse.target.x * pulse * 0.052;
+        cameraTargetPosition.z -= pulse * 0.34;
+        cameraTargetPosition.y -= pulse * 0.16;
 
         if (progress >= 1) {
           focusPulse = undefined;
         }
       }
 
-      camera.position.lerp(cameraTargetPosition, 0.04);
-      camera.lookAt(lookTarget);
+      const alpha = Math.min(deltaSeconds * 4.2, 1);
+      camera.position.lerp(cameraTargetPosition, alpha);
+      currentLookTarget.lerp(lookTarget, Math.min(deltaSeconds * 5.4, 1));
+      camera.lookAt(currentLookTarget);
     },
     dispose() {
       controls.dispose();
     },
   };
+}
+
+function getDefaultCameraPosition(aspect: number): THREE.Vector3 {
+  if (aspect < 0.82) {
+    return TALL_CAMERA_POSITION;
+  }
+
+  return DEFAULT_CAMERA_POSITION;
+}
+
+function easeInOutSine(value: number): number {
+  return -(Math.cos(Math.PI * value) - 1) / 2;
 }

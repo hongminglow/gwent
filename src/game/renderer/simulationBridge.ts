@@ -82,7 +82,7 @@ type RenderedCardPose = {
 const ROWS = ["close", "ranged", "siege"] as const;
 const PLAYERS = ["player", "opponent"] as const;
 const HAND_Z: Record<PlayerId, number> = {
-  player: 7.15,
+  player: 6.68,
   opponent: -7.15,
 };
 const CARD_ROTATION_X = -Math.PI / 2 + 0.06;
@@ -196,6 +196,8 @@ function createRenderedCard(card: CardInstance, definition: CardDefinition): Ren
     label: definition.name,
     accentColor,
     faceColor: definition.type === "hero" ? "#41301c" : undefined,
+    powerLabel: definition.type === "special" || definition.type === "leader" ? "" : `${definition.basePower}`,
+    typeLabel: formatCardType(definition),
   });
   cardMesh.root.name = `Card:${card.id}:${definition.id}`;
 
@@ -272,7 +274,9 @@ function syncHandTargets(
   assignedCards: Set<CardInstanceId>,
 ) {
   const handCards = state.players[playerId].hand.cards;
-  const spacing = Math.min(0.82, 8.8 / Math.max(handCards.length - 1, 1));
+  const spacing = playerId === "player"
+    ? Math.min(0.8, 8.7 / Math.max(handCards.length - 1, 1))
+    : Math.min(0.74, 8.4 / Math.max(handCards.length - 1, 1));
   const startX = -((handCards.length - 1) * spacing) / 2;
 
   handCards.forEach((cardInstanceId, index) => {
@@ -286,15 +290,17 @@ function syncHandTargets(
       position: new THREE.Vector3(
         startX + index * spacing,
         0.42 + index * 0.004,
-        HAND_Z[playerId],
+        HAND_Z[playerId] + (playerId === "player" ? Math.sin((index / Math.max(handCards.length - 1, 1)) * Math.PI) * -0.08 : 0),
       ),
       rotation: new THREE.Euler(
         CARD_ROTATION_X,
         0,
-        playerId === "player" ? (index - handCards.length / 2) * -0.018 : Math.PI,
+        playerId === "player"
+          ? (index - (handCards.length - 1) / 2) * -0.022
+          : Math.PI + (index - (handCards.length - 1) / 2) * 0.012,
       ),
-      scale: playerId === "player" ? 1 : 0.92,
-      visible: playerId === "player" || index < 8,
+      scale: playerId === "player" ? 0.92 : 0.86,
+      visible: playerId === "player" || index < 10,
     });
     assignedCards.add(cardInstanceId);
   });
@@ -746,24 +752,24 @@ function completeEvent(renderedCards: Map<CardInstanceId, RenderedCard>, event: 
 function getEventDuration(event: GameEvent): number {
   switch (event.type) {
     case "card.drawn":
-      return 0.22;
+      return 0.28;
     case "card.played":
-      return 0.46;
+      return 0.54;
     case "card.revived":
-      return 0.68;
-    case "leader.used":
       return 0.76;
+    case "leader.used":
+      return 0.84;
     case "card.destroyed":
-      return 0.48;
+      return 0.56;
     case "weather.applied":
     case "weather.cleared":
-      return 0.68;
+      return 0.76;
     case "row.buff.applied":
-      return 0.62;
+      return 0.68;
     case "round.ended":
-      return 0.82;
+      return 0.9;
     case "match.ended":
-      return 1.08;
+      return 1.18;
     case "phase.changed":
     case "turn.changed":
     case "player.passed":
@@ -772,6 +778,29 @@ function getEventDuration(event: GameEvent): number {
     default:
       return assertNever(event.type);
   }
+}
+
+function formatCardType(definition: CardDefinition): string {
+  if (definition.type === "special") {
+    return definition.abilities.length > 0
+      ? definition.abilities.map(formatAbility).join(" / ")
+      : "Special";
+  }
+
+  if (definition.type === "leader") {
+    return "Leader";
+  }
+
+  return definition.abilities.length > 0
+    ? definition.abilities.map(formatAbility).join(" / ")
+    : definition.type === "hero" ? "Hero" : "Unit";
+}
+
+function formatAbility(ability: string): string {
+  return ability
+    .split("-")
+    .map((part) => `${part[0]?.toUpperCase() ?? ""}${part.slice(1)}`)
+    .join(" ");
 }
 
 function getAnchorPosition(root: THREE.Group, anchor: THREE.Group): THREE.Vector3 {

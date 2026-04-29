@@ -29,8 +29,8 @@ type SlainPalette = {
   spark: string;
 };
 
-const SPARK_COUNT = 42;
-const FRAGMENT_COUNT = 12;
+const SPARK_COUNT = 34;
+const FRAGMENT_COUNT = 10;
 
 export function createSlainAnimationContract(
   event: GameEvent,
@@ -127,15 +127,15 @@ export function createSlainCardEffect(contract: SlainAnimationContract): SlainCa
       const slashIn = easeOutCubic(clamp01(p / 0.16));
       const slashOut = 1 - clamp01((p - 0.18) / 0.32);
       slash.scale.set(1 + slashIn * 0.42, 0.38 + slashIn * 0.82, 1);
-      slashMaterial.opacity = slashOut * 0.86;
+      slashMaterial.opacity = slashOut * 0.76;
 
       const cutLife = 1 - clamp01((p - 0.38) / 0.52);
       cut.scale.set(1 + Math.sin(p * Math.PI) * 0.45, 0.35 + clamp01(p / 0.22) * 0.78, 1);
-      cutMaterial.opacity = Math.max(0, cutLife) * 0.92;
+      cutMaterial.opacity = Math.max(0, cutLife) * 0.86;
 
       const shockLife = 1 - clamp01(p / 0.42);
       shock.scale.setScalar(0.55 + p * 2.4);
-      shockMaterial.opacity = shockLife * 0.34;
+      shockMaterial.opacity = shockLife * 0.28;
 
       updateSparkBurst(sparks, p);
       updateFragments(fragments, p);

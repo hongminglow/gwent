@@ -160,9 +160,9 @@ function createTable(): THREE.Group {
   const tabletop = new THREE.Mesh(
     new THREE.BoxGeometry(14.4, 0.42, 17.2),
     new THREE.MeshStandardMaterial({
-      color: "#2b1f16",
-      roughness: 0.72,
-      metalness: 0.08,
+      color: "#302115",
+      roughness: 0.66,
+      metalness: 0.12,
     }),
   );
   tabletop.name = "Tabletop";
@@ -173,9 +173,9 @@ function createTable(): THREE.Group {
   const underglow = new THREE.Mesh(
     new THREE.BoxGeometry(13.4, 0.04, 16.2),
     new THREE.MeshStandardMaterial({
-      color: "#5c3322",
-      emissive: "#7a3a1c",
-      emissiveIntensity: 0.18,
+      color: "#6a3c24",
+      emissive: "#87401f",
+      emissiveIntensity: 0.22,
       roughness: 0.8,
       metalness: 0.04,
     }),
@@ -191,9 +191,9 @@ function createPlaymat(): THREE.Mesh {
   const playmat = new THREE.Mesh(
     new THREE.BoxGeometry(12.7, 0.07, 15.3),
     new THREE.MeshStandardMaterial({
-      color: "#17110d",
-      roughness: 0.88,
-      metalness: 0.03,
+      color: "#18130f",
+      roughness: 0.84,
+      metalness: 0.05,
     }),
   );
   playmat.name = "Playmat";
@@ -208,7 +208,7 @@ function createCenterLine(): THREE.Mesh {
     new THREE.MeshStandardMaterial({
       color: "#a77b42",
       emissive: "#4a2c12",
-      emissiveIntensity: 0.18,
+      emissiveIntensity: 0.24,
     }),
   );
   centerLine.name = "CenterLine";
@@ -220,9 +220,9 @@ function createBoardRails(): THREE.Group {
   const group = new THREE.Group();
   group.name = "BoardRails";
   const material = new THREE.MeshStandardMaterial({
-    color: "#5b3a24",
-    roughness: 0.62,
-    metalness: 0.12,
+    color: "#624026",
+    roughness: 0.56,
+    metalness: 0.18,
   });
   const horizontalGeometry = new THREE.BoxGeometry(13.1, 0.16, 0.12);
   const verticalGeometry = new THREE.BoxGeometry(0.12, 0.16, 15.4);
@@ -253,11 +253,11 @@ function createRowZone(
     new THREE.MeshStandardMaterial({
       color: playerId === "player" ? "#1f2b2a" : "#2a1f20",
       emissive: playerId === "player" ? "#244c45" : "#532a2d",
-      emissiveIntensity: 0.1,
+      emissiveIntensity: 0.12,
       roughness: 0.82,
       metalness: 0.04,
       transparent: true,
-      opacity: 0.92,
+      opacity: 0.86,
     }),
   );
   zoneMesh.name = "PlacementZoneSurface";

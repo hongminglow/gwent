@@ -233,8 +233,8 @@ export function createThreeApp(
 
 function createScene(): THREE.Scene {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color("#090806");
-  scene.fog = new THREE.Fog("#090806", 18, 44);
+  scene.background = new THREE.Color("#080807");
+  scene.fog = new THREE.Fog("#080807", 22, 52);
   return scene;
 }
 
@@ -249,17 +249,21 @@ function createRenderer(): THREE.WebGLRenderer {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 1.12;
   return renderer;
 }
 
 function addLighting(scene: THREE.Scene) {
-  const ambientLight = new THREE.AmbientLight("#f0dcc1", 0.58);
+  const hemisphereLight = new THREE.HemisphereLight("#f1dcc0", "#171b20", 0.52);
+  hemisphereLight.name = "TableHemisphereLight";
+  scene.add(hemisphereLight);
+
+  const ambientLight = new THREE.AmbientLight("#f0dcc1", 0.42);
   scene.add(ambientLight);
 
-  const keyLight = new THREE.DirectionalLight("#ffe2b8", 2.9);
+  const keyLight = new THREE.DirectionalLight("#ffe2b8", 3.15);
   keyLight.name = "KeyLight";
-  keyLight.position.set(-4.5, 9.2, 6.4);
+  keyLight.position.set(-4.2, 9.4, 6.8);
   keyLight.castShadow = true;
   keyLight.shadow.mapSize.set(2048, 2048);
   keyLight.shadow.camera.near = 1;
@@ -270,12 +274,17 @@ function addLighting(scene: THREE.Scene) {
   keyLight.shadow.camera.bottom = -10;
   scene.add(keyLight);
 
-  const rimLight = new THREE.DirectionalLight("#8fb7ff", 1.05);
+  const rimLight = new THREE.DirectionalLight("#8fb7ff", 1.22);
   rimLight.name = "RimLight";
   rimLight.position.set(5, 5, -8);
   scene.add(rimLight);
 
-  const rowGlow = new THREE.PointLight("#b97b49", 18, 18, 2.1);
+  const cardFill = new THREE.PointLight("#f2cf7b", 10, 12, 2.2);
+  cardFill.name = "CardReadabilityFill";
+  cardFill.position.set(0, 3.2, 5.4);
+  scene.add(cardFill);
+
+  const rowGlow = new THREE.PointLight("#b97b49", 15, 18, 2.1);
   rowGlow.name = "BoardRowGlow";
   rowGlow.position.set(0, 2.2, 0);
   scene.add(rowGlow);
