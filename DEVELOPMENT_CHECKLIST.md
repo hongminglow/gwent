@@ -444,23 +444,32 @@ Phase 15 output:
 
 ## Phase 16: Testing
 
-- [ ] Unit tests for match creation.
-- [ ] Unit tests for shuffle/draw/redraw.
-- [ ] Unit tests for passing.
-- [ ] Unit tests for round resolution.
-- [ ] Unit tests for each faction perk.
-- [ ] Unit tests for each MVP ability.
-- [ ] Unit tests for scoring modifiers.
-- [ ] Unit tests for card persistence between rounds.
-- [ ] Integration test for full match simulation.
-- [ ] Integration test for AI completing a match.
-- [ ] Browser smoke test for first load.
-- [ ] Browser test for card hover/select/play.
-- [ ] Browser test for pass flow.
-- [ ] Browser test for round result.
-- [ ] Browser visual check for slain VFX.
-- [ ] Browser visual check for weather VFX.
-- [ ] Performance check on mid-range desktop.
+- [x] Unit tests for match creation.
+- [x] Unit tests for shuffle/draw/redraw.
+- [x] Unit tests for passing.
+- [x] Unit tests for round resolution.
+- [x] Unit tests for each faction perk.
+- [x] Unit tests for each MVP ability.
+- [x] Unit tests for scoring modifiers.
+- [x] Unit tests for card persistence between rounds.
+- [x] Integration test for full match simulation.
+- [x] Integration test for AI completing a match.
+- [x] Browser smoke test for first load.
+- [x] Browser test for card hover/select/play.
+- [x] Browser test for pass flow.
+- [x] Browser test for round result.
+- [x] Browser visual check for slain VFX.
+- [x] Browser visual check for weather VFX.
+- [x] Performance check on mid-range desktop.
+
+Phase 16 output:
+
+- Match-flow regression coverage was expanded in `src/game/simulation/matchFlow.test.ts` for deterministic shuffle/draw, redraw budget, faction perks, round cleanup, card persistence, and a scripted full match.
+- Existing ability, scoring, AI, debug-tools, renderer interaction, and VFX test suites remain part of the full Phase 16 test pass.
+- Northern Realms now draws its faction bonus card after winning a non-final round.
+- Renderer input-block synchronization now clears correctly after fast blocking animations, preventing the HUD from getting stuck in an animation-blocked state after card play.
+- Browser QA covered first load, card hover/select/play, pass flow, round result modal, slain/weather VFX cues, and mobile viewport sanity. Screenshots were saved under `.codex/phase16-*.png`.
+- Headless Chromium performance sampling completed but measured low FPS in this environment: about 8.15 FPS average, p95 frame time about 133.4 ms, and 179/180 sampled frames above 33 ms. Treat runtime performance as a Phase 18/19 optimization risk, not as a gameplay-rule blocker.
 
 ## Phase 17: Audio
 

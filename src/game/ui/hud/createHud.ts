@@ -326,7 +326,7 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     const leaderAction = getLeaderAction(nextState);
     const redrawPlayer = getNextRedrawPlayer(nextState);
 
-    phase.textContent = `Phase 15 debug tools. ${formatPhase(nextState.phase)}.`;
+    phase.textContent = `Testing build. ${formatPhase(nextState.phase)}.`;
     detail.textContent = `${formatFaction(nextState.players.player.factionId)} vs ${formatFaction(
       nextState.players.opponent.factionId,
     )}. Active: ${formatPlayer(activePlayer)} / ${formatFaction(activeFaction)}. Round ${nextState.round.number}.`;

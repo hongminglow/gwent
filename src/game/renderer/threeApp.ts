@@ -71,8 +71,9 @@ export function createThreeApp(
   });
   addLighting(scene);
 
-  const clock = new THREE.Clock();
   let animationFrameActive = false;
+  let animationFrameId: number | undefined;
+  let lastFrameTimestamp = 0;
 
   const resize = () => {
     const width = sceneLayer.clientWidth || window.innerWidth;
@@ -83,11 +84,7 @@ export function createThreeApp(
   const resizeObserver = new ResizeObserver(resize);
   resizeObserver.observe(sceneLayer);
 
-  const render = () => {
-    const delta = clock.getDelta();
-    cameraRig.update(delta);
-    board.update(delta);
-    simulationRenderer.update(delta);
+  const syncInputBlocked = () => {
     const inputBlocked = animationQueue.isBlocking();
 
     if (inputBlocked !== latestInputBlocked) {
@@ -95,8 +92,24 @@ export function createThreeApp(
       options.onInputBlockedChange?.(inputBlocked);
       cardInteraction.refresh();
     }
+  };
+
+  const render = (timestamp: number) => {
+    if (!animationFrameActive) {
+      return;
+    }
+
+    const delta = lastFrameTimestamp === 0
+      ? 1 / 60
+      : Math.min((timestamp - lastFrameTimestamp) / 1000, 0.1);
+    lastFrameTimestamp = timestamp;
+    cameraRig.update(delta);
+    board.update(delta);
+    simulationRenderer.update(delta);
+    syncInputBlocked();
 
     renderer.render(scene, cameraRig.camera);
+    animationFrameId = window.requestAnimationFrame(render);
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
@@ -140,11 +153,16 @@ export function createThreeApp(
   };
   const onContextLost = (event: Event) => {
     event.preventDefault();
-    renderer.setAnimationLoop(null);
+
+    if (animationFrameId !== undefined) {
+      window.cancelAnimationFrame(animationFrameId);
+      animationFrameId = undefined;
+    }
   };
   const onContextRestored = () => {
-    if (animationFrameActive) {
-      renderer.setAnimationLoop(render);
+    if (animationFrameActive && animationFrameId === undefined) {
+      lastFrameTimestamp = 0;
+      animationFrameId = window.requestAnimationFrame(render);
     }
   };
 
@@ -158,6 +176,7 @@ export function createThreeApp(
       latestState = state;
       simulationRenderer.applySnapshot(state, applyOptions);
       cardInteraction.refresh();
+      syncInputBlocked();
     },
     isInputBlocked() {
       return animationQueue.isBlocking();
@@ -179,12 +198,18 @@ export function createThreeApp(
       }
 
       animationFrameActive = true;
-      clock.start();
-      renderer.setAnimationLoop(render);
+      lastFrameTimestamp = 0;
+      animationFrameId = window.requestAnimationFrame(render);
     },
     dispose() {
       animationFrameActive = false;
-      renderer.setAnimationLoop(null);
+      lastFrameTimestamp = 0;
+
+      if (animationFrameId !== undefined) {
+        window.cancelAnimationFrame(animationFrameId);
+        animationFrameId = undefined;
+      }
+
       window.removeEventListener("keydown", onKeyDown);
       renderer.domElement.removeEventListener("webglcontextlost", onContextLost);
       renderer.domElement.removeEventListener("webglcontextrestored", onContextRestored);

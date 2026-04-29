@@ -529,11 +529,24 @@ function resolveRound(state: MatchState): MatchState {
       winnerId,
     }, true);
   } else {
+    nextState = applyNorthernRealmsRoundWinDraw(nextState, winnerIds);
     nextState = appendEvent(nextState, "phase.changed", {
       phase: "playing",
       roundNumber: nextState.round.number,
       activePlayerId: nextState.round.activePlayerId,
     });
+  }
+
+  return nextState;
+}
+
+function applyNorthernRealmsRoundWinDraw(state: MatchState, winnerIds: PlayerId[]): MatchState {
+  let nextState = state;
+
+  for (const winnerId of winnerIds) {
+    if (nextState.players[winnerId].factionId === "northern-realms") {
+      nextState = drawCards(nextState, winnerId, 1, "faction:northern-realms");
+    }
   }
 
   return nextState;
