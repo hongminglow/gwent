@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { createMatchFromFaction } from "./matchFlow";
 import { matchReducer } from "./reducer";
 import { restoreMatchState, serializeMatchState } from "./serialization";
 import { createEmptyMatchState } from "./matchState";
@@ -41,27 +42,41 @@ describe("match state", () => {
   });
 
   it("logs pass events while keeping previous state immutable", () => {
-    const state = createEmptyMatchState({
+    let state = createMatchFromFaction({
       id: "match-pass",
       seed: "pass-seed",
       playerFactionId: "northern-realms",
-      opponentFactionId: "monsters",
     });
+    state = matchReducer(state, {
+      type: "finish-redraw",
+      playerId: "player",
+    });
+    state = matchReducer(state, {
+      type: "finish-redraw",
+      playerId: "opponent",
+    });
+    const activePlayerId = state.round.activePlayerId;
+    const otherPlayerId = activePlayerId === "player" ? "opponent" : "player";
 
     const nextState = matchReducer(state, {
       type: "pass-round",
-      playerId: "player",
+      playerId: activePlayerId,
     });
 
-    expect(state.players.player.hasPassed).toBe(false);
-    expect(nextState.players.player.hasPassed).toBe(true);
-    expect(nextState.round.passed.player).toBe(true);
-    expect(nextState.round.activePlayerId).toBe("opponent");
+    expect(state.players[activePlayerId].hasPassed).toBe(false);
+    expect(nextState.players[activePlayerId].hasPassed).toBe(true);
+    expect(nextState.round.passed[activePlayerId]).toBe(true);
+    expect(nextState.round.activePlayerId).toBe(otherPlayerId);
     expect(nextState.eventLog.at(-1)).toMatchObject({
-      id: "event-000002",
+      type: "turn.changed",
+      payload: {
+        activePlayerId: otherPlayerId,
+      },
+    });
+    expect(nextState.eventLog.at(-2)).toMatchObject({
       type: "player.passed",
       payload: {
-        playerId: "player",
+        playerId: activePlayerId,
       },
     });
   });

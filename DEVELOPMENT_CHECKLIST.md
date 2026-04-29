@@ -123,23 +123,31 @@ Phase 3 output:
 
 ## Phase 4: Match Flow
 
-- [ ] Create match from selected player faction.
-- [ ] Randomly select opponent faction from remaining factions.
-- [ ] Shuffle decks.
-- [ ] Draw 10 opening cards per player.
-- [ ] Implement opening redraw of up to 2 cards.
-- [ ] Decide starting player.
-- [ ] Start round one.
-- [ ] Alternate turns.
-- [ ] Validate legal actions.
-- [ ] Implement pass.
-- [ ] End round when both players pass or cannot act.
-- [ ] Score round.
-- [ ] Apply faction win/loss/tie rules.
-- [ ] Move non-persistent board cards to discard.
-- [ ] Start next round.
-- [ ] End match after one player wins two rounds.
-- [ ] Emit match result.
+- [x] Create match from selected player faction.
+- [x] Randomly select opponent faction from remaining factions.
+- [x] Shuffle decks.
+- [x] Draw 10 opening cards per player.
+- [x] Implement opening redraw of up to 2 cards.
+- [x] Decide starting player.
+- [x] Start round one.
+- [x] Alternate turns.
+- [x] Validate legal actions.
+- [x] Implement pass.
+- [x] End round when both players pass or cannot act.
+- [x] Score round.
+- [x] Apply faction win/loss/tie rules.
+- [x] Move non-persistent board cards to discard.
+- [x] Start next round.
+- [x] End match after one player wins two rounds.
+- [x] Emit match result.
+
+Phase 4 output:
+
+- Generated starter-deck factory in `src/game/simulation/deckFactory.ts`.
+- Match creation and turn flow in `src/game/simulation/matchFlow.ts`.
+- Basic score snapshot in `src/game/simulation/scoring.ts`.
+- Match-flow reducer integration in `src/game/simulation/reducer.ts`.
+- Match-flow tests in `src/game/simulation/matchFlow.test.ts`.
 
 ## Phase 5: Scoring System
 

@@ -1,5 +1,6 @@
 import type { GameAction } from "./actions";
 import { appendEvent } from "./events";
+import { finishRedraw, passRound, playCard, redrawCard } from "./matchFlow";
 import type { MatchState, PlayerId } from "./types";
 
 export function matchReducer(state: MatchState, action: GameAction): MatchState {
@@ -20,7 +21,11 @@ export function matchReducer(state: MatchState, action: GameAction): MatchState 
       return passRound(state, action.playerId);
 
     case "redraw-card":
+      return redrawCard(state, action.playerId, action.cardInstanceId);
+
     case "play-card":
+      return playCard(state, action.playerId, action.cardInstanceId, action.rowId);
+
     case "use-leader":
       return appendEvent(state, "phase.changed", {
         reason: "action-not-implemented-in-phase-3",
@@ -50,59 +55,6 @@ function transitionPhase(
     phase,
     playerId,
   });
-}
-
-function finishRedraw(state: MatchState, playerId: PlayerId): MatchState {
-  const player = state.players[playerId];
-  const nextState: MatchState = {
-    ...state,
-    players: {
-      ...state.players,
-      [playerId]: {
-        ...player,
-        hand: {
-          ...player.hand,
-          redrawComplete: true,
-        },
-      },
-    },
-  };
-
-  return appendEvent(nextState, "phase.changed", {
-    playerId,
-    redrawComplete: true,
-  });
-}
-
-function passRound(state: MatchState, playerId: PlayerId): MatchState {
-  const player = state.players[playerId];
-  const nextPassed = {
-    ...state.round.passed,
-    [playerId]: true,
-  };
-  const nextState: MatchState = {
-    ...state,
-    players: {
-      ...state.players,
-      [playerId]: {
-        ...player,
-        hasPassed: true,
-      },
-    },
-    round: {
-      ...state.round,
-      passed: nextPassed,
-      activePlayerId: getOtherPlayerId(playerId),
-    },
-  };
-
-  return appendEvent(nextState, "player.passed", {
-    playerId,
-  });
-}
-
-function getOtherPlayerId(playerId: PlayerId): PlayerId {
-  return playerId === "player" ? "opponent" : "player";
 }
 
 function assertNever(value: never): never {

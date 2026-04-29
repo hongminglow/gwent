@@ -131,6 +131,7 @@ export type RngState = {
 
 export type GameEventType =
   | "match.created"
+  | "match.ended"
   | "phase.changed"
   | "turn.changed"
   | "player.passed"
@@ -160,6 +161,7 @@ export type MatchState = {
   cards: Record<CardInstanceId, CardInstance>;
   cardDefinitions: Record<CardId, CardDefinition>;
   round: RoundState;
+  winnerId?: PlayerId;
   eventLog: GameEvent[];
   nextEventSequence: number;
   nextCardInstanceSequence: number;
