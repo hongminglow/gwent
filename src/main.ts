@@ -1,59 +1,123 @@
 import "./style.css";
 import type { CardInteractionHudState } from "./game/renderer/cardInteraction";
-import { createThreeApp } from "./game/renderer/threeApp";
-import { createMatchStore } from "./game/runtime/matchStore";
+import { createThreeApp, type ThreeApp } from "./game/renderer/threeApp";
+import { createMatchStore, type MatchStore } from "./game/runtime/matchStore";
 import type { GameAction } from "./game/simulation/actions";
 import { createMatchFromFaction } from "./game/simulation/matchFlow";
-import { createHud } from "./game/ui/hud/createHud";
+import type { FactionId } from "./game/simulation/types";
+import { createHud, type Hud } from "./game/ui/hud/createHud";
+import { createMainMenu } from "./game/ui/menu/createMainMenu";
 
-const root = document.querySelector<HTMLDivElement>("#app");
+const rootElement = document.querySelector<HTMLDivElement>("#app");
 
-if (!root) {
+if (!rootElement) {
   throw new Error("Missing #app root element.");
 }
 
-const initialState = createMatchFromFaction({
-  id: "phase-10-live-bridge",
-  seed: "phase-10-live-bridge",
-  playerFactionId: "northern-realms",
+const root = rootElement;
+
+type GameSession = {
+  hud: Hud;
+  interactionState: CardInteractionHudState;
+  store: MatchStore;
+  threeApp: ThreeApp;
+  unsubscribe: () => void;
+};
+
+let activeSession: GameSession | undefined;
+let startTimerId: number | undefined;
+
+const menu = createMainMenu(root, {
+  onStartMatch: (factionId) => {
+    if (startTimerId !== undefined) {
+      window.clearTimeout(startTimerId);
+    }
+
+    startTimerId = window.setTimeout(() => {
+      startTimerId = undefined;
+      startMatch(factionId);
+    }, 420);
+  },
 });
-const store = createMatchStore(initialState);
-const dispatchIntent = (action: GameAction) => {
-  if (threeApp.isInputBlocked()) {
+
+function startMatch(playerFactionId: FactionId) {
+  disposeSession();
+
+  const matchSeed = `${playerFactionId}-${Date.now()}`;
+  const initialState = createMatchFromFaction({
+    id: `match-${Date.now()}`,
+    playerFactionId,
+    seed: matchSeed,
+  });
+  const store = createMatchStore(initialState);
+  const session: Partial<GameSession> = {
+    interactionState: {
+      validRows: [],
+    },
+    store,
+  };
+  const dispatchIntent = (action: GameAction) => {
+    if (session.threeApp?.isInputBlocked()) {
+      return;
+    }
+
+    try {
+      store.dispatch(action);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const hud = createHud(root, initialState, {
+    onExitToMenu: showMainMenu,
+    onIntent: dispatchIntent,
+    onToggleDebugCamera: (enabled) => session.threeApp?.setDebugCamera(enabled),
+    onToggleFastAnimations: (enabled) => session.threeApp?.setFastAnimations(enabled),
+  });
+  const threeApp = createThreeApp(root, initialState, {
+    onInputBlockedChange: (blocked) => {
+      hud.update(store.getState(), blocked, session.interactionState);
+    },
+    onInteractionChange: (nextInteractionState) => {
+      session.interactionState = nextInteractionState;
+      hud.setInteraction(nextInteractionState);
+    },
+    onIntent: dispatchIntent,
+  });
+  const unsubscribe = store.subscribe((state) => {
+    threeApp.applyMatchState(state);
+    hud.update(state, threeApp.isInputBlocked(), session.interactionState);
+  }, false);
+
+  session.hud = hud;
+  session.threeApp = threeApp;
+  session.unsubscribe = unsubscribe;
+  activeSession = session as GameSession;
+  menu.hideLoading();
+  menu.hide();
+  threeApp.start();
+}
+
+function showMainMenu() {
+  disposeSession();
+  menu.show();
+}
+
+function disposeSession() {
+  if (!activeSession) {
     return;
   }
 
-  try {
-    store.dispatch(action);
-  } catch (error) {
-    console.error(error);
-  }
-};
-const hud = createHud(root, initialState, {
-  onIntent: dispatchIntent,
-});
-let interactionState: CardInteractionHudState = {
-  validRows: [],
-};
-const threeApp = createThreeApp(root, initialState, {
-  onInteractionChange: (nextInteractionState) => {
-    interactionState = nextInteractionState;
-    hud.setInteraction(nextInteractionState);
-  },
-  onIntent: dispatchIntent,
-  onInputBlockedChange: (blocked) => {
-    hud.update(store.getState(), blocked, interactionState);
-  },
-});
-const unsubscribe = store.subscribe((state) => {
-  threeApp.applyMatchState(state);
-  hud.update(state, threeApp.isInputBlocked(), interactionState);
-}, false);
-
-threeApp.start();
+  activeSession.unsubscribe();
+  activeSession.threeApp.dispose();
+  activeSession.hud.dispose();
+  activeSession = undefined;
+}
 
 window.addEventListener("beforeunload", () => {
-  unsubscribe();
-  threeApp.dispose();
-  hud.dispose();
+  if (startTimerId !== undefined) {
+    window.clearTimeout(startTimerId);
+  }
+
+  disposeSession();
+  menu.dispose();
 });

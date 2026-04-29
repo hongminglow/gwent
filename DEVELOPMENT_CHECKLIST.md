@@ -389,25 +389,33 @@ Phase 13 output:
 
 ## Phase 14: UI And HUD
 
-- [ ] Main menu.
-- [ ] Faction selection.
-- [ ] Deck preview.
-- [ ] Match loading screen.
-- [ ] Opening redraw screen.
-- [ ] In-match HUD.
-- [ ] Player and opponent score display.
-- [ ] Row score display.
-- [ ] Round gems / round win markers.
-- [ ] Hand count indicators.
-- [ ] Deck and discard counts.
-- [ ] Current turn indicator.
-- [ ] Pass button.
-- [ ] Leader ability button.
-- [ ] Card inspection panel.
-- [ ] Round result modal.
-- [ ] Match result modal.
-- [ ] Settings screen.
-- [ ] Debug overlay.
+- [x] Main menu.
+- [x] Faction selection.
+- [x] Deck preview.
+- [x] Match loading screen.
+- [x] Opening redraw screen.
+- [x] In-match HUD.
+- [x] Player and opponent score display.
+- [x] Row score display.
+- [x] Round gems / round win markers.
+- [x] Hand count indicators.
+- [x] Deck and discard counts.
+- [x] Current turn indicator.
+- [x] Pass button.
+- [x] Leader ability button.
+- [x] Card inspection panel.
+- [x] Round result modal.
+- [x] Match result modal.
+- [x] Settings screen.
+- [x] Debug overlay.
+
+Phase 14 output:
+
+- Main menu, faction choice, deck preview model, and match loading UI live in `src/game/ui/menu/`.
+- `src/main.ts` now manages disposable match sessions so the player starts from faction select and can return to menu after a match.
+- `src/game/ui/hud/createHud.ts` now owns redraw card buttons, score chips, row score panels, round win gems, leader/pass controls, result modals, settings, card inspection, and debug readouts.
+- `src/game/renderer/threeApp.ts` exposes HUD-controlled fast animation and debug camera toggles.
+- `src/style.css` now contains the responsive fantasy card-game UI theme for menu, HUD, redraw, modals, settings, and debug surfaces.
 
 ## Phase 15: Debug Tools
 

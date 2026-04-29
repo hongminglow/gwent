@@ -12,9 +12,11 @@ import { createSimulationRenderer } from "./simulationBridge";
 
 export type ThreeApp = {
   applyMatchState: (state: MatchState, options?: { animateEvents?: boolean }) => void;
-  isInputBlocked: () => boolean;
-  start: () => void;
   dispose: () => void;
+  isInputBlocked: () => boolean;
+  setDebugCamera: (enabled: boolean) => void;
+  setFastAnimations: (enabled: boolean) => void;
+  start: () => void;
 };
 
 export type ThreeAppOptions = {
@@ -158,6 +160,13 @@ export function createThreeApp(
     },
     isInputBlocked() {
       return animationQueue.isBlocking();
+    },
+    setDebugCamera(enabled) {
+      debugFlags.debugCamera = enabled;
+      cameraRig.setDebugMode(enabled);
+    },
+    setFastAnimations(enabled) {
+      debugFlags.fastAnimations = enabled;
     },
     start() {
       if (animationFrameActive) {

@@ -6,9 +6,9 @@ The goal is a faithful 1v1 Gwent-style experience: four base factions, three bat
 
 ## Project Status
 
-Current phase: Phase 13 ability-specific VFX complete.
+Current phase: Phase 14 UI and HUD complete.
 
-The repository now contains the TypeScript/Vite/Three.js scaffold, product spec, rule reference, serializable simulation core, match flow, scoring system, ability engine, curated MVP faction cards, starter decks, validation tests, deterministic AI opponent, 3D board foundation, live renderer/simulation bridge, pointer-driven card interaction, slain / slice destruction VFX, and ability-specific event VFX. Phase 14 starts the larger UI and HUD pass.
+The repository now contains the TypeScript/Vite/Three.js scaffold, product spec, rule reference, serializable simulation core, match flow, scoring system, ability engine, curated MVP faction cards, starter decks, validation tests, deterministic AI opponent, 3D board foundation, live renderer/simulation bridge, pointer-driven card interaction, slain / slice destruction VFX, ability-specific event VFX, main menu, faction selection, deck preview, opening redraw UI, in-match HUD, result modals, settings, and debug overlay. Phase 15 starts the larger debug-tools pass.
 
 ## Run Locally
 
