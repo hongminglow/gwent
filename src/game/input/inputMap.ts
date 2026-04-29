@@ -1,6 +1,6 @@
-import type { GameAction } from "./actions";
+import type { InputAction } from "./actions";
 
-export function actionFromKeyboardEvent(event: KeyboardEvent): GameAction | null {
+export function actionFromKeyboardEvent(event: KeyboardEvent): InputAction | null {
   if (event.key === "Escape") {
     return { type: "cancel-selection" };
   }

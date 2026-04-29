@@ -91,26 +91,35 @@ Rule references:
 
 ## Phase 3: Simulation Core
 
-- [ ] Define core enums and IDs:
-  - [ ] `PlayerId`
-  - [ ] `FactionId`
-  - [ ] `CardId`
-  - [ ] `RowId`
-  - [ ] `AbilityId`
-  - [ ] `CardType`
-- [ ] Define serializable `CardDefinition`.
-- [ ] Define serializable `CardInstance`.
-- [ ] Define `DeckState`.
-- [ ] Define `HandState`.
-- [ ] Define `BoardState`.
-- [ ] Define `DiscardState`.
-- [ ] Define `RoundState`.
-- [ ] Define `MatchState`.
-- [ ] Define `GameAction`.
-- [ ] Build reducer or state machine for match updates.
-- [ ] Add deterministic random seed support.
-- [ ] Add event log for renderer animations.
-- [ ] Add serialization and restore tests.
+- [x] Define core enums and IDs:
+  - [x] `PlayerId`
+  - [x] `FactionId`
+  - [x] `CardId`
+  - [x] `RowId`
+  - [x] `AbilityId`
+  - [x] `CardType`
+- [x] Define serializable `CardDefinition`.
+- [x] Define serializable `CardInstance`.
+- [x] Define `DeckState`.
+- [x] Define `HandState`.
+- [x] Define `BoardState`.
+- [x] Define `DiscardState`.
+- [x] Define `RoundState`.
+- [x] Define `MatchState`.
+- [x] Define `GameAction`.
+- [x] Build reducer or state machine for match updates.
+- [x] Add deterministic random seed support.
+- [x] Add event log for renderer animations.
+- [x] Add serialization and restore tests.
+
+Phase 3 output:
+
+- Serializable match-state model in `src/game/simulation/types.ts`.
+- Deterministic RNG in `src/game/simulation/random.ts`.
+- Reducer shell in `src/game/simulation/reducer.ts`.
+- Empty match factory in `src/game/simulation/matchState.ts`.
+- Event log helpers in `src/game/simulation/events.ts`.
+- JSON serialization helpers in `src/game/simulation/serialization.ts`.
 
 ## Phase 4: Match Flow
 
