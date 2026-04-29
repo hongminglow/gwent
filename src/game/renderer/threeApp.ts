@@ -47,7 +47,10 @@ export function createThreeApp(
   const animationQueue = createVisualAnimationQueue();
   let latestState = initialState;
   let latestInputBlocked = animationQueue.isBlocking();
-  const simulationRenderer = createSimulationRenderer(board.root, board.anchors, animationQueue);
+  const simulationRenderer = createSimulationRenderer(board.root, board.anchors, animationQueue, {
+    onAudioCue: emitRendererAudioCue,
+    onCameraFocus: (worldPosition, intensity) => cameraRig.focusAt(worldPosition, intensity),
+  });
   simulationRenderer.applySnapshot(initialState, { animateEvents: false });
   const cardInteraction = createCardInteractionController({
     board,
@@ -231,6 +234,12 @@ function addLighting(scene: THREE.Scene) {
   rowGlow.name = "BoardRowGlow";
   rowGlow.position.set(0, 2.2, 0);
   scene.add(rowGlow);
+}
+
+function emitRendererAudioCue(cue: unknown) {
+  window.dispatchEvent(new CustomEvent("oathbound:audio-cue", {
+    detail: cue,
+  }));
 }
 
 function createShell(root: HTMLElement): HTMLElement {

@@ -11,9 +11,15 @@ import type {
   PlayerId,
   RowId,
 } from "../simulation/types";
-import type { VisualAnimationQueue } from "./animationQueue";
+import type { VisualAnimation, VisualAnimationQueue } from "./animationQueue";
 import type { BoardAnchors } from "./boardScene";
 import { createCardMesh, type CardMesh } from "./cardMesh";
+import {
+  createSlainAnimationContract,
+  createSlainCardEffect,
+  type SlainAnimationContract,
+  type SlainCardEffect,
+} from "./vfx/slainEffect";
 
 export type SimulationRenderer = {
   applySnapshot: (state: MatchState, options?: { animateEvents?: boolean }) => void;
@@ -23,6 +29,19 @@ export type SimulationRenderer = {
   setInteractionState: (state: RenderInteractionState) => void;
   update: (deltaSeconds: number) => void;
   dispose: () => void;
+};
+
+export type RendererAudioCue = {
+  cardInstanceId: CardInstanceId;
+  cue: "slain-slash";
+  intensity: "major" | "normal";
+  reason: string;
+};
+
+export type SimulationRendererOptions = {
+  onAudioCue?: (cue: RendererAudioCue) => void;
+  onCameraFocus?: (worldPosition: THREE.Vector3, intensity: number) => void;
+  prefersReducedMotion?: () => boolean;
 };
 
 export type CardInspection = {
@@ -47,9 +66,16 @@ export type RenderInteractionState = {
 
 type RenderedCard = {
   card: CardMesh;
+  slainEffect?: SlainCardEffect;
   targetPosition: THREE.Vector3;
   targetRotation: THREE.Euler;
   targetScale: number;
+};
+
+type RenderedCardPose = {
+  position: THREE.Vector3;
+  rotation: THREE.Euler;
+  scale: number;
 };
 
 const ROWS = ["close", "ranged", "siege"] as const;
@@ -67,22 +93,34 @@ export function createSimulationRenderer(
   root: THREE.Group,
   anchors: BoardAnchors,
   queue: VisualAnimationQueue,
+  rendererOptions: SimulationRendererOptions = {},
 ): SimulationRenderer {
   const renderedCards = new Map<CardInstanceId, RenderedCard>();
+  const activelyAnimatedCards = new Set<CardInstanceId>();
   let lastEventSequence = Number.NEGATIVE_INFINITY;
   let latestState: MatchState | undefined;
   let interactionState: RenderInteractionState = {};
 
   return {
-    applySnapshot(state, options = {}) {
+    applySnapshot(state, applyOptions = {}) {
+      const previousPoses = snapshotRenderedCardPoses(renderedCards);
       latestState = state;
       ensureRenderedCards(root, renderedCards, state);
       syncCardTargets(root, anchors, renderedCards, state);
       applyCardInteractionState(renderedCards, interactionState);
 
-      const animateEvents = options.animateEvents ?? true;
+      const animateEvents = applyOptions.animateEvents ?? true;
       if (animateEvents) {
-        enqueueNewEvents(renderedCards, queue, state, lastEventSequence);
+        enqueueNewEvents(
+          renderedCards,
+          queue,
+          state,
+          lastEventSequence,
+          previousPoses,
+          root,
+          activelyAnimatedCards,
+          rendererOptions,
+        );
       }
 
       lastEventSequence = getLatestEventSequence(state);
@@ -97,6 +135,7 @@ export function createSimulationRenderer(
         renderedCards,
         debugFlags.fastAnimations ? 1 : Math.min(deltaSeconds * 12, 1),
         interactionState,
+        activelyAnimatedCards,
       );
     },
     getCardInstanceIdFromObject(object) {
@@ -120,6 +159,7 @@ export function createSimulationRenderer(
     },
     dispose() {
       for (const renderedCard of renderedCards.values()) {
+        renderedCard.slainEffect?.dispose();
         renderedCard.card.dispose();
         renderedCard.card.root.removeFromParent();
       }
@@ -351,12 +391,32 @@ function snapRenderedCards(renderedCards: Map<CardInstanceId, RenderedCard>) {
   }
 }
 
+function snapshotRenderedCardPoses(
+  renderedCards: Map<CardInstanceId, RenderedCard>,
+): Map<CardInstanceId, RenderedCardPose> {
+  return new Map(
+    [...renderedCards.entries()].map(([cardInstanceId, renderedCard]) => [
+      cardInstanceId,
+      {
+        position: renderedCard.card.root.position.clone(),
+        rotation: renderedCard.card.root.rotation.clone(),
+        scale: renderedCard.card.root.scale.x,
+      },
+    ]),
+  );
+}
+
 function settleRenderedCards(
   renderedCards: Map<CardInstanceId, RenderedCard>,
   alpha: number,
   interactionState: RenderInteractionState,
+  activelyAnimatedCards: Set<CardInstanceId>,
 ) {
   for (const [cardInstanceId, renderedCard] of renderedCards) {
+    if (activelyAnimatedCards.has(cardInstanceId)) {
+      continue;
+    }
+
     const targetPosition = getInteractionPosition(cardInstanceId, renderedCard, interactionState);
     const targetScale = getInteractionScale(cardInstanceId, renderedCard, interactionState);
     renderedCard.card.root.position.lerp(targetPosition, alpha);
@@ -432,12 +492,33 @@ function enqueueNewEvents(
   queue: VisualAnimationQueue,
   state: MatchState,
   lastEventSequence: number,
+  previousPoses: Map<CardInstanceId, RenderedCardPose>,
+  root: THREE.Group,
+  activelyAnimatedCards: Set<CardInstanceId>,
+  options: SimulationRendererOptions,
 ) {
   const newEvents = state.eventLog
     .filter((event) => event.sequence > lastEventSequence)
     .sort((a, b) => a.sequence - b.sequence);
 
   for (const event of newEvents) {
+    const slainContract = createSlainAnimationContract(event, state, {
+      reducedMotion: prefersReducedMotion(options),
+    });
+
+    if (slainContract) {
+      queue.enqueue(createSlainAnimation(
+        renderedCards,
+        root,
+        event,
+        slainContract,
+        previousPoses,
+        activelyAnimatedCards,
+        options,
+      ));
+      continue;
+    }
+
     queue.enqueue({
       id: event.id,
       event,
@@ -447,6 +528,135 @@ function enqueueNewEvents(
       onComplete: () => completeEvent(renderedCards, event),
     });
   }
+}
+
+function createSlainAnimation(
+  renderedCards: Map<CardInstanceId, RenderedCard>,
+  root: THREE.Group,
+  event: GameEvent,
+  contract: SlainAnimationContract,
+  previousPoses: Map<CardInstanceId, RenderedCardPose>,
+  activelyAnimatedCards: Set<CardInstanceId>,
+  options: SimulationRendererOptions,
+): VisualAnimation {
+  return {
+    id: event.id,
+    event,
+    blocking: event.blocking,
+    durationSeconds: contract.durationSeconds,
+    onStart: () => {
+      const renderedCard = renderedCards.get(contract.cardInstanceId);
+
+      if (!renderedCard) {
+        return;
+      }
+
+      const startPose = getAnimationStartPose(renderedCard, previousPoses.get(contract.cardInstanceId));
+      renderedCard.card.root.position.copy(startPose.position);
+      renderedCard.card.root.rotation.copy(startPose.rotation);
+      renderedCard.card.root.scale.setScalar(startPose.scale);
+      activelyAnimatedCards.add(contract.cardInstanceId);
+
+      if (!contract.reducedMotion) {
+        renderedCard.slainEffect?.dispose();
+        renderedCard.slainEffect = createSlainCardEffect(contract);
+        renderedCard.card.root.add(renderedCard.slainEffect.root);
+        renderedCard.slainEffect.update(0);
+      }
+
+      options.onCameraFocus?.(
+        root.localToWorld(startPose.position.clone()),
+        contract.major ? 1 : 0.72,
+      );
+      options.onAudioCue?.({
+        cardInstanceId: contract.cardInstanceId,
+        cue: "slain-slash",
+        intensity: contract.major ? "major" : "normal",
+        reason: contract.reason,
+      });
+    },
+    onUpdate: (progress) => animateSlainEvent(
+      renderedCards,
+      contract,
+      previousPoses,
+      progress,
+    ),
+    onComplete: () => completeSlainEvent(renderedCards, contract, activelyAnimatedCards),
+  };
+}
+
+function animateSlainEvent(
+  renderedCards: Map<CardInstanceId, RenderedCard>,
+  contract: SlainAnimationContract,
+  previousPoses: Map<CardInstanceId, RenderedCardPose>,
+  progress: number,
+) {
+  const renderedCard = renderedCards.get(contract.cardInstanceId);
+
+  if (!renderedCard) {
+    return;
+  }
+
+  const startPose = getAnimationStartPose(renderedCard, previousPoses.get(contract.cardInstanceId));
+
+  if (contract.reducedMotion) {
+    animateReducedMotionSlain(renderedCard, startPose, progress);
+    return;
+  }
+
+  const cutProgress = clamp01(progress / 0.72);
+  const travelProgress = clamp01((progress - 0.72) / 0.28);
+  const shake = Math.sin(progress * Math.PI * 18) * (1 - cutProgress) * 0.035;
+  const recoil = Math.sin(progress * Math.PI) * 0.2;
+
+  if (travelProgress <= 0) {
+    renderedCard.card.root.position.set(
+      startPose.position.x + shake,
+      startPose.position.y + recoil,
+      startPose.position.z,
+    );
+    renderedCard.card.root.rotation.x = startPose.rotation.x + shake * 0.12;
+    renderedCard.card.root.rotation.y = startPose.rotation.y;
+    renderedCard.card.root.rotation.z = startPose.rotation.z + Math.sin(progress * Math.PI * 6) * (1 - cutProgress) * 0.035;
+    renderedCard.card.root.scale.setScalar(startPose.scale + Math.sin(progress * Math.PI) * 0.12);
+  } else {
+    const easedTravel = easeInOutCubic(travelProgress);
+    renderedCard.card.root.position.lerpVectors(startPose.position, renderedCard.targetPosition, easedTravel);
+    lerpEuler(renderedCard.card.root.rotation, startPose.rotation, renderedCard.targetRotation, easedTravel);
+    renderedCard.card.root.scale.setScalar(THREE.MathUtils.lerp(startPose.scale * 0.9, renderedCard.targetScale, easedTravel));
+  }
+
+  renderedCard.slainEffect?.update(progress);
+}
+
+function animateReducedMotionSlain(
+  renderedCard: RenderedCard,
+  startPose: RenderedCardPose,
+  progress: number,
+) {
+  const eased = easeInOutCubic(progress);
+  renderedCard.card.root.position.lerpVectors(startPose.position, renderedCard.targetPosition, eased);
+  lerpEuler(renderedCard.card.root.rotation, startPose.rotation, renderedCard.targetRotation, eased);
+  renderedCard.card.root.scale.setScalar(renderedCard.targetScale + Math.sin(progress * Math.PI) * 0.05);
+}
+
+function completeSlainEvent(
+  renderedCards: Map<CardInstanceId, RenderedCard>,
+  contract: SlainAnimationContract,
+  activelyAnimatedCards: Set<CardInstanceId>,
+) {
+  const renderedCard = renderedCards.get(contract.cardInstanceId);
+  activelyAnimatedCards.delete(contract.cardInstanceId);
+
+  if (!renderedCard) {
+    return;
+  }
+
+  renderedCard.slainEffect?.dispose();
+  renderedCard.slainEffect = undefined;
+  renderedCard.card.root.position.copy(renderedCard.targetPosition);
+  renderedCard.card.root.rotation.copy(renderedCard.targetRotation);
+  renderedCard.card.root.scale.setScalar(renderedCard.targetScale);
 }
 
 function animateEvent(
@@ -547,6 +757,48 @@ function lastInitialEventSequence(): number {
 function getPayloadString(event: GameEvent, key: string): string | undefined {
   const value = event.payload[key];
   return typeof value === "string" ? value : undefined;
+}
+
+function getAnimationStartPose(
+  renderedCard: RenderedCard,
+  previousPose?: RenderedCardPose,
+): RenderedCardPose {
+  return previousPose ?? {
+    position: renderedCard.card.root.position.clone(),
+    rotation: renderedCard.card.root.rotation.clone(),
+    scale: renderedCard.card.root.scale.x,
+  };
+}
+
+function lerpEuler(
+  target: THREE.Euler,
+  from: THREE.Euler,
+  to: THREE.Euler,
+  alpha: number,
+) {
+  target.x = THREE.MathUtils.lerp(from.x, to.x, alpha);
+  target.y = THREE.MathUtils.lerp(from.y, to.y, alpha);
+  target.z = THREE.MathUtils.lerp(from.z, to.z, alpha);
+}
+
+function prefersReducedMotion(options: SimulationRendererOptions): boolean {
+  if (options.prefersReducedMotion) {
+    return options.prefersReducedMotion();
+  }
+
+  return typeof window !== "undefined"
+    && typeof window.matchMedia === "function"
+    && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function clamp01(value: number): number {
+  return Math.max(0, Math.min(1, value));
+}
+
+function easeInOutCubic(progress: number): number {
+  return progress < 0.5
+    ? 4 * progress ** 3
+    : 1 - (-2 * progress + 2) ** 3 / 2;
 }
 
 function markInteractiveCard(root: THREE.Object3D, cardInstanceId: CardInstanceId) {

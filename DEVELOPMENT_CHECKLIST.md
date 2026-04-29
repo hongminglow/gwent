@@ -334,22 +334,32 @@ Phase 11 output:
 
 ## Phase 12: Slain / Slice VFX
 
-- [ ] Define destruction event type from simulation.
-- [ ] Add renderer animation contract for destroyed card IDs.
-- [ ] Create blade slash trail effect.
-- [ ] Add card cut line shader or decal.
-- [ ] Add impact sparks.
-- [ ] Add fragment burst or split-card mesh.
-- [ ] Add ember/magic particle variant.
-- [ ] Add camera focus during slain effect.
-- [ ] Add slow-motion timing option for major cards.
-- [ ] Add audio hook for slash impact.
-- [ ] Move card to discard after slain effect completes.
-- [ ] Ensure multiple destroyed cards can play sequentially or in grouped waves.
-- [ ] Add reduced-motion fallback.
-- [ ] Verify slain effect for Scorch.
-- [ ] Verify slain effect for row Scorch variants.
-- [ ] Verify slain effect for any future destroy ability.
+- [x] Define destruction event type from simulation.
+- [x] Add renderer animation contract for destroyed card IDs.
+- [x] Create blade slash trail effect.
+- [x] Add card cut line shader or decal.
+- [x] Add impact sparks.
+- [x] Add fragment burst or split-card mesh.
+- [x] Add ember/magic particle variant.
+- [x] Add camera focus during slain effect.
+- [x] Add slow-motion timing option for major cards.
+- [x] Add audio hook for slash impact.
+- [x] Move card to discard after slain effect completes.
+- [x] Ensure multiple destroyed cards can play sequentially or in grouped waves.
+- [x] Add reduced-motion fallback.
+- [x] Verify slain effect for Scorch.
+- [x] Verify slain effect for row Scorch variants.
+- [x] Verify slain effect for any future destroy ability.
+
+Phase 12 output:
+
+- Slain / slice VFX primitives and renderer event contract live in `src/game/renderer/vfx/slainEffect.ts`.
+- `card.destroyed` events now use a dedicated blocking animation path in `src/game/renderer/simulationBridge.ts`.
+- Destroyed cards stay at their pre-destruction board pose during the slash, then travel to discard on completion.
+- Slain events request a short camera focus pulse through `src/game/renderer/cameraRig.ts`.
+- Slain events emit the `oathbound:audio-cue` browser event with a `slain-slash` cue payload.
+- Reduced-motion users get a short discard transition without the slash particle burst.
+- Contract and VFX construction tests live in `src/game/renderer/vfx/slainEffect.test.ts`.
 
 ## Phase 13: Other VFX
 

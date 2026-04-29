@@ -4,6 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 export type CameraRig = {
   root: THREE.Group;
   camera: THREE.PerspectiveCamera;
+  focusAt: (worldPosition: THREE.Vector3, intensity?: number, durationSeconds?: number) => void;
   isDebugMode: () => boolean;
   setDebugMode: (enabled: boolean) => void;
   toggleDebugMode: () => boolean;
@@ -38,9 +39,16 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
 
   let debugMode = false;
   let elapsed = 0;
+  let focusPulse: {
+    durationSeconds: number;
+    elapsedSeconds: number;
+    intensity: number;
+    target: THREE.Vector3;
+  } | undefined;
   const setDebugMode = (enabled: boolean) => {
     debugMode = enabled;
     controls.enabled = enabled;
+    focusPulse = undefined;
 
     if (enabled) {
       camera.position.copy(DEBUG_CAMERA_POSITION);
@@ -55,6 +63,18 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
   return {
     root,
     camera,
+    focusAt(worldPosition, intensity = 0.8, durationSeconds = 0.72) {
+      if (debugMode) {
+        return;
+      }
+
+      focusPulse = {
+        durationSeconds,
+        elapsedSeconds: 0,
+        intensity,
+        target: worldPosition.clone(),
+      };
+    },
     isDebugMode() {
       return debugMode;
     },
@@ -76,11 +96,28 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
       }
 
       const breathe = Math.sin(elapsed * 0.35) * 0.08;
-      camera.position.lerp(
-        new THREE.Vector3(DEFAULT_CAMERA_POSITION.x, DEFAULT_CAMERA_POSITION.y + breathe, DEFAULT_CAMERA_POSITION.z),
-        0.035,
+      const cameraTargetPosition = new THREE.Vector3(
+        DEFAULT_CAMERA_POSITION.x,
+        DEFAULT_CAMERA_POSITION.y + breathe,
+        DEFAULT_CAMERA_POSITION.z,
       );
-      camera.lookAt(CAMERA_TARGET);
+      const lookTarget = CAMERA_TARGET.clone();
+
+      if (focusPulse) {
+        focusPulse.elapsedSeconds += deltaSeconds;
+        const progress = Math.min(focusPulse.elapsedSeconds / Math.max(focusPulse.durationSeconds, 0.001), 1);
+        const pulse = Math.sin(progress * Math.PI) * focusPulse.intensity;
+        lookTarget.lerp(focusPulse.target, Math.min(pulse * 0.42, 0.48));
+        cameraTargetPosition.x += focusPulse.target.x * pulse * 0.035;
+        cameraTargetPosition.z -= pulse * 0.28;
+
+        if (progress >= 1) {
+          focusPulse = undefined;
+        }
+      }
+
+      camera.position.lerp(cameraTargetPosition, 0.04);
+      camera.lookAt(lookTarget);
     },
     dispose() {
       controls.dispose();
