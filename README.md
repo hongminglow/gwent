@@ -6,9 +6,9 @@ The goal is a faithful 1v1 Gwent-style experience: four base factions, three bat
 
 ## Project Status
 
-Current phase: Phase 18 polish complete. Next phase: Phase 19 packaging.
+Current phase: Phase 19 packaging complete. First playable is ready for commit and milestone tagging.
 
-The repository now contains the TypeScript/Vite/Three.js scaffold, product spec, rule reference, serializable simulation core, match flow, scoring system, ability engine, curated MVP faction cards, starter decks, validation tests, deterministic AI opponent, 3D board foundation, live renderer/simulation bridge, pointer-driven card interaction, slain / slice destruction VFX, ability-specific event VFX, main menu, faction selection, deck preview, opening redraw UI, in-match HUD, result modals, settings, debug overlay, a full debug tools drawer, expanded simulation/integration coverage, browser smoke screenshots, a procedural Web Audio cue system, volume/mute controls, polished board/card/camera/hand presentation, loading/error fallback UI, responsive HUD refinements, clean favicon handling, and a recorded performance finding for the later optimization pass.
+The repository now contains the TypeScript/Vite/Three.js scaffold, product spec, rule reference, serializable simulation core, match flow, scoring system, ability engine, curated MVP faction cards, starter decks, validation tests, deterministic AI opponent, 3D board foundation, live renderer/simulation bridge, pointer-driven card interaction, slain / slice destruction VFX, ability-specific event VFX, main menu, faction selection, deck preview, opening redraw UI, in-match HUD, result modals, settings, debug overlay, a full debug tools drawer, expanded simulation/integration coverage, browser smoke screenshots, a procedural Web Audio cue system, volume/mute controls, polished board/card/camera/hand presentation, loading/error fallback UI, responsive HUD refinements, clean favicon handling, packaged production output, precompressed static assets, bundle reporting, and a recorded first-playable performance sample.
 
 ## Run Locally
 
@@ -30,6 +30,26 @@ Build the project:
 npm run build
 ```
 
+This writes Vite production output to `dist/` and creates `.gz` plus `.br` compressed copies for static hosting.
+
+Preview the production build locally:
+
+```bash
+npm run preview
+```
+
+Analyze the built bundle:
+
+```bash
+npm run analyze:bundle
+```
+
+Run the full package verification suite:
+
+```bash
+npm run package:verify
+```
+
 Run tests:
 
 ```bash
@@ -47,6 +67,31 @@ Run linting:
 ```bash
 npm run lint
 ```
+
+## Packaging Notes
+
+Production builds split Three.js into a dedicated vendor chunk. Generated card textures are smaller and cached by card label/type/accent/power, card meshes share static geometries, and production rendering uses lower shadow/pixel-ratio settings than development.
+
+Latest package report:
+
+| Metric | Size |
+| --- | ---: |
+| Raw dist payload | 626.00 kB |
+| Gzip payload | 163.22 kB |
+| Brotli payload | 136.26 kB |
+
+Suggested first-playable tag after committing this packaging snapshot:
+
+```bash
+git tag -a v0.1.0-first-playable -m "Oathbound first playable"
+```
+
+## Known Limitations
+
+- Headless Edge performance in this workspace is still below target: latest production preview sample averaged 15.96 FPS with p95 frame time 66.8 ms. The next optimization pass should reduce card draw calls further and consider merging static card submeshes.
+- Card art is generated placeholder/fallback art, not final illustrated card assets.
+- No deck builder, collection progression, save/load, replay system, online multiplayer, Skellige faction, or post-MVP ability set yet.
+- This is a private, non-commercial fan/developer hobby project that intentionally follows Witcher 3 Gwent-style rules and naming.
 
 ## Credits
 

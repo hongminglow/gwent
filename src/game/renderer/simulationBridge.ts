@@ -325,7 +325,7 @@ function syncPileTargets(
       return;
     }
 
-    const stackIndex = Math.min(index, 7);
+    const stackIndex = Math.min(index, 3);
     setRenderedCardTarget(renderedCard, {
       position: new THREE.Vector3(
         anchorPosition.x + stackIndex * 0.012,
@@ -334,7 +334,7 @@ function syncPileTargets(
       ),
       rotation: new THREE.Euler(CARD_ROTATION_X, 0, playerId === "player" ? 0 : Math.PI),
       scale: 0.95,
-      visible: index < 8 || pile === "discard",
+      visible: index < 4,
     });
     assignedCards.add(cardInstanceId);
   });

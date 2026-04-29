@@ -30,6 +30,29 @@ const CARD_WIDTH = 1.42;
 const CARD_HEIGHT = 2.05;
 const CARD_THICKNESS = 0.065;
 
+type TextureCacheEntry = {
+  refs: number;
+  texture: THREE.CanvasTexture;
+};
+
+type TextureHandle = {
+  release: () => void;
+  texture: THREE.Texture;
+};
+
+const CARD_BODY_GEOMETRY = new THREE.BoxGeometry(CARD_WIDTH, CARD_HEIGHT, CARD_THICKNESS);
+const CARD_FACE_GEOMETRY = new THREE.PlaneGeometry(1.26, 1.84);
+const CARD_FRAME_HORIZONTAL_GEOMETRY = new THREE.PlaneGeometry(1.18, 0.018);
+const CARD_FRAME_VERTICAL_GEOMETRY = new THREE.PlaneGeometry(0.018, 1.72);
+const CARD_HIGHLIGHT_GEOMETRY = new THREE.PlaneGeometry(1.38, 1.96);
+const CARD_POWER_GEM_GEOMETRY = new THREE.CircleGeometry(0.18, 28);
+const CARD_POWER_LABEL_GEOMETRY = new THREE.PlaneGeometry(0.31, 0.2);
+const CARD_CAPTION_GEOMETRY = new THREE.PlaneGeometry(1.12, 0.32);
+
+const faceTextureCache = new Map<string, TextureCacheEntry>();
+const captionTextureCache = new Map<string, TextureCacheEntry>();
+const powerTextureCache = new Map<string, TextureCacheEntry>();
+
 export function createCardMesh(options: CardMeshOptions): CardMesh {
   const root = new THREE.Group();
   const position = options.position ?? new THREE.Vector3();
@@ -37,34 +60,37 @@ export function createCardMesh(options: CardMeshOptions): CardMesh {
   root.position.copy(position);
   root.rotation.set(-Math.PI / 2 + 0.06, options.rotationY ?? 0, 0);
 
-  const faceTexture = options.frontTexture ?? createFaceTexture(options.label, options.accentColor, options.typeLabel);
-  const captionTexture = createCaptionTexture(options.label, options.typeLabel);
-  const powerTexture = createPowerTexture(options.powerLabel ?? "");
+  const faceTexture = options.frontTexture
+    ? createExternalTextureHandle(options.frontTexture)
+    : acquireFaceTexture(options.label, options.accentColor, options.typeLabel);
+  const captionTexture = acquireCaptionTexture(options.label, options.typeLabel);
+  const powerTexture = acquirePowerTexture(options.powerLabel ?? "");
   const materials = createCardMaterialSet({
     accentColor: options.accentColor,
     faceColor: options.faceColor,
-    captionTexture,
-    frontTexture: faceTexture,
+    captionTexture: captionTexture.texture,
+    frontTexture: faceTexture.texture,
   });
 
   const body = new THREE.Mesh(
-    new THREE.BoxGeometry(CARD_WIDTH, CARD_HEIGHT, CARD_THICKNESS),
+    CARD_BODY_GEOMETRY,
     materials.body,
   );
   body.name = "CardBody";
-  body.castShadow = true;
+  body.castShadow = import.meta.env.DEV;
   body.receiveShadow = true;
   root.add(body);
 
   const face = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.26, 1.84),
+    CARD_FACE_GEOMETRY,
     materials.face,
   );
   face.name = "CardFace";
   face.position.z = 0.034;
   root.add(face);
 
-  const frame = createCardFrame(options.accentColor);
+  const frameMaterial = createCardFrameMaterial(options.accentColor);
+  const frame = createCardFrame(frameMaterial);
   frame.position.z = 0.038;
   root.add(frame);
 
@@ -76,7 +102,7 @@ export function createCardMesh(options: CardMeshOptions): CardMesh {
     transparent: true,
   });
   const highlight = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.38, 1.96),
+    CARD_HIGHLIGHT_GEOMETRY,
     highlightMaterial,
   );
   highlight.name = "CardInteractionHighlight";
@@ -85,26 +111,27 @@ export function createCardMesh(options: CardMeshOptions): CardMesh {
   root.add(highlight);
 
   const gem = new THREE.Mesh(
-    new THREE.CircleGeometry(0.18, 36),
+    CARD_POWER_GEM_GEOMETRY,
     materials.accent,
   );
   gem.name = "CardPowerGem";
   gem.position.set(0, 0.68, 0.037);
   root.add(gem);
 
+  const powerMaterial = new THREE.MeshBasicMaterial({
+    map: powerTexture.texture,
+    transparent: true,
+  });
   const power = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.31, 0.2),
-    new THREE.MeshBasicMaterial({
-      map: powerTexture,
-      transparent: true,
-    }),
+    CARD_POWER_LABEL_GEOMETRY,
+    powerMaterial,
   );
   power.name = "CardPowerLabel";
   power.position.set(0, 0.68, 0.041);
   root.add(power);
 
   const caption = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.12, 0.32),
+    CARD_CAPTION_GEOMETRY,
     materials.caption,
   );
   caption.name = "CardCaption";
@@ -130,36 +157,32 @@ export function createCardMesh(options: CardMeshOptions): CardMesh {
       highlightMaterial.color.set(state.rejected ? "#e55d4f" : state.dragging ? "#f0d290" : "#f8e6bb");
     },
     dispose() {
-      if (!options.frontTexture) {
-        faceTexture.dispose();
-      }
-      captionTexture.dispose();
-      powerTexture.dispose();
+      faceTexture.release();
+      captionTexture.release();
+      powerTexture.release();
       materials.dispose();
-      root.traverse((object) => {
-        if (object instanceof THREE.Mesh) {
-          object.geometry.dispose();
-          disposeMeshMaterial(object.material);
-        }
-      });
+      frameMaterial.dispose();
+      highlightMaterial.dispose();
+      powerMaterial.dispose();
     },
   };
 }
 
-function createCardFrame(accentColor: string): THREE.Group {
-  const frame = new THREE.Group();
-  frame.name = "CardFrame";
-  const material = new THREE.MeshBasicMaterial({
+function createCardFrameMaterial(accentColor: string): THREE.MeshBasicMaterial {
+  return new THREE.MeshBasicMaterial({
     color: accentColor,
     transparent: true,
     opacity: 0.82,
   });
-  const horizontalGeometry = new THREE.PlaneGeometry(1.18, 0.018);
-  const verticalGeometry = new THREE.PlaneGeometry(0.018, 1.72);
-  const top = new THREE.Mesh(horizontalGeometry, material);
-  const bottom = new THREE.Mesh(horizontalGeometry.clone(), material);
-  const left = new THREE.Mesh(verticalGeometry, material);
-  const right = new THREE.Mesh(verticalGeometry.clone(), material);
+}
+
+function createCardFrame(material: THREE.MeshBasicMaterial): THREE.Group {
+  const frame = new THREE.Group();
+  frame.name = "CardFrame";
+  const top = new THREE.Mesh(CARD_FRAME_HORIZONTAL_GEOMETRY, material);
+  const bottom = new THREE.Mesh(CARD_FRAME_HORIZONTAL_GEOMETRY, material);
+  const left = new THREE.Mesh(CARD_FRAME_VERTICAL_GEOMETRY, material);
+  const right = new THREE.Mesh(CARD_FRAME_VERTICAL_GEOMETRY, material);
 
   top.position.y = 0.86;
   bottom.position.y = -0.86;
@@ -170,17 +193,92 @@ function createCardFrame(accentColor: string): THREE.Group {
   return frame;
 }
 
+function createExternalTextureHandle(texture: THREE.Texture): TextureHandle {
+  return {
+    texture,
+    release() {
+      return undefined;
+    },
+  };
+}
+
+function acquireFaceTexture(label: string, accentColor: string, typeLabel?: string): TextureHandle {
+  return acquireCachedTexture(
+    faceTextureCache,
+    `${label}|${accentColor}|${typeLabel ?? ""}`,
+    () => createFaceTexture(label, accentColor, typeLabel),
+  );
+}
+
+function acquireCaptionTexture(label: string, typeLabel?: string): TextureHandle {
+  return acquireCachedTexture(
+    captionTextureCache,
+    `${label}|${typeLabel ?? ""}`,
+    () => createCaptionTexture(label, typeLabel),
+  );
+}
+
+function acquirePowerTexture(powerLabel: string): TextureHandle {
+  return acquireCachedTexture(
+    powerTextureCache,
+    powerLabel,
+    () => createPowerTexture(powerLabel),
+  );
+}
+
+function acquireCachedTexture(
+  cache: Map<string, TextureCacheEntry>,
+  key: string,
+  createTexture: () => THREE.CanvasTexture,
+): TextureHandle {
+  const cached = cache.get(key);
+
+  if (cached) {
+    cached.refs += 1;
+    return {
+      texture: cached.texture,
+      release: () => releaseCachedTexture(cache, key),
+    };
+  }
+
+  const texture = createTexture();
+  cache.set(key, {
+    refs: 1,
+    texture,
+  });
+
+  return {
+    texture,
+    release: () => releaseCachedTexture(cache, key),
+  };
+}
+
+function releaseCachedTexture(cache: Map<string, TextureCacheEntry>, key: string) {
+  const cached = cache.get(key);
+
+  if (!cached) {
+    return;
+  }
+
+  cached.refs -= 1;
+
+  if (cached.refs <= 0) {
+    cached.texture.dispose();
+    cache.delete(key);
+  }
+}
+
 function createCaptionTexture(label: string, typeLabel?: string): THREE.CanvasTexture {
   const texture = new THREE.CanvasTexture(createCaptionCanvas(label, typeLabel));
   texture.colorSpace = THREE.SRGBColorSpace;
-  texture.anisotropy = 4;
+  texture.anisotropy = 2;
   return texture;
 }
 
 function createCaptionCanvas(label: string, typeLabel?: string): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
-  canvas.width = 512;
-  canvas.height = 128;
+  canvas.width = 384;
+  canvas.height = 96;
 
   const context = canvas.getContext("2d");
 
@@ -190,21 +288,21 @@ function createCaptionCanvas(label: string, typeLabel?: string): HTMLCanvasEleme
 
   context.clearRect(0, 0, canvas.width, canvas.height);
   context.fillStyle = "rgba(10, 8, 6, 0.9)";
-  roundRect(context, 18, 16, 476, 96, 18);
+  roundRect(context, 12, 12, 360, 72, 14);
   context.fill();
   context.strokeStyle = "rgba(247, 239, 225, 0.16)";
-  context.lineWidth = 3;
+  context.lineWidth = 2;
   context.stroke();
   context.fillStyle = "#f7efe1";
-  context.font = "800 31px system-ui, sans-serif";
+  context.font = "800 23px system-ui, sans-serif";
   context.textAlign = "center";
   context.textBaseline = "alphabetic";
-  context.fillText(label, canvas.width / 2, typeLabel ? 58 : 75, 432);
+  context.fillText(label, canvas.width / 2, typeLabel ? 44 : 56, 324);
 
   if (typeLabel) {
     context.fillStyle = "rgba(242, 207, 123, 0.84)";
-    context.font = "700 18px system-ui, sans-serif";
-    context.fillText(typeLabel, canvas.width / 2, 87, 420);
+    context.font = "700 14px system-ui, sans-serif";
+    context.fillText(typeLabel, canvas.width / 2, 66, 316);
   }
 
   return canvas;
@@ -212,8 +310,8 @@ function createCaptionCanvas(label: string, typeLabel?: string): HTMLCanvasEleme
 
 function createFaceTexture(label: string, accentColor: string, typeLabel?: string): THREE.CanvasTexture {
   const canvas = document.createElement("canvas");
-  canvas.width = 512;
-  canvas.height = 768;
+  canvas.width = 384;
+  canvas.height = 576;
   const context = canvas.getContext("2d");
 
   if (!context) {
@@ -228,42 +326,42 @@ function createFaceTexture(label: string, accentColor: string, typeLabel?: strin
   context.fillRect(0, 0, canvas.width, canvas.height);
 
   context.strokeStyle = accentColor;
-  context.lineWidth = 12;
-  roundRect(context, 34, 32, 444, 704, 28);
+  context.lineWidth = 9;
+  roundRect(context, 26, 24, 332, 528, 22);
   context.stroke();
 
   context.globalAlpha = 0.22;
   context.fillStyle = accentColor;
   for (let index = 0; index < 9; index += 1) {
-    const y = 108 + index * 64;
+    const y = 80 + index * 48;
     context.beginPath();
-    context.ellipse(256, y, 150 - index * 7, 26, 0.18, 0, Math.PI * 2);
+    context.ellipse(192, y, 112 - index * 5, 20, 0.18, 0, Math.PI * 2);
     context.fill();
   }
   context.globalAlpha = 1;
 
   context.fillStyle = "rgba(247, 239, 225, 0.86)";
-  context.font = "800 46px system-ui, sans-serif";
+  context.font = "800 34px system-ui, sans-serif";
   context.textAlign = "center";
   context.textBaseline = "middle";
-  drawWrappedText(context, label, 256, 334, 370, 52, 3);
+  drawWrappedText(context, label, 192, 250, 276, 39, 3);
 
   if (typeLabel) {
     context.fillStyle = "rgba(242, 207, 123, 0.84)";
-    context.font = "700 26px system-ui, sans-serif";
-    context.fillText(typeLabel, 256, 510, 380);
+    context.font = "700 20px system-ui, sans-serif";
+    context.fillText(typeLabel, 192, 382, 285);
   }
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
-  texture.anisotropy = 8;
+  texture.anisotropy = 4;
   return texture;
 }
 
 function createPowerTexture(powerLabel: string): THREE.CanvasTexture {
   const canvas = document.createElement("canvas");
-  canvas.width = 160;
-  canvas.height = 112;
+  canvas.width = 128;
+  canvas.height = 90;
   const context = canvas.getContext("2d");
 
   if (!context) {
@@ -273,17 +371,17 @@ function createPowerTexture(powerLabel: string): THREE.CanvasTexture {
   context.clearRect(0, 0, canvas.width, canvas.height);
   if (powerLabel) {
     context.fillStyle = "#fff8df";
-    context.font = "900 62px system-ui, sans-serif";
+    context.font = "900 50px system-ui, sans-serif";
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.shadowColor = "rgba(0, 0, 0, 0.75)";
-    context.shadowBlur = 10;
-    context.fillText(powerLabel, canvas.width / 2, canvas.height / 2 + 4, 130);
+    context.shadowBlur = 8;
+    context.fillText(powerLabel, canvas.width / 2, canvas.height / 2 + 3, 104);
   }
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
-  texture.anisotropy = 4;
+  texture.anisotropy = 2;
   return texture;
 }
 
@@ -345,13 +443,4 @@ function roundRect(
   context.lineTo(x, y + radius);
   context.quadraticCurveTo(x, y, x + radius, y);
   context.closePath();
-}
-
-function disposeMeshMaterial(material: THREE.Material | THREE.Material[]) {
-  if (Array.isArray(material)) {
-    material.forEach(disposeMeshMaterial);
-    return;
-  }
-
-  material.dispose();
 }

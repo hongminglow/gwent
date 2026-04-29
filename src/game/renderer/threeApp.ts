@@ -239,12 +239,13 @@ function createScene(): THREE.Scene {
 }
 
 function createRenderer(): THREE.WebGLRenderer {
+  const maxPixelRatio = import.meta.env.PROD ? 1.5 : 2;
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
     powerPreference: "high-performance",
     preserveDrawingBuffer: import.meta.env.DEV,
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxPixelRatio));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -265,7 +266,8 @@ function addLighting(scene: THREE.Scene) {
   keyLight.name = "KeyLight";
   keyLight.position.set(-4.2, 9.4, 6.8);
   keyLight.castShadow = true;
-  keyLight.shadow.mapSize.set(2048, 2048);
+  const shadowMapSize = import.meta.env.PROD ? 1024 : 2048;
+  keyLight.shadow.mapSize.set(shadowMapSize, shadowMapSize);
   keyLight.shadow.camera.near = 1;
   keyLight.shadow.camera.far = 28;
   keyLight.shadow.camera.left = -9;

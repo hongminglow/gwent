@@ -527,15 +527,29 @@ Phase 18 output:
 
 ## Phase 19: Packaging
 
-- [ ] Production build.
-- [ ] Asset compression.
-- [ ] Texture optimization.
-- [ ] Bundle analysis.
-- [ ] Runtime performance pass.
-- [ ] Static hosting verification.
-- [ ] Document run/build commands.
-- [ ] Document known limitations.
-- [ ] Tag first playable milestone.
+- [x] Production build.
+- [x] Asset compression.
+- [x] Texture optimization.
+- [x] Bundle analysis.
+- [x] Runtime performance pass.
+- [x] Static hosting verification.
+- [x] Document run/build commands.
+- [x] Document known limitations.
+- [x] Prepare first playable milestone tag.
+
+Phase 19 output:
+
+- Vite production output now splits Three.js into a dedicated `three` vendor chunk, removing the previous single oversized application chunk warning.
+- `npm run build` now runs TypeScript, Vite production build, and gzip/Brotli dist precompression.
+- `npm run analyze:bundle` reports raw, gzip, and Brotli sizes for the built `dist` files.
+- Current production bundle report: total raw 626.00 kB, gzip 163.22 kB, Brotli 136.26 kB.
+- Generated card face, caption, and power textures are smaller and reference-count cached across duplicate rendered cards.
+- Card meshes now share static geometries instead of allocating new geometry per card instance.
+- Production rendering caps pixel ratio at 1.5, uses a smaller shadow map, disables per-card shadow casting, and renders only the top four visible deck/discard pile cards.
+- Static hosting verification passed through `vite preview` on port 4173: first load, faction start, redraw completion, and Playing phase all worked with no console messages and no network errors.
+- Browser QA screenshot: `.codex/phase19-preview-playing2.png`.
+- Headless runtime sample improved from the earlier Phase 16 finding of about 8.15 FPS to 15.96 FPS average, with p95 frame time 66.8 ms. This remains below a 30/60 FPS target and is documented as a known limitation for the next optimization pass.
+- First playable milestone tag is prepared as `v0.1.0-first-playable`; create it after committing this packaging snapshot.
 
 ## Phase 20: Post-MVP
 
