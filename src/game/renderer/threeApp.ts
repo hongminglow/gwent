@@ -1,17 +1,31 @@
 import * as THREE from "three";
 import { debugFlags } from "../diagnostics/debugFlags";
 import { actionFromKeyboardEvent } from "../input/inputMap";
-import type { MatchPreviewState } from "../simulation/types";
+import type { GameAction } from "../simulation/actions";
+import type { MatchState } from "../simulation/types";
+import { createVisualAnimationQueue } from "./animationQueue";
 import { createBoardScene } from "./boardScene";
 import { createCameraRig } from "./cameraRig";
 import { createGameTextureLoader } from "./loaders/textureLoader";
+import { createSimulationRenderer } from "./simulationBridge";
 
 export type ThreeApp = {
+  applyMatchState: (state: MatchState, options?: { animateEvents?: boolean }) => void;
+  isInputBlocked: () => boolean;
   start: () => void;
   dispose: () => void;
 };
 
-export function createThreeApp(root: HTMLElement, state: MatchPreviewState): ThreeApp {
+export type ThreeAppOptions = {
+  onIntent?: (action: GameAction) => void;
+  onInputBlockedChange?: (blocked: boolean) => void;
+};
+
+export function createThreeApp(
+  root: HTMLElement,
+  initialState: MatchState,
+  options: ThreeAppOptions = {},
+): ThreeApp {
   const shell = root.querySelector<HTMLElement>(".app-shell") ?? createShell(root);
   const sceneLayer = document.createElement("div");
   sceneLayer.className = "scene-layer";
@@ -26,12 +40,17 @@ export function createThreeApp(root: HTMLElement, state: MatchPreviewState): Thr
   cameraRig.setDebugMode(debugFlags.debugCamera);
   scene.add(cameraRig.root);
 
-  const board = createBoardScene(state);
+  const board = createBoardScene();
   scene.add(board.root);
+  const animationQueue = createVisualAnimationQueue();
+  const simulationRenderer = createSimulationRenderer(board.root, board.anchors, animationQueue);
+  simulationRenderer.applySnapshot(initialState, { animateEvents: false });
   addLighting(scene);
 
   const clock = new THREE.Clock();
   let animationFrameActive = false;
+  let latestState = initialState;
+  let latestInputBlocked = animationQueue.isBlocking();
 
   const resize = () => {
     const width = sceneLayer.clientWidth || window.innerWidth;
@@ -46,18 +65,55 @@ export function createThreeApp(root: HTMLElement, state: MatchPreviewState): Thr
     const delta = clock.getDelta();
     cameraRig.update(delta);
     board.update(delta);
+    simulationRenderer.update(delta);
+    const inputBlocked = animationQueue.isBlocking();
+
+    if (inputBlocked !== latestInputBlocked) {
+      latestInputBlocked = inputBlocked;
+      options.onInputBlockedChange?.(inputBlocked);
+    }
+
     renderer.render(scene, cameraRig.camera);
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
     const action = actionFromKeyboardEvent(event);
 
-    if (action?.type !== "toggle-debug") {
+    if (!action) {
       return;
     }
 
-    event.preventDefault();
-    debugFlags.debugCamera = cameraRig.toggleDebugMode();
+    if (action.type === "toggle-debug") {
+      event.preventDefault();
+      debugFlags.debugCamera = cameraRig.toggleDebugMode();
+      return;
+    }
+
+    if (action.type === "toggle-fast-animations") {
+      event.preventDefault();
+      debugFlags.fastAnimations = !debugFlags.fastAnimations;
+      return;
+    }
+
+    if (!options.onIntent || animationQueue.isBlocking()) {
+      return;
+    }
+
+    if (action.type === "pass-round" && latestState.phase === "playing") {
+      event.preventDefault();
+      options.onIntent({
+        type: "pass-round",
+        playerId: latestState.round.activePlayerId,
+      });
+    }
+
+    if (action.type === "use-leader" && latestState.phase === "playing") {
+      event.preventDefault();
+      options.onIntent({
+        type: "use-leader",
+        playerId: latestState.round.activePlayerId,
+      });
+    }
   };
   const onContextLost = (event: Event) => {
     event.preventDefault();
@@ -75,6 +131,13 @@ export function createThreeApp(root: HTMLElement, state: MatchPreviewState): Thr
   resize();
 
   return {
+    applyMatchState(state, applyOptions = {}) {
+      latestState = state;
+      simulationRenderer.applySnapshot(state, applyOptions);
+    },
+    isInputBlocked() {
+      return animationQueue.isBlocking();
+    },
     start() {
       if (animationFrameActive) {
         return;
@@ -92,6 +155,7 @@ export function createThreeApp(root: HTMLElement, state: MatchPreviewState): Thr
       renderer.domElement.removeEventListener("webglcontextrestored", onContextRestored);
       resizeObserver.disconnect();
       cameraRig.dispose();
+      simulationRenderer.dispose();
       board.dispose();
       textureLoader.dispose();
       renderer.dispose();

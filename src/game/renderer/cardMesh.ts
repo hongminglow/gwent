@@ -81,6 +81,7 @@ export function createCardMesh(options: CardMeshOptions): CardMesh {
       root.traverse((object) => {
         if (object instanceof THREE.Mesh) {
           object.geometry.dispose();
+          disposeMeshMaterial(object.material);
         }
       });
     },
@@ -161,4 +162,13 @@ function roundRect(
   context.lineTo(x, y + radius);
   context.quadraticCurveTo(x, y, x + radius, y);
   context.closePath();
+}
+
+function disposeMeshMaterial(material: THREE.Material | THREE.Material[]) {
+  if (Array.isArray(material)) {
+    material.forEach(disposeMeshMaterial);
+    return;
+  }
+
+  material.dispose();
 }

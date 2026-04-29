@@ -287,15 +287,25 @@ Phase 9 output:
 
 ## Phase 10: Renderer And Simulation Bridge
 
-- [ ] Subscribe renderer to simulation state snapshots.
-- [ ] Convert simulation card state into card meshes.
-- [ ] Convert simulation row state into board placement.
-- [ ] Play event-log animations in order.
-- [ ] Block player input while blocking animations play.
-- [ ] Emit player intents from renderer/UI.
-- [ ] Keep renderer objects out of simulation state.
-- [ ] Add animation queue.
-- [ ] Add skipped/fast animation mode for testing.
+- [x] Subscribe renderer to simulation state snapshots.
+- [x] Convert simulation card state into card meshes.
+- [x] Convert simulation row state into board placement.
+- [x] Play event-log animations in order.
+- [x] Block player input while blocking animations play.
+- [x] Emit player intents from renderer/UI.
+- [x] Keep renderer objects out of simulation state.
+- [x] Add animation queue.
+- [x] Add skipped/fast animation mode for testing.
+
+Phase 10 output:
+
+- Match-state subscription and reducer dispatch live in `src/game/runtime/matchStore.ts`.
+- The app now starts a real match from `src/main.ts` and routes HUD/keyboard intents through the reducer.
+- Simulation snapshot to Three.js object mapping lives in `src/game/renderer/simulationBridge.ts`.
+- Event-log animation sequencing and input blocking live in `src/game/renderer/animationQueue.ts`.
+- The Three.js app exposes `applyMatchState` and `isInputBlocked` from `src/game/renderer/threeApp.ts`.
+- The HUD now reflects live phase, turn, hand counts, score totals, and emits basic reducer intents from `src/game/ui/hud/createHud.ts`.
+- Fast animation testing mode can be toggled with `F`; debug camera remains on backquote.
 
 ## Phase 11: Card Interaction
 

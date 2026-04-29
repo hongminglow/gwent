@@ -1,6 +1,5 @@
 import * as THREE from "three";
-import type { MatchPreviewState, PlayerId, RowId } from "../simulation/types";
-import { createCardMesh } from "./cardMesh";
+import type { PlayerId, RowId } from "../simulation/types";
 
 export type BoardAnchors = {
   rowZones: Record<PlayerId, Record<RowId, THREE.Group>>;
@@ -44,7 +43,7 @@ const ROW_Z: Record<PlayerId, Record<RowId, number>> = {
   },
 };
 
-export function createBoardScene(state: MatchPreviewState): BoardScene {
+export function createBoardScene(): BoardScene {
   const root = new THREE.Group();
   root.name = "OathboundBoardFoundation";
   const anchors = createEmptyAnchors();
@@ -79,39 +78,8 @@ export function createBoardScene(state: MatchPreviewState): BoardScene {
     root.add(handAnchor);
   }
 
-  const previewCards = [
-    createCardMesh({
-      label: state.selectedFaction.name,
-      accentColor: state.selectedFaction.accentColor,
-      position: new THREE.Vector3(-2.45, 0.31, 6.55),
-      rotationY: -0.08,
-    }),
-    createCardMesh({
-      label: "Leader",
-      accentColor: "#f0d290",
-      faceColor: "#332416",
-      position: new THREE.Vector3(-4.65, 0.31, 4.95),
-      rotationY: 0.04,
-    }),
-    createCardMesh({
-      label: "Rival",
-      accentColor: state.opponentPool[0]?.accentColor ?? "#a7a7a7",
-      position: new THREE.Vector3(2.85, 0.31, -6.55),
-      rotationY: 0.12,
-    }),
-  ];
-
-  for (const card of previewCards) {
-    root.add(card.root);
-  }
-
   const update = (deltaSeconds: number) => {
     const elapsed = performance.now() / 1000;
-
-    for (const [index, card] of previewCards.entries()) {
-      card.root.position.y = card.baseY + Math.sin(elapsed * 1.15 + index * 0.8) * 0.035;
-      card.root.rotation.z = Math.sin(elapsed * 0.88 + index) * 0.012;
-    }
 
     for (const zone of rowZoneMeshes) {
       const material = zone.material;

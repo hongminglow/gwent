@@ -7,4 +7,5 @@ export type InputAction =
   | { type: "cancel-selection" }
   | { type: "pass-round" }
   | { type: "use-leader" }
-  | { type: "toggle-debug" };
+  | { type: "toggle-debug" }
+  | { type: "toggle-fast-animations" };

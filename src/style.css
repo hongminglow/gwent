@@ -99,6 +99,39 @@ textarea {
   max-width: min(640px, calc(100vw - 36px));
 }
 
+.hud__controls {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  max-width: min(520px, calc(100vw - 36px));
+  pointer-events: auto;
+}
+
+.hud__button {
+  min-height: 36px;
+  padding: 8px 11px;
+  border: 1px solid rgba(245, 217, 149, 0.28);
+  border-radius: 8px;
+  background: rgba(23, 18, 12, 0.78);
+  color: #f7efe1;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.hud__button:hover:not(:disabled) {
+  border-color: rgba(245, 217, 149, 0.52);
+  background: rgba(54, 38, 22, 0.88);
+}
+
+.hud__button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
 .hud__chip {
   min-width: 92px;
   padding: 9px 11px;
@@ -108,6 +141,38 @@ textarea {
   color: #f7efe1;
   text-align: left;
   backdrop-filter: blur(8px);
+}
+
+@media (max-width: 760px) {
+  .hud__status {
+    max-width: calc(100vw - 36px);
+  }
+
+  .hud__controls {
+    top: 146px;
+    left: 18px;
+    right: 18px;
+    justify-content: flex-start;
+  }
+
+  .hud__button {
+    min-height: 34px;
+    padding: 7px 9px;
+    font-size: 12px;
+  }
+
+  .hud__strip {
+    left: 18px;
+    right: 18px;
+    bottom: 18px;
+    justify-content: flex-start;
+  }
+
+  .hud__hint {
+    bottom: 152px;
+    max-width: calc(100vw - 36px);
+    white-space: nowrap;
+  }
 }
 
 .hud__chip-label {
@@ -138,4 +203,12 @@ textarea {
   background: rgba(247, 239, 225, 0.1);
   color: rgba(247, 239, 225, 0.7);
   font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  .hud__hint {
+    bottom: 152px;
+    max-width: calc(100vw - 36px);
+    white-space: nowrap;
+  }
 }

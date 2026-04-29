@@ -6,9 +6,9 @@ The goal is a faithful 1v1 Gwent-style experience: four base factions, three bat
 
 ## Project Status
 
-Current phase: Phase 9 Three.js foundation complete.
+Current phase: Phase 10 renderer and simulation bridge complete.
 
-The repository now contains the TypeScript/Vite/Three.js scaffold, product spec, rule reference, serializable simulation core, match flow, scoring system, ability engine, curated MVP faction cards, starter decks, validation tests, deterministic AI opponent, and the first 3D board foundation. Phase 10 connects simulation snapshots to renderer objects.
+The repository now contains the TypeScript/Vite/Three.js scaffold, product spec, rule reference, serializable simulation core, match flow, scoring system, ability engine, curated MVP faction cards, starter decks, validation tests, deterministic AI opponent, 3D board foundation, and a live renderer/simulation bridge. Phase 11 starts card interaction.
 
 ## Run Locally
 

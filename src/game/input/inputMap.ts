@@ -17,5 +17,9 @@ export function actionFromKeyboardEvent(event: KeyboardEvent): InputAction | nul
     return { type: "toggle-debug" };
   }
 
+  if (event.key.toLowerCase() === "f") {
+    return { type: "toggle-fast-animations" };
+  }
+
   return null;
 }
