@@ -9,7 +9,7 @@ export type GameAction =
       type: "play-card";
       playerId: PlayerId;
       cardInstanceId: CardInstanceId;
-      rowId: RowId;
+      rowId?: RowId;
       targetCardInstanceId?: CardInstanceId;
     }
   | { type: "pass-round"; playerId: PlayerId }

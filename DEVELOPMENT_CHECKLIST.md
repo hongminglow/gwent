@@ -174,24 +174,32 @@ Phase 5 output:
 
 ## Phase 6: Card Ability Engine
 
-- [ ] Implement ability resolver pipeline.
-- [ ] Implement target selection.
-- [ ] Implement immediate effects.
-- [ ] Implement delayed effects.
-- [ ] Implement ability event logging for renderer.
-- [ ] Implement `Spy`.
-- [ ] Implement `Medic`.
-- [ ] Implement `Muster`.
-- [ ] Implement `Morale Boost`.
-- [ ] Implement `Tight Bond`.
-- [ ] Implement `Scorch`.
-- [ ] Implement `Decoy`.
-- [ ] Implement `Weather`.
-- [ ] Implement `Clear Weather`.
-- [ ] Implement `Commander's Horn`.
-- [ ] Implement `Agile`.
-- [ ] Implement `Hero`.
-- [ ] Add complete ability tests.
+- [x] Implement ability resolver pipeline.
+- [x] Implement target selection.
+- [x] Implement immediate effects.
+- [x] Implement delayed effects.
+- [x] Implement ability event logging for renderer.
+- [x] Implement `Spy`.
+- [x] Implement `Medic`.
+- [x] Implement `Muster`.
+- [x] Implement `Morale Boost`.
+- [x] Implement `Tight Bond`.
+- [x] Implement `Scorch`.
+- [x] Implement `Decoy`.
+- [x] Implement `Weather`.
+- [x] Implement `Clear Weather`.
+- [x] Implement `Commander's Horn`.
+- [x] Implement `Agile`.
+- [x] Implement `Hero`.
+- [x] Add complete ability tests.
+
+Phase 6 output:
+
+- Ability resolver pipeline in `src/game/simulation/abilityEngine.ts`.
+- Card play flow delegates to the ability engine from `src/game/simulation/matchFlow.ts`.
+- Persistent delayed effects are represented as serializable board state: weather flags, row Horn flags, and static row-card abilities.
+- Renderer-facing ability events now include `card.played`, `card.drawn`, `card.revived`, `card.destroyed`, `weather.applied`, `weather.cleared`, and `row.buff.applied`.
+- Ability tests live in `src/game/simulation/abilityEngine.test.ts`.
 
 Post-MVP abilities:
 

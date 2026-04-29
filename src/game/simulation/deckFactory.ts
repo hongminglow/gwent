@@ -25,17 +25,20 @@ export function createGeneratedStarterDeck(factionId: FactionId): StarterDeckDef
   const units = Array.from({ length: 22 }, (_, index): CardDefinition => {
     const cardNumber = index + 1;
     const row = ROW_SEQUENCE[index % ROW_SEQUENCE.length];
+    const abilities = getGeneratedUnitAbilities(index);
+    const rows = abilities.includes("agile") ? (["close", "ranged"] as RowId[]) : [row];
+    const tags = ["generated", row, ...getGeneratedUnitTags(index)];
 
     return {
       id: `${factionSlug}-unit-${cardNumber.toString().padStart(2, "0")}`,
       name: `${formatFactionName(factionId)} Unit ${cardNumber}`,
       faction: factionId,
       type: "unit",
-      rows: [row],
+      rows,
       basePower: 1 + (index % 10),
-      abilities: [],
+      abilities,
       rarity: "common",
-      tags: ["generated", row],
+      tags,
       artKey: `cards.${factionSlug}.unit-${cardNumber}`,
     };
   });
@@ -44,6 +47,18 @@ export function createGeneratedStarterDeck(factionId: FactionId): StarterDeckDef
     leader,
     deck: [...units, ...createGeneratedSpecials(factionId)],
   };
+}
+
+function getGeneratedUnitTags(index: number): string[] {
+  if (index === 2 || index === 3) {
+    return ["muster:generated-pack"];
+  }
+
+  if (index === 4 || index === 5) {
+    return ["bond:generated-bond"];
+  }
+
+  return [];
 }
 
 function createGeneratedSpecials(factionId: CardFactionId): CardDefinition[] {
@@ -96,7 +111,71 @@ function createGeneratedSpecials(factionId: CardFactionId): CardDefinition[] {
       tags: ["generated", "special"],
       artKey: "cards.neutral.decoy",
     },
+    {
+      id: `${factionId}-special-biting-frost`,
+      name: "Biting Frost",
+      faction: "neutral",
+      type: "special",
+      rows: ["close"],
+      basePower: 0,
+      abilities: ["weather"],
+      rarity: "common",
+      tags: ["generated", "special", "weather"],
+      artKey: "cards.neutral.biting-frost",
+    },
+    {
+      id: `${factionId}-special-impenetrable-fog`,
+      name: "Impenetrable Fog",
+      faction: "neutral",
+      type: "special",
+      rows: ["ranged"],
+      basePower: 0,
+      abilities: ["weather"],
+      rarity: "common",
+      tags: ["generated", "special", "weather"],
+      artKey: "cards.neutral.impenetrable-fog",
+    },
+    {
+      id: `${factionId}-special-torrential-rain`,
+      name: "Torrential Rain",
+      faction: "neutral",
+      type: "special",
+      rows: ["siege"],
+      basePower: 0,
+      abilities: ["weather"],
+      rarity: "common",
+      tags: ["generated", "special", "weather"],
+      artKey: "cards.neutral.torrential-rain",
+    },
   ];
+}
+
+function getGeneratedUnitAbilities(index: number): CardDefinition["abilities"] {
+  if (index === 0) {
+    return ["spy"];
+  }
+
+  if (index === 1) {
+    return ["medic"];
+  }
+
+  if (index === 2 || index === 3) {
+    return ["muster"];
+  }
+
+  if (index === 4 || index === 5) {
+    return ["tight-bond"];
+  }
+
+  if (index === 6) {
+    return ["morale-boost"];
+  }
+
+  if (index === 7) {
+    return ["agile"];
+  }
+
+  return [];
 }
 
 function formatFactionName(factionId: FactionId): string {

@@ -24,7 +24,13 @@ export function matchReducer(state: MatchState, action: GameAction): MatchState 
       return redrawCard(state, action.playerId, action.cardInstanceId);
 
     case "play-card":
-      return playCard(state, action.playerId, action.cardInstanceId, action.rowId);
+      return playCard(
+        state,
+        action.playerId,
+        action.cardInstanceId,
+        action.rowId,
+        action.targetCardInstanceId,
+      );
 
     case "use-leader":
       return appendEvent(state, "phase.changed", {

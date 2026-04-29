@@ -16,8 +16,8 @@ describe("match flow", () => {
     expect(state.players.opponent.factionId).not.toBe("northern-realms");
     expect(state.players.player.hand.cards).toHaveLength(10);
     expect(state.players.opponent.hand.cards).toHaveLength(10);
-    expect(state.players.player.deck.cards).toHaveLength(16);
-    expect(state.players.opponent.deck.cards).toHaveLength(16);
+    expect(state.players.player.deck.cards).toHaveLength(19);
+    expect(state.players.opponent.deck.cards).toHaveLength(19);
   });
 
   it("uses Scoia'tael first-turn control when either side has that faction", () => {
@@ -222,7 +222,7 @@ function playFirstUnitForActivePlayer(state: MatchState): MatchState {
 function findPlayableUnit(state: MatchState, playerId: PlayerId): CardInstanceId {
   const cardId = state.players[playerId].hand.cards.find((candidateId) => {
     const definition = state.cardDefinitions[state.cards[candidateId].definitionId];
-    return definition.type === "unit" || definition.type === "hero";
+    return (definition.type === "unit" || definition.type === "hero") && !definition.abilities.includes("spy");
   });
 
   if (!cardId) {

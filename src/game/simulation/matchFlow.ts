@@ -1,4 +1,5 @@
 import { FACTIONS } from "../data/factions";
+import { resolveCardPlay } from "./abilityEngine";
 import { createGeneratedStarterDeck } from "./deckFactory";
 import { appendEvent } from "./events";
 import { createEmptyBoard, createEmptyMatchState } from "./matchState";
@@ -160,71 +161,19 @@ export function playCard(
   state: MatchState,
   playerId: PlayerId,
   cardInstanceId: CardInstanceId,
-  rowId: RowId,
+  rowId?: RowId,
+  targetCardInstanceId?: CardInstanceId,
 ): MatchState {
   assertPhase(state, "playing");
   assertActivePlayer(state, playerId);
   assertPlayerCanAct(state, playerId);
 
-  const player = state.players[playerId];
-  const card = state.cards[cardInstanceId];
-
-  if (!card || card.ownerId !== playerId || card.zone !== "hand") {
-    throw new Error(`${cardInstanceId} is not a playable card in ${playerId}'s hand.`);
-  }
-
-  const definition = state.cardDefinitions[card.definitionId];
-
-  if (definition.type !== "unit" && definition.type !== "hero") {
-    throw new Error(`${definition.name} cannot be played to a row until the ability engine exists.`);
-  }
-
-  if (!definition.rows.includes(rowId)) {
-    throw new Error(`${definition.name} cannot be played on ${rowId}.`);
-  }
-
-  const nextHandCards = player.hand.cards.filter((id) => id !== cardInstanceId);
-  let nextState: MatchState = {
-    ...state,
-    cards: {
-      ...state.cards,
-      [cardInstanceId]: {
-        ...card,
-        controllerId: playerId,
-        rowId,
-        zone: "board",
-      },
-    },
-    players: {
-      ...state.players,
-      [playerId]: {
-        ...player,
-        hand: {
-          ...player.hand,
-          cards: nextHandCards,
-        },
-      },
-    },
-    board: {
-      ...state.board,
-      rows: {
-        ...state.board.rows,
-        [playerId]: {
-          ...state.board.rows[playerId],
-          [rowId]: {
-            ...state.board.rows[playerId][rowId],
-            cards: [...state.board.rows[playerId][rowId].cards, cardInstanceId],
-          },
-        },
-      },
-    },
-  };
-
-  nextState = appendEvent(nextState, "card.played", {
+  const nextState = resolveCardPlay(state, {
     playerId,
     cardInstanceId,
     rowId,
-  }, true);
+    targetCardInstanceId,
+  });
 
   return advanceAfterAction(nextState, playerId);
 }
