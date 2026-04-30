@@ -1040,10 +1040,8 @@ function renderModal(
           onClick: () => options.onExitToMenu?.(),
         },
       ],
-      content: createMatchSummaryContent(state, winnerId),
-      eyebrow: winnerId === "player" ? "Victory Ledger" : "Match Ledger",
-      meta: createMatchFinalMeta(state, winnerId),
-      title: `${formatWinner(winnerId ? [winnerId] : [])} wins the match`,
+      content: createMatchSummaryContent(state),
+      title: formatMatchResultTitle(winnerId),
       variant: winnerId === "player" ? "victory" : "defeat",
     });
     return;
@@ -1086,7 +1084,7 @@ function renderResultPanel(
     actions: { label: string; onClick: () => void }[];
     content?: HTMLElement[];
     eyebrow?: string;
-    meta: string;
+    meta?: string;
     title: string;
     variant?: "defeat" | "victory";
   },
@@ -1102,8 +1100,6 @@ function renderResultPanel(
   eyebrow.textContent = options.eyebrow ?? "";
   const title = document.createElement("h2");
   title.textContent = options.title;
-  const meta = document.createElement("p");
-  meta.textContent = options.meta;
   const actions = document.createElement("div");
   actions.className = "hud__modal-actions";
 
@@ -1117,11 +1113,19 @@ function renderResultPanel(
     panel.appendChild(eyebrow);
   }
 
-  panel.append(title, meta, ...(options.content ?? []), actions);
+  panel.appendChild(title);
+
+  if (options.meta) {
+    const meta = document.createElement("p");
+    meta.textContent = options.meta;
+    panel.appendChild(meta);
+  }
+
+  panel.append(...(options.content ?? []), actions);
   root.replaceChildren(panel);
 }
 
-function createMatchSummaryContent(state: MatchState, winnerId?: PlayerId): HTMLElement[] {
+function createMatchSummaryContent(state: MatchState): HTMLElement[] {
   const summaries = getRoundSummaries(state);
   const cardsPlayed = summaries.reduce<Record<PlayerId, number>>((total, summary) => ({
     opponent: total.opponent + summary.cardsPlayed.opponent,
@@ -1149,13 +1153,7 @@ function createMatchSummaryContent(state: MatchState, winnerId?: PlayerId): HTML
     rounds.appendChild(createRoundSummaryRow(summary));
   }
 
-  const closing = document.createElement("p");
-  closing.className = "hud__summary-note";
-  closing.textContent = winnerId === "player"
-    ? "Contract fulfilled. The board is yours, the ledger favors your command, and the final crown stays on your side."
-    : "The ledger is saved for review. Tighten card economy, force early passes, and watch for enemy Spy tempo next match.";
-
-  return [metrics, rounds, closing];
+  return [metrics, rounds];
 }
 
 function createSummaryMetric(label: string, value: string, detail: string): HTMLElement {
@@ -1573,12 +1571,16 @@ function getWinnerIds(event: GameEvent): PlayerId[] {
   return winnerIds.filter(isPlayerId);
 }
 
-function createMatchFinalMeta(state: MatchState, winnerId?: PlayerId): string {
-  const finalScore = `${state.players.player.roundWins}-${state.players.opponent.roundWins}`;
+function formatMatchResultTitle(winnerId?: PlayerId): string {
+  if (winnerId === "player") {
+    return "You won the match";
+  }
 
-  return winnerId === "player"
-    ? `Victory secured. Final score ${finalScore}.`
-    : `Opponent takes the match. Final score ${finalScore}.`;
+  if (winnerId === "opponent") {
+    return "Opponent wins the match";
+  }
+
+  return "Match complete";
 }
 
 function getRoundSummaries(state: MatchState): RoundSummary[] {

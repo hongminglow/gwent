@@ -18,10 +18,10 @@ describe("audio engine cue routing", () => {
       reason: "redraw",
     }), state)).toEqual(["redraw", "card.draw"]);
     expect(getAudioCuesForGameEvent(createEvent(2, "player.passed"), state)).toEqual(["pass"]);
-    expect(getAudioCuesForGameEvent(createEvent(3, "leader.used"), state)).toEqual(["leader"]);
-    expect(getAudioCuesForGameEvent(createEvent(4, "weather.applied"), state)).toEqual(["weather"]);
-    expect(getAudioCuesForGameEvent(createEvent(5, "weather.cleared"), state)).toEqual(["clear-weather"]);
-    expect(getAudioCuesForGameEvent(createEvent(6, "row.buff.applied"), state)).toEqual(["horn"]);
+    expect(getAudioCuesForGameEvent(createEvent(3, "leader.used"), state)).toEqual([]);
+    expect(getAudioCuesForGameEvent(createEvent(4, "weather.applied"), state)).toEqual([]);
+    expect(getAudioCuesForGameEvent(createEvent(5, "weather.cleared"), state)).toEqual([]);
+    expect(getAudioCuesForGameEvent(createEvent(6, "row.buff.applied"), state)).toEqual([]);
     expect(getAudioCuesForGameEvent(createEvent(7, "turn.changed"), state)).toEqual(["turn"]);
     expect(getAudioCuesForGameEvent(createEvent(8, "phase.changed", {
       phase: "playing",
@@ -38,10 +38,13 @@ describe("audio engine cue routing", () => {
       cardInstanceId: "muster-card",
       reason: "muster",
     }), state)).toEqual(["card.play", "muster"]);
+    expect(getAudioCuesForGameEvent(createEvent(3, "card.played", {
+      cardInstanceId: "weather-card",
+    }), state)).toEqual([]);
     expect(getAudioCuesForGameEvent(createEvent(3, "card.revived"), state)).toEqual(["medic"]);
     expect(getAudioCuesForGameEvent(createEvent(4, "card.destroyed", {
       reason: "scorch",
-    }), state)).toEqual(["card.destroy", "scorch"]);
+    }), state)).toEqual([]);
   });
 
   it("maps round and match outcomes from the player perspective", () => {
@@ -69,6 +72,10 @@ describe("audio engine cue routing", () => {
       cue: "slain-slash",
     })).toBe("slain-slash");
     expect(getAudioCueFromRendererCue({
+      cue: "slain-slash",
+      reason: "scorch",
+    })).toBeUndefined();
+    expect(getAudioCueFromRendererCue({
       cardInstanceId: "card-1",
       cue: "card.hover",
     })).toBe("card.hover");
@@ -93,6 +100,7 @@ describe("audio engine cue routing", () => {
 function createAudioState(): MatchState {
   const spy = definition("spy-unit", ["spy"]);
   const muster = definition("muster-unit", ["muster"]);
+  const weather = specialDefinition("weather-card", ["weather"]);
 
   return {
     ...createEmptyMatchState({
@@ -104,6 +112,7 @@ function createAudioState(): MatchState {
     cardDefinitions: {
       [spy.id]: spy,
       [muster.id]: muster,
+      [weather.id]: weather,
     },
     cards: {
       "muster-card": {
@@ -121,6 +130,14 @@ function createAudioState(): MatchState {
         ownerId: "player",
         zone: "hand",
         createdSequence: 2,
+      },
+      "weather-card": {
+        controllerId: "player",
+        definitionId: weather.id,
+        id: "weather-card",
+        ownerId: "player",
+        zone: "hand",
+        createdSequence: 3,
       },
     },
   };
@@ -140,5 +157,14 @@ function definition(id: string, abilities: CardDefinition["abilities"]): CardDef
     tags: [],
     type: "unit",
     vfxKey: id,
+  };
+}
+
+function specialDefinition(id: string, abilities: CardDefinition["abilities"]): CardDefinition {
+  return {
+    ...definition(id, abilities),
+    basePower: 0,
+    rows: ["close", "ranged", "siege"],
+    type: "special",
   };
 }

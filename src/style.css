@@ -1231,7 +1231,8 @@ input:focus-visible {
   z-index: 20;
   display: grid;
   place-items: center;
-  padding: 18px;
+  overflow: hidden;
+  padding: 30px;
   background: rgba(8, 9, 8, 0.52);
   pointer-events: auto;
 }
@@ -1255,19 +1256,22 @@ input:focus-visible {
 
 .hud__modal-panel--victory,
 .hud__modal-panel--defeat {
+  align-content: start;
   justify-items: center;
-  width: min(620px, 100%);
-  max-height: min(80vh, 640px);
-  gap: 10px;
-  padding: 18px 20px;
+  width: min(720px, calc(100vw - 60px));
+  min-height: min(600px, calc(100vh - 72px));
+  max-height: calc(100vh - 72px);
+  gap: 9px;
+  overflow: hidden;
+  padding: 68px 56px 64px;
   text-align: center;
 }
 
 .hud__modal-panel--victory {
   border-color: rgba(242, 207, 123, 0.58);
   background:
-    radial-gradient(circle at 50% 0%, rgba(242, 207, 123, 0.22), transparent 34%),
-    linear-gradient(180deg, rgba(31, 27, 20, 0.98), rgba(11, 13, 14, 0.98)),
+    radial-gradient(circle at 50% 0%, rgba(242, 207, 123, 0.16), transparent 36%),
+    linear-gradient(180deg, rgba(24, 22, 18, 0.99), rgba(8, 10, 11, 0.99)),
     var(--ui-panel-strong);
   box-shadow:
     0 0 0 1px rgba(242, 207, 123, 0.18),
@@ -1293,10 +1297,18 @@ input:focus-visible {
   border-color: rgba(121, 169, 255, 0.26);
 }
 
+.hud__modal-panel > * {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  max-width: 100%;
+}
+
 .hud__modal-eyebrow {
-  color: var(--ui-blue);
+  color: rgba(177, 207, 255, 0.96);
   font-size: 11px;
   font-weight: 900;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.72);
   text-transform: uppercase;
 }
 
@@ -1309,6 +1321,20 @@ input:focus-visible {
   color: var(--ui-gold);
   font-size: 24px;
   line-height: 1.05;
+  text-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.88),
+    0 0 20px rgba(242, 207, 123, 0.28);
+}
+
+.hud__modal-panel--victory h2,
+.hud__modal-panel--defeat h2 {
+  color: #ffe3a1;
+  font-size: 28px;
+  -webkit-text-stroke: 0.7px rgba(0, 0, 0, 0.78);
+  text-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.95),
+    0 0 10px rgba(0, 0, 0, 0.9),
+    0 0 26px rgba(242, 207, 123, 0.34);
 }
 
 .hud__modal-panel p {
@@ -1330,15 +1356,18 @@ input:focus-visible {
   gap: 8px;
   justify-self: stretch;
   width: 100%;
+  min-width: 0;
 }
 
 .hud__summary-metric,
 .hud__summary-round {
-  border: 1px solid rgba(255, 255, 255, 0.11);
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 8px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent),
-    rgba(0, 0, 0, 0.2);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), transparent),
+    rgba(0, 0, 0, 0.36);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.28);
 }
 
 .hud__summary-metric {
@@ -1350,14 +1379,15 @@ input:focus-visible {
 
 .hud__summary-metric span,
 .hud__summary-metric small {
-  color: var(--ui-faint);
+  color: rgba(247, 239, 225, 0.7);
   font-size: 11px;
 }
 
 .hud__summary-metric strong {
-  color: #ffffff;
+  color: #fff7df;
   font-size: 20px;
   line-height: 1.1;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.72);
 }
 
 .hud__summary-rounds {
@@ -1365,9 +1395,8 @@ input:focus-visible {
   justify-self: stretch;
   gap: 6px;
   width: 100%;
-  max-height: 140px;
-  overflow: auto;
-  padding-right: 3px;
+  max-height: none;
+  overflow: hidden;
 }
 
 .hud__summary-round {
@@ -1380,6 +1409,7 @@ input:focus-visible {
 }
 
 .hud__summary-round span {
+  min-width: 0;
   color: var(--ui-text);
   font-size: 12px;
   font-weight: 800;
@@ -1392,15 +1422,8 @@ input:focus-visible {
 
 .hud__summary-round small {
   grid-column: 1 / -1;
-  color: var(--ui-muted);
+  color: rgba(226, 232, 226, 0.76);
   font-size: 11px;
-}
-
-.hud__summary-note {
-  max-width: 540px;
-  padding-top: 2px;
-  color: rgba(242, 207, 123, 0.84) !important;
-  text-align: center;
 }
 
 .rules-overlay {
@@ -1690,6 +1713,17 @@ input:focus-visible {
     padding: 12px;
   }
 
+  .hud__modal {
+    padding: 18px;
+  }
+
+  .hud__modal-panel--victory,
+  .hud__modal-panel--defeat {
+    width: calc(100vw - 36px);
+    min-height: 0;
+    padding: 24px 22px 22px;
+  }
+
   .rules-overlay__panel {
     max-height: calc(100vh - 24px);
   }
@@ -1770,6 +1804,27 @@ input:focus-visible {
 
   .hud__summary-metrics {
     grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .hud__modal {
+    padding: 12px;
+  }
+
+  .hud__modal-panel--victory,
+  .hud__modal-panel--defeat {
+    width: calc(100vw - 24px);
+    gap: 8px;
+    padding: 22px 18px 20px;
+  }
+
+  .hud__modal-panel--victory h2,
+  .hud__modal-panel--defeat h2 {
+    font-size: 24px;
+  }
+
+  .hud__summary-metric {
+    min-height: 0;
   }
 }
 

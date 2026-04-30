@@ -1,5 +1,5 @@
 import type { RendererAudioCue } from "../renderer/simulationBridge";
-import type { CardInstanceId, GameEvent, MatchState, RowId } from "../simulation/types";
+import type { CardInstanceId, GameEvent, MatchState } from "../simulation/types";
 
 export type AudioCueName =
   | "card.destroy"
@@ -26,8 +26,7 @@ export type AudioCueName =
   | "spy"
   | "turn"
   | "ui.click"
-  | "weather"
-  | "weather.ambience";
+  | "weather";
 
 export type AudioSettings = {
   masterVolume: number;
@@ -54,12 +53,6 @@ export type AudioEngine = {
   setMuted: (muted: boolean) => void;
 };
 
-type WeatherAmbience = {
-  gain: GainNode;
-  noise: AudioBufferSourceNode;
-  oscillator: OscillatorNode;
-};
-
 type MatchMusic = {
   gain: GainNode;
   intervalId: number;
@@ -67,7 +60,6 @@ type MatchMusic = {
   step: number;
 };
 
-const ROWS: RowId[] = ["close", "ranged", "siege"];
 const MUSIC_TEMPO_BPM = 140;
 const MUSIC_STEP_SECONDS = 60 / MUSIC_TEMPO_BPM / 4;
 const MUSIC_LOOKAHEAD_SECONDS = 0.34;
@@ -83,9 +75,7 @@ export function createAudioEngine(root: HTMLElement, initialSettings: Partial<Au
   });
   let audioContext: AudioContext | undefined;
   let masterGain: GainNode | undefined;
-  let weatherAmbience: WeatherAmbience | undefined;
   let matchMusic: MatchMusic | undefined;
-  let activeWeatherRows = new Set<RowId>();
   let lastMatchId: string | undefined;
   let lastEventSequence = Number.NEGATIVE_INFINITY;
   let latestMatchState: MatchState | undefined;
@@ -108,12 +98,10 @@ export function createAudioEngine(root: HTMLElement, initialSettings: Partial<Au
       lastMatchId = state.id;
       lastEventSequence = getLatestEventSequence(state);
       latestMatchState = state;
-      syncWeatherRowsFromState(state);
       syncMatchMusicFromState(state);
     },
     dispose() {
       root.removeEventListener("click", handleUiClick);
-      stopWeatherAmbience();
       stopMatchMusic();
 
       if (audioContext && audioContext.state !== "closed") {
@@ -141,7 +129,6 @@ export function createAudioEngine(root: HTMLElement, initialSettings: Partial<Au
       }
 
       lastEventSequence = getLatestEventSequence(state);
-      syncWeatherRowsFromState(state);
       syncMatchMusicFromState(state);
     },
     playCue,
@@ -158,7 +145,6 @@ export function createAudioEngine(root: HTMLElement, initialSettings: Partial<Au
         masterVolume: clampVolume(volume),
       };
       applyMasterVolume();
-      syncWeatherAmbience();
       syncMatchMusicFromState(latestMatchState);
     },
     setMuted(muted) {
@@ -167,7 +153,6 @@ export function createAudioEngine(root: HTMLElement, initialSettings: Partial<Au
         muted,
       };
       applyMasterVolume();
-      syncWeatherAmbience();
       syncMatchMusicFromState(latestMatchState);
     },
   };
@@ -226,27 +211,6 @@ export function createAudioEngine(root: HTMLElement, initialSettings: Partial<Au
     masterGain.gain.setTargetAtTime(targetVolume, audioContext.currentTime, 0.02);
   }
 
-  function syncWeatherRowsFromState(state: MatchState) {
-    activeWeatherRows = new Set(ROWS.filter((rowId) => state.board.weather[rowId]));
-    syncWeatherAmbience();
-  }
-
-  function syncWeatherAmbience() {
-    if (activeWeatherRows.size === 0 || settings.muted) {
-      stopWeatherAmbience();
-      return;
-    }
-
-    const context = ensureAudioContext();
-
-    if (!context || !masterGain || weatherAmbience) {
-      return;
-    }
-
-    weatherAmbience = startWeatherAmbience(context, masterGain);
-    emitAudioDiagnostic("weather.ambience", settings);
-  }
-
   function syncMatchMusicFromState(state?: MatchState) {
     if (!state || state.phase === "match-complete" || settings.muted) {
       stopMatchMusic();
@@ -274,7 +238,7 @@ export function createAudioEngine(root: HTMLElement, initialSettings: Partial<Au
     const gain = context.createGain();
     const now = context.currentTime;
     gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.linearRampToValueAtTime(0.36, now + 0.9);
+    gain.gain.linearRampToValueAtTime(0.58, now + 0.9);
     gain.connect(masterGain);
 
     matchMusic = {
@@ -313,21 +277,6 @@ export function createAudioEngine(root: HTMLElement, initialSettings: Partial<Au
     matchMusic = undefined;
   }
 
-  function stopWeatherAmbience() {
-    if (!audioContext || !weatherAmbience) {
-      weatherAmbience = undefined;
-      return;
-    }
-
-    const stopAt = audioContext.currentTime + 0.42;
-    weatherAmbience.gain.gain.cancelScheduledValues(audioContext.currentTime);
-    weatherAmbience.gain.gain.setValueAtTime(weatherAmbience.gain.gain.value, audioContext.currentTime);
-    weatherAmbience.gain.gain.linearRampToValueAtTime(0.0001, stopAt);
-    weatherAmbience.noise.stop(stopAt + 0.04);
-    weatherAmbience.oscillator.stop(stopAt + 0.04);
-    weatherAmbience = undefined;
-  }
-
   return engine;
 }
 
@@ -355,17 +304,17 @@ export function getAudioCuesForGameEvent(event: GameEvent, state: MatchState): A
     case "card.revived":
       return ["medic"];
     case "card.destroyed":
-      return event.payload.reason === "scorch" ? ["card.destroy", "scorch"] : ["card.destroy"];
+      return event.payload.reason === "scorch" ? [] : ["card.destroy"];
     case "leader.used":
-      return ["leader"];
+      return [];
     case "player.passed":
       return ["pass"];
     case "weather.applied":
-      return ["weather"];
+      return [];
     case "weather.cleared":
-      return ["clear-weather"];
+      return [];
     case "row.buff.applied":
-      return ["horn"];
+      return [];
     case "round.ended":
       return ["card.discard", ...getOutcomeCue(event, "round")];
     case "match.ended":
@@ -385,7 +334,7 @@ export function getAudioCueFromRendererCue(cue: RendererAudioCue | CardHoverAudi
     return undefined;
   }
 
-  if (cue.cue === "slain-slash") {
+  if (cue.cue === "slain-slash" && cue.reason !== "scorch") {
     return "slain-slash";
   }
 
@@ -397,13 +346,18 @@ export function getAudioCueFromRendererCue(cue: RendererAudioCue | CardHoverAudi
 }
 
 function getCardPlayedCues(event: GameEvent, state: MatchState): AudioCueName[] {
-  const cues: AudioCueName[] = ["card.play"];
   const cardInstanceId = getPayloadString(event, "cardInstanceId");
   const definition = cardInstanceId ? state.cardDefinitions[state.cards[cardInstanceId]?.definitionId] : undefined;
 
   if (!definition) {
-    return cues;
+    return ["card.play"];
   }
+
+  if (definition.type === "special") {
+    return [];
+  }
+
+  const cues: AudioCueName[] = ["card.play"];
 
   if (definition.abilities.includes("spy")) {
     cues.push("spy");
@@ -469,19 +423,11 @@ function scheduleCue(context: AudioContext, destination: AudioNode, cueName: Aud
       playNoise(context, destination, 0.18, 0.032, { filterFrequency: 1900 });
       playChord(context, destination, [196, 294, 392], 0.26, 0.058, "triangle");
       break;
-    case "leader":
-      playChord(context, destination, [164, 246, 329, 493], 0.42, 0.055, "triangle");
-      playNoise(context, destination, 0.2, 0.03, { delay: 0.05, filterFrequency: 2400 });
-      break;
     case "weather":
-      playNoise(context, destination, 0.42, 0.05, { filterFrequency: 520 });
-      playTone(context, destination, 92, 0.52, 0.052, "sawtooth", { endFrequency: 70 });
-      break;
     case "clear-weather":
-      playChord(context, destination, [523, 659, 784], 0.36, 0.045, "sine");
-      break;
     case "horn":
-      playChord(context, destination, [196, 294, 392], 0.34, 0.07, "sawtooth");
+    case "leader":
+    case "scorch":
       break;
     case "medic":
       playTone(context, destination, 320, 0.16, 0.045, "sine", { endFrequency: 520 });
@@ -495,10 +441,6 @@ function scheduleCue(context: AudioContext, destination: AudioNode, cueName: Aud
     case "spy":
       playTone(context, destination, 392, 0.12, 0.035, "sine", { endFrequency: 262 });
       playNoise(context, destination, 0.16, 0.022, { delay: 0.06, filterFrequency: 1200 });
-      break;
-    case "scorch":
-      playNoise(context, destination, 0.38, 0.08, { filterFrequency: 2600 });
-      playTone(context, destination, 84, 0.36, 0.08, "sawtooth", { endFrequency: 52 });
       break;
     case "slain-slash":
       playNoise(context, destination, 0.16, 0.08, { filterFrequency: 3800 });
@@ -519,7 +461,6 @@ function scheduleCue(context: AudioContext, destination: AudioNode, cueName: Aud
     case "match.loss":
       playChord(context, destination, [196, 147, 98], 0.82, 0.065, "sawtooth");
       break;
-    case "weather.ambience":
     case "match.music":
       break;
     default:
@@ -669,35 +610,6 @@ function playWoodwindNote(
   playScheduledTone(context, destination, frequency, duration, gain, oscillatorType, startAt, {
     endFrequency: frequency * 1.006,
   });
-}
-
-function startWeatherAmbience(context: AudioContext, destination: AudioNode): WeatherAmbience {
-  const gain = context.createGain();
-  const filter = context.createBiquadFilter();
-  const noise = context.createBufferSource();
-  const oscillator = context.createOscillator();
-  const now = context.currentTime;
-
-  filter.type = "lowpass";
-  filter.frequency.setValueAtTime(460, now);
-  noise.buffer = createNoiseBuffer(context, 1.5);
-  noise.loop = true;
-  oscillator.type = "sawtooth";
-  oscillator.frequency.setValueAtTime(58, now);
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.linearRampToValueAtTime(0.032, now + 0.5);
-  noise.connect(filter);
-  oscillator.connect(filter);
-  filter.connect(gain);
-  gain.connect(destination);
-  noise.start(now);
-  oscillator.start(now);
-
-  return {
-    gain,
-    noise,
-    oscillator,
-  };
 }
 
 function playChord(
