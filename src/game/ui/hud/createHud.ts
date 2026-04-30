@@ -17,6 +17,7 @@ import type {
   PlayerId,
   RowId,
 } from "../../simulation/types";
+import { createRulesOverlay } from "../rules/createRulesOverlay";
 
 export type Hud = {
   dispose: () => void;
@@ -87,6 +88,9 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
   const leaderButton = createButton("Leader");
   const passButton = createButton("Pass");
   const aiStepButton = createButton("AI Step");
+  const rulesButton = createButton("Rules");
+  rulesButton.setAttribute("aria-expanded", "false");
+  rulesButton.setAttribute("aria-haspopup", "dialog");
   const settingsButton = createButton("Settings");
   const debugButton = createButton("Debug");
   const menuButton = createButton("Menu");
@@ -96,6 +100,7 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     leaderButton,
     passButton,
     aiStepButton,
+    rulesButton,
     settingsButton,
     debugButton,
     menuButton,
@@ -147,6 +152,11 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
   modal.className = "hud__modal";
   modal.setAttribute("aria-label", "Match result");
   modal.hidden = true;
+  const rulesOverlay = createRulesOverlay({
+    onOpenChange: (open) => {
+      rulesButton.setAttribute("aria-expanded", String(open));
+    },
+  });
 
   const settingsDrawer = createSettingsDrawer({
     audioSettings,
@@ -213,6 +223,7 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     inspect,
     hint,
     modal,
+    rulesOverlay.root,
     settingsDrawer.root,
     debugToolsDrawer.root,
     debugOverlay,
@@ -275,22 +286,35 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     }
   });
 
+  rulesButton.addEventListener("click", () => {
+    settingsOpen = false;
+    debugToolsOpen = false;
+    renderSettingsDrawer();
+    renderDebugToolsDrawer();
+    rulesOverlay.toggle();
+    rulesButton.setAttribute("aria-expanded", String(rulesOverlay.isOpen()));
+  });
+
   settingsButton.addEventListener("click", () => {
     settingsOpen = !settingsOpen;
     if (settingsOpen) {
       debugToolsOpen = false;
+      rulesOverlay.hide();
     }
     renderSettingsDrawer();
     renderDebugToolsDrawer();
+    rulesButton.setAttribute("aria-expanded", "false");
   });
 
   debugButton.addEventListener("click", () => {
     debugToolsOpen = !debugToolsOpen;
     if (debugToolsOpen) {
       settingsOpen = false;
+      rulesOverlay.hide();
     }
     renderSettingsDrawer();
     renderDebugToolsDrawer();
+    rulesButton.setAttribute("aria-expanded", "false");
   });
 
   menuButton.addEventListener("click", () => {
@@ -401,6 +425,7 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
 
   return {
     dispose() {
+      rulesOverlay.dispose();
       shell.remove();
     },
     setInteraction(interaction) {

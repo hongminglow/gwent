@@ -1,5 +1,6 @@
 import { FACTIONS } from "../../data/factions";
 import type { FactionId } from "../../simulation/types";
+import { createRulesOverlay } from "../rules/createRulesOverlay";
 import { createDeckPreviewModel, type DeckPreviewModel } from "./deckPreview";
 
 export type MainMenu = {
@@ -48,7 +49,13 @@ export function createMainMenu(root: HTMLElement, options: MainMenuOptions): Mai
   startButton.className = "main-menu__start";
   startButton.type = "button";
   startButton.textContent = "Start Match";
-  actions.append(startButton);
+  const rulesButton = document.createElement("button");
+  rulesButton.className = "main-menu__rules";
+  rulesButton.type = "button";
+  rulesButton.textContent = "Rules";
+  rulesButton.setAttribute("aria-expanded", "false");
+  rulesButton.setAttribute("aria-haspopup", "dialog");
+  actions.append(startButton, rulesButton);
 
   stage.append(masthead, factionGrid, preview, actions);
   shell.append(stage);
@@ -88,6 +95,13 @@ export function createMainMenu(root: HTMLElement, options: MainMenuOptions): Mai
   error.appendChild(errorPanel);
   shell.appendChild(error);
 
+  const rulesOverlay = createRulesOverlay({
+    onOpenChange: (open) => {
+      rulesButton.setAttribute("aria-expanded", String(open));
+    },
+  });
+  shell.appendChild(rulesOverlay.root);
+
   root.appendChild(shell);
 
   let selectedFactionId: FactionId = "northern-realms";
@@ -113,8 +127,13 @@ export function createMainMenu(root: HTMLElement, options: MainMenuOptions): Mai
   }
 
   startButton.addEventListener("click", () => {
+    rulesOverlay.hide();
     showLoading(selectedFactionId);
     options.onStartMatch(selectedFactionId);
+  });
+
+  rulesButton.addEventListener("click", () => {
+    rulesOverlay.toggle();
   });
 
   const setSelectedFaction = (factionId: FactionId) => {
@@ -185,10 +204,12 @@ export function createMainMenu(root: HTMLElement, options: MainMenuOptions): Mai
   return {
     dispose() {
       stopLoadingProgress();
+      rulesOverlay.dispose();
       shell.remove();
     },
     hideError,
     hide() {
+      rulesOverlay.hide();
       shell.hidden = true;
     },
     hideLoading() {
@@ -199,6 +220,7 @@ export function createMainMenu(root: HTMLElement, options: MainMenuOptions): Mai
     setSelectedFaction,
     show() {
       shell.hidden = false;
+      rulesOverlay.hide();
       loading.hidden = true;
       error.hidden = true;
       stopLoadingProgress();

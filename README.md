@@ -74,6 +74,10 @@ Run linting:
 npm run lint
 ```
 
+## Player Handbook
+
+Rules are documented in `docs/GAME_RULES.md`. The same rules are also available in-game from the Rules button on the faction menu and match HUD.
+
 ## Packaging Notes
 
 Production builds split Three.js into a dedicated vendor chunk. Generated card textures are smaller and cached by card label/type/accent/power, card meshes share static geometries, and production rendering uses lower shadow/pixel-ratio settings than development.
