@@ -2,7 +2,12 @@ import { describe, expect, it } from "vitest";
 import { createMatchFromFaction } from "../simulation/matchFlow";
 import { matchReducer } from "../simulation/reducer";
 import type { CardId, CardInstanceId, MatchState, PlayerId } from "../simulation/types";
-import { createImmediateAction, createRowTargetAction, getValidRowTargets } from "./cardInteraction";
+import {
+  createImmediateAction,
+  createRowTargetAction,
+  getPlacementRejectionReason,
+  getValidRowTargets,
+} from "./cardInteraction";
 
 describe("card interaction helpers", () => {
   it("maps active hand units to their own legal rows", () => {
@@ -71,6 +76,20 @@ describe("card interaction helpers", () => {
       playerId: "player",
       cardInstanceId: cardId,
     });
+  });
+
+  it("explains rejected row targets with the concrete rule", () => {
+    const spy = readyMatchWithActiveCard("spy-rejection", "nr-thaler");
+    expect(getPlacementRejectionReason(spy.state, spy.cardId, { playerId: "player", rowId: "siege" }))
+      .toBe("Spy cards must be placed on the opponent's Siege row, then they draw cards for you.");
+
+    const unit = readyMatchWithActiveCard("row-rejection", "nr-blue-stripes-commando");
+    expect(getPlacementRejectionReason(unit.state, unit.cardId, { playerId: "player", rowId: "ranged" }))
+      .toBe("Blue Stripes Commando is a Close card and cannot be placed on Ranged.");
+
+    const special = readyMatchWithActiveCard("special-rejection", "neutral-scorch");
+    expect(getPlacementRejectionReason(special.state, special.cardId, { playerId: "player", rowId: "close" }))
+      .toBe("Scorch resolves without a row. Click the selected card again to play it.");
   });
 
   it("supports targeted and immediate leader abilities", () => {

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import type { GameAction } from "../simulation/actions";
-import type { CardInstanceId, MatchState, PlayerId, RowId } from "../simulation/types";
+import type { CardDefinition, CardInstanceId, MatchState, PlayerId, RowId } from "../simulation/types";
 import type { BoardScene, RowInteractionTarget } from "./boardScene";
 import type { CardInspection, SimulationRenderer } from "./simulationBridge";
 
@@ -12,6 +12,10 @@ export type InteractionAudioCue = {
 export type CardInteractionHudState = {
   feedback?: string;
   inspection?: CardInspection;
+  pointer?: {
+    x: number;
+    y: number;
+  };
   selectedCardId?: CardInstanceId;
   validRows: RowInteractionTarget[];
 };
@@ -54,6 +58,7 @@ export function createCardInteractionController(
   let hoveredRow: RowInteractionTarget | undefined;
   let rejectedCardId: CardInstanceId | undefined;
   let rejectedRow: RowInteractionTarget | undefined;
+  let pointerPosition: CardInteractionHudState["pointer"];
   let pointerDownState: PointerDownState | undefined;
   let feedback: string | undefined;
   let rejectTimeoutId: number | undefined;
@@ -76,6 +81,7 @@ export function createCardInteractionController(
     options.onInteractionChange({
       feedback,
       inspection: getInspection(options.simulationRenderer, selectedCardId ?? hoveredCardId),
+      pointer: pointerPosition,
       selectedCardId,
       validRows,
     });
@@ -89,6 +95,11 @@ export function createCardInteractionController(
   };
 
   const onPointerMove = (event: PointerEvent) => {
+    pointerPosition = {
+      x: event.clientX,
+      y: event.clientY,
+    };
+
     if (options.isInputBlocked()) {
       clearHover();
       syncVisualState();
@@ -123,6 +134,10 @@ export function createCardInteractionController(
       return;
     }
 
+    pointerPosition = {
+      x: event.clientX,
+      y: event.clientY,
+    };
     updateRaycaster(event, options.domElement, pointer, raycaster, options.camera);
     const cardInstanceId = pickCard(options.simulationRenderer, raycaster);
     pointerDownState = {
@@ -140,6 +155,11 @@ export function createCardInteractionController(
   };
 
   const onPointerUp = (event: PointerEvent) => {
+    pointerPosition = {
+      x: event.clientX,
+      y: event.clientY,
+    };
+
     if (event.button !== 0 || options.isInputBlocked()) {
       clearDrag();
       syncVisualState();
@@ -187,6 +207,7 @@ export function createCardInteractionController(
   const onPointerLeave = () => {
     clearHover();
     clearDrag();
+    pointerPosition = undefined;
     syncVisualState();
   };
 
@@ -202,15 +223,17 @@ export function createCardInteractionController(
     const action = createRowTargetAction(state, cardInstanceId, rowTarget);
 
     if (!action) {
-      rejectInteraction(cardInstanceId, rowTarget, "That card cannot be played there.");
+      rejectInteraction(cardInstanceId, rowTarget, getPlacementRejectionReason(state, cardInstanceId, rowTarget));
       return;
     }
 
     try {
       options.onIntent(action);
       clearSelection();
-    } catch {
-      rejectInteraction(cardInstanceId, rowTarget, "The match rejected that move.");
+    } catch (error) {
+      rejectInteraction(cardInstanceId, rowTarget, error instanceof Error
+        ? error.message
+        : "The match rejected that move.");
     }
   };
 
@@ -431,6 +454,105 @@ export function createImmediateAction(
   return undefined;
 }
 
+export function getPlacementRejectionReason(
+  state: MatchState,
+  cardInstanceId: CardInstanceId,
+  rowTarget: RowInteractionTarget,
+): string {
+  if (state.phase !== "playing") {
+    return "Cards can be placed only after both redraws are finished.";
+  }
+
+  const card = state.cards[cardInstanceId];
+
+  if (!card) {
+    return "That card is no longer in the match.";
+  }
+
+  const activePlayerId = state.round.activePlayerId;
+  const definition = state.cardDefinitions[card.definitionId];
+
+  if (card.ownerId !== activePlayerId) {
+    return `It is ${formatPlayer(activePlayerId)}'s turn. ${formatPlayer(card.ownerId)} cards cannot be placed now.`;
+  }
+
+  if (card.zone === "leader") {
+    if (state.players[activePlayerId].leaderUsed) {
+      return "That leader ability has already been used this match.";
+    }
+
+    if (definition.abilities.includes("weather")) {
+      return `${definition.name} targets ${formatRows(definition.rows.length > 0 ? definition.rows : [...ROWS])}.`;
+    }
+
+    return `${definition.name} does not use a row target.`;
+  }
+
+  if (card.zone !== "hand") {
+    return `${definition.name} is in ${card.zone}; only cards in hand can be placed.`;
+  }
+
+  if (definition.type === "special") {
+    return getSpecialPlacementRejectionReason(state, activePlayerId, definition, rowTarget);
+  }
+
+  const targetPlayerId = definition.abilities.includes("spy")
+    ? getOpponentId(activePlayerId)
+    : activePlayerId;
+  const legalRows = formatRows(definition.rows);
+
+  if (rowTarget.playerId !== targetPlayerId) {
+    return definition.abilities.includes("spy")
+      ? `Spy cards must be placed on the opponent's ${legalRows} row, then they draw cards for you.`
+      : `${definition.name} must be placed on your ${legalRows} row.`;
+  }
+
+  if (!definition.rows.includes(rowTarget.rowId)) {
+    return definition.abilities.includes("agile")
+      ? `${definition.name} is Agile: choose Close or Ranged, not ${formatRow(rowTarget.rowId)}.`
+      : `${definition.name} is a ${legalRows} card and cannot be placed on ${formatRow(rowTarget.rowId)}.`;
+  }
+
+  return `${definition.name} cannot be placed on that row.`;
+}
+
+function getSpecialPlacementRejectionReason(
+  state: MatchState,
+  activePlayerId: PlayerId,
+  definition: CardDefinition,
+  rowTarget: RowInteractionTarget,
+): string {
+  if (definition.abilities.includes("scorch") || definition.abilities.includes("clear-weather")) {
+    return `${definition.name} resolves without a row. Click the selected card again to play it.`;
+  }
+
+  if (definition.abilities.includes("decoy")) {
+    return "Decoy needs one of your non-hero battlefield units as a target, not an empty row.";
+  }
+
+  if (definition.abilities.includes("commanders-horn")) {
+    if (rowTarget.playerId !== activePlayerId) {
+      return "Commander's Horn can buff only one of your own rows.";
+    }
+
+    if (state.board.rows[activePlayerId][rowTarget.rowId].hornActive) {
+      return `Commander's Horn is already active on your ${formatRow(rowTarget.rowId)} row.`;
+    }
+
+    return "Commander's Horn must be placed on one of your rows.";
+  }
+
+  if (definition.abilities.includes("weather")) {
+    const affectedRows = definition.rows.length > 0 ? definition.rows : [...ROWS];
+
+    if (!affectedRows.includes(rowTarget.rowId)) {
+      return `${definition.name} affects ${formatRows(affectedRows)}, not ${formatRow(rowTarget.rowId)}.`;
+    }
+  }
+
+  return `${definition.name} does not use that row target.`;
+}
+
 function updateRaycaster(
   event: PointerEvent,
   domElement: HTMLElement,
@@ -542,6 +664,18 @@ function sameRow(a: RowInteractionTarget, b: RowInteractionTarget): boolean {
 
 function getOpponentId(playerId: PlayerId): PlayerId {
   return playerId === "player" ? "opponent" : "player";
+}
+
+function formatPlayer(playerId: PlayerId): string {
+  return playerId === "player" ? "Player" : "Opponent";
+}
+
+function formatRow(rowId: RowId): string {
+  return rowId[0].toUpperCase() + rowId.slice(1);
+}
+
+function formatRows(rows: RowId[]): string {
+  return rows.map(formatRow).join("/");
 }
 
 function isPlayerId(value: unknown): value is PlayerId {

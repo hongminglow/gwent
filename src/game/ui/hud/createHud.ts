@@ -54,6 +54,30 @@ const ABILITIES: AbilityId[] = [
   "weather",
 ];
 
+const ABILITY_COPY: Record<AbilityId, string> = {
+  agile: "May be played into either Close Combat or Ranged Combat.",
+  "clear-weather": "Removes every active weather effect from the battlefield.",
+  "commanders-horn": "Doubles eligible unit strength in the chosen row.",
+  decoy: "Returns one eligible non-hero unit from your battlefield to hand.",
+  hero: "Ignores weather, Horn, Morale Boost, Tight Bond, Decoy, Medic, and Scorch targeting rules.",
+  medic: "Revives one eligible normal unit from your discard pile when played.",
+  "morale-boost": "Adds +1 strength to other eligible normal units in the same row.",
+  muster: "Pulls matching group cards from your deck or hand onto the battlefield.",
+  scorch: "Destroys every strongest non-hero unit on the battlefield if its final strength is above 0.",
+  spy: "Plays onto the opponent's board, then draws two cards for you.",
+  "tight-bond": "Multiplies matching units by the number of same-bond copies in that row.",
+  weather: "Applies a row weather effect that reduces eligible units in that row to strength 1.",
+};
+
+type CardDetail = {
+  abilities: AbilityId[];
+  basePower: number;
+  name: string;
+  rows: RowId[];
+  type: CardDefinition["type"];
+  zone?: string;
+};
+
 export function createHud(root: HTMLElement, state: MatchState, options: HudOptions): Hud {
   let audioSettings: AudioSettings = {
     ...DEFAULT_AUDIO_SETTINGS,
@@ -144,9 +168,21 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
   inspectTitle.className = "hud__inspect-title";
   const inspectMeta = document.createElement("p");
   inspectMeta.className = "hud__inspect-meta";
-  const inspectAbilities = document.createElement("p");
-  inspectAbilities.className = "hud__inspect-meta";
+  const inspectAbilities = document.createElement("div");
+  inspectAbilities.className = "hud__inspect-abilities";
   inspect.append(inspectTitle, inspectMeta, inspectAbilities);
+
+  const cardTooltip = document.createElement("aside");
+  cardTooltip.className = "hud__card-tooltip";
+  cardTooltip.setAttribute("aria-label", "Hovered card ability details");
+  cardTooltip.hidden = true;
+  const cardTooltipTitle = document.createElement("h2");
+  cardTooltipTitle.className = "hud__card-tooltip-title";
+  const cardTooltipMeta = document.createElement("p");
+  cardTooltipMeta.className = "hud__card-tooltip-meta";
+  const cardTooltipAbilities = document.createElement("div");
+  cardTooltipAbilities.className = "hud__card-tooltip-abilities";
+  cardTooltip.append(cardTooltipTitle, cardTooltipMeta, cardTooltipAbilities);
 
   const modal = document.createElement("section");
   modal.className = "hud__modal";
@@ -221,6 +257,7 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     strip,
     redrawPanel,
     inspect,
+    cardTooltip,
     hint,
     modal,
     rulesOverlay.root,
@@ -404,7 +441,17 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
       onExitToMenu: options.onExitToMenu,
     });
     updateInspection(inspect, inspectTitle, inspectMeta, inspectAbilities, latestInteraction);
-    hint.textContent = getHintText(inputBlocked, latestInteraction, nextState);
+    updateCardTooltip(
+      cardTooltip,
+      cardTooltipTitle,
+      cardTooltipMeta,
+      cardTooltipAbilities,
+      latestInteraction,
+      inputBlocked,
+    );
+    const hintText = getHintText(inputBlocked, latestInteraction, nextState);
+    hint.hidden = hintText.length === 0;
+    hint.textContent = hintText;
 
     finishRedrawButton.textContent = redrawPlayer ? `Finish ${formatPlayer(redrawPlayer)} Redraw` : "Finish Redraw";
     finishRedrawButton.disabled = inputBlocked || nextState.phase !== "redraw" || !redrawPlayer;
@@ -874,21 +921,39 @@ function renderRedrawPanel(
 
   const cards = document.createElement("div");
   cards.className = "hud__redraw-cards";
+  const redrawDetail = document.createElement("aside");
+  redrawDetail.className = "hud__redraw-detail";
+  const redrawBody = document.createElement("div");
+  redrawBody.className = "hud__redraw-body";
+  let firstDefinition: CardDefinition | undefined;
 
   for (const cardInstanceId of player.hand.cards) {
     const card = state.cards[cardInstanceId];
     const definition = state.cardDefinitions[card.definitionId];
+    firstDefinition ??= definition;
     const button = document.createElement("button");
     button.className = "hud__redraw-card";
     button.type = "button";
-    button.disabled = inputBlocked || !isPlayerRedrawOpen;
+    button.disabled = inputBlocked;
+    button.setAttribute("aria-disabled", String(inputBlocked || !isPlayerRedrawOpen));
+    button.setAttribute("aria-label", getCardDetailPlainText(definition));
     button.innerHTML = `
       <span>${definition.name}</span>
       <strong>${definition.type === "special" ? "Special" : definition.basePower}</strong>
       <small>${formatAbilities(definition.abilities)}</small>
     `;
+    button.addEventListener("pointerenter", () => {
+      renderCardDetail(redrawDetail, definition, {
+        eyebrow: "Selected redraw card",
+      });
+    });
+    button.addEventListener("focus", () => {
+      renderCardDetail(redrawDetail, definition, {
+        eyebrow: "Selected redraw card",
+      });
+    });
     button.addEventListener("click", () => {
-      if (!button.disabled) {
+      if (!button.disabled && isPlayerRedrawOpen) {
         onIntent({
           type: "redraw-card",
           playerId: "player",
@@ -899,7 +964,16 @@ function renderRedrawPanel(
     cards.appendChild(button);
   }
 
-  root.replaceChildren(header, meta, cards);
+  if (firstDefinition) {
+    renderCardDetail(redrawDetail, firstDefinition, {
+      eyebrow: "Card ability reference",
+    });
+  } else {
+    redrawDetail.textContent = "No cards available for redraw.";
+  }
+
+  redrawBody.append(cards, redrawDetail);
+  root.replaceChildren(header, meta, redrawBody);
 }
 
 function renderModal(
@@ -1002,15 +1076,111 @@ function updateInspection(
   }
 
   title.textContent = inspection.name;
-  meta.textContent = [
-    inspection.type.toUpperCase(),
-    `Power ${inspection.basePower}`,
-    inspection.rows.length > 0 ? `Rows ${inspection.rows.map(formatRow).join("/")}` : "No row target",
-    `Zone ${inspection.zone}`,
-  ].join(" | ");
-  abilities.textContent = inspection.abilities.length > 0
-    ? `Abilities: ${inspection.abilities.map(formatAbility).join(", ")}`
-    : "Abilities: none";
+  meta.textContent = formatCardMeta(inspection);
+  renderAbilityDetails(abilities, inspection.abilities);
+}
+
+function updateCardTooltip(
+  root: HTMLElement,
+  title: HTMLElement,
+  meta: HTMLElement,
+  abilities: HTMLElement,
+  interaction: CardInteractionHudState,
+  inputBlocked: boolean,
+) {
+  const inspection = interaction.inspection;
+  const pointer = interaction.pointer;
+  const shouldShow = Boolean(inspection && pointer && !inputBlocked);
+  root.hidden = !shouldShow;
+
+  if (!shouldShow || !inspection || !pointer) {
+    return;
+  }
+
+  title.textContent = inspection.name;
+  meta.textContent = formatCardMeta(inspection);
+  renderAbilityDetails(abilities, inspection.abilities);
+
+  const padding = 14;
+  const gap = 18;
+  const width = root.offsetWidth || 320;
+  const height = root.offsetHeight || 180;
+  const right = pointer.x + gap + width;
+  const below = pointer.y + gap + height;
+  const x = right > window.innerWidth - padding
+    ? Math.max(padding, pointer.x - width - gap)
+    : pointer.x + gap;
+  const y = below > window.innerHeight - padding
+    ? Math.max(padding, pointer.y - height - gap)
+    : pointer.y + gap;
+  root.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+}
+
+function renderCardDetail(
+  root: HTMLElement,
+  detail: CardDetail,
+  options: { eyebrow: string },
+) {
+  const eyebrow = document.createElement("span");
+  eyebrow.className = "hud__redraw-detail-eyebrow";
+  eyebrow.textContent = options.eyebrow;
+  const title = document.createElement("h3");
+  title.textContent = detail.name;
+  const meta = document.createElement("p");
+  meta.className = "hud__redraw-detail-meta";
+  meta.textContent = formatCardMeta(detail);
+  const abilities = document.createElement("div");
+  abilities.className = "hud__redraw-detail-abilities";
+  renderAbilityDetails(abilities, detail.abilities);
+  root.replaceChildren(eyebrow, title, meta, abilities);
+}
+
+function renderAbilityDetails(root: HTMLElement, abilities: AbilityId[]) {
+  root.replaceChildren();
+
+  if (abilities.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "hud__ability-empty";
+    empty.textContent = "No special ability. This card contributes raw row strength.";
+    root.appendChild(empty);
+    return;
+  }
+
+  for (const ability of abilities) {
+    const item = document.createElement("div");
+    item.className = "hud__ability-line";
+    const name = document.createElement("strong");
+    name.textContent = formatAbility(ability);
+    const description = document.createElement("span");
+    description.textContent = ABILITY_COPY[ability];
+    item.append(name, description);
+    root.appendChild(item);
+  }
+}
+
+function formatCardMeta(detail: CardDetail): string {
+  return [
+    detail.type.toUpperCase(),
+    formatPowerMeta(detail),
+    detail.rows.length > 0 ? `Rows ${detail.rows.map(formatRow).join("/")}` : "No row target",
+    detail.zone ? `Zone ${detail.zone}` : undefined,
+  ].filter(Boolean).join(" | ");
+}
+
+function formatPowerMeta(detail: CardDetail): string {
+  if (detail.type === "special" || detail.type === "leader") {
+    return "No base power";
+  }
+
+  return `Power ${detail.basePower}`;
+}
+
+function getCardDetailPlainText(detail: CardDetail): string {
+  const abilityText = detail.abilities.length > 0
+    ? detail.abilities.map((ability) => `${formatAbility(ability)}: ${ABILITY_COPY[ability]}`).join("; ")
+    : "No special ability.";
+
+  return `${detail.name}. ${formatCardMeta(detail)}. ${abilityText}`;
 }
 
 function getHintText(inputBlocked: boolean, interaction: CardInteractionHudState, state: MatchState): string {
@@ -1031,14 +1201,60 @@ function getHintText(inputBlocked: boolean, interaction: CardInteractionHudState
   }
 
   if (interaction.selectedCardId && interaction.validRows.length > 0) {
-    return "Choose a highlighted row or drag the selected card onto it.";
+    return `Playable targets are highlighted: ${formatTargets(interaction.validRows)}.`;
   }
 
-  if (interaction.inspection) {
-    return "Card inspected. Click again for instant specials or choose a valid row.";
+  if (interaction.selectedCardId && interaction.validRows.length === 0) {
+    return getNoTargetHint(state, interaction);
   }
 
-  return "Hover, click, or drag cards to interact.";
+  return "";
+}
+
+function getNoTargetHint(state: MatchState, interaction: CardInteractionHudState): string {
+  const selectedCardId = interaction.selectedCardId;
+  const inspection = interaction.inspection;
+
+  if (!selectedCardId || !inspection) {
+    return "";
+  }
+
+  if (state.phase !== "playing") {
+    return "Cards can be played after both redraws are finished.";
+  }
+
+  if (inspection.ownerId !== state.round.activePlayerId) {
+    return `It is ${formatPlayer(state.round.activePlayerId)}'s turn. ${formatPlayer(inspection.ownerId)} cards can only be inspected.`;
+  }
+
+  if (inspection.zone === "leader") {
+    return state.players[inspection.ownerId].leaderUsed
+      ? "That leader ability has already been used this match."
+      : "This leader resolves without a row target. Use the Leader button or click the leader again.";
+  }
+
+  if (inspection.zone !== "hand") {
+    return "Cards already on the battlefield can only be inspected.";
+  }
+
+  if (inspection.abilities.includes("scorch") || inspection.abilities.includes("clear-weather")) {
+    return `${inspection.name} resolves immediately. Click the selected card again to play it.`;
+  }
+
+  if (inspection.abilities.includes("decoy")) {
+    return "Decoy needs one of your non-hero battlefield units as a target, not a row.";
+  }
+
+  if (inspection.type === "special") {
+    return `${inspection.name} does not have a row target.`;
+  }
+
+  return "";
+}
+
+function formatTargets(targets: { playerId: PlayerId; rowId: RowId }[]): string {
+  const labels = targets.map((target) => `${formatPlayer(target.playerId)} ${formatRow(target.rowId)}`);
+  return [...new Set(labels)].join(", ");
 }
 
 function createChip(label: string): { root: HTMLElement; value: HTMLElement } {

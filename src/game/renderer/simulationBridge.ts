@@ -53,7 +53,7 @@ export type CardInspection = {
   type: CardDefinition["type"];
   basePower: number;
   rows: RowId[];
-  abilities: string[];
+  abilities: CardDefinition["abilities"];
   zone: CardInstance["zone"];
   ownerId: PlayerId;
   controllerId: PlayerId;
