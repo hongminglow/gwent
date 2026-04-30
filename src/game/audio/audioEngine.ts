@@ -51,6 +51,7 @@ export type AudioEngine = {
   playRendererCue: (cue: RendererAudioCue | CardHoverAudioCue | unknown) => void;
   setMasterVolume: (volume: number) => void;
   setMuted: (muted: boolean) => void;
+  stopMatch: () => void;
 };
 
 type MatchMusic = {
@@ -154,6 +155,12 @@ export function createAudioEngine(root: HTMLElement, initialSettings: Partial<Au
       };
       applyMasterVolume();
       syncMatchMusicFromState(latestMatchState);
+    },
+    stopMatch() {
+      lastMatchId = undefined;
+      lastEventSequence = Number.NEGATIVE_INFINITY;
+      latestMatchState = undefined;
+      stopMatchMusic();
     },
   };
 

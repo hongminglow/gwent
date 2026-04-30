@@ -124,12 +124,14 @@ function handleStartError(error: unknown) {
   console.error(error);
   disposeSession();
   setAiAutoplay(false);
+  audio.stopMatch();
   menu.showError(error instanceof Error ? error.message : "The renderer failed while preparing the match.");
 }
 
 function showMainMenu() {
   setAiAutoplay(false);
   disposeSession();
+  audio.stopMatch();
   menu.show();
 }
 
