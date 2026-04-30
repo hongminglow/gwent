@@ -55,6 +55,27 @@ describe("ability engine", () => {
     });
   });
 
+  it("plays an opponent non-Spy unit on the opponent side", () => {
+    let state = createAbilityState();
+    state = addCard(state, {
+      id: "opponent-unit",
+      ownerId: "opponent",
+      zone: "hand",
+      rowId: "close",
+      basePower: 5,
+    });
+
+    state = resolveCardPlay(state, {
+      playerId: "opponent",
+      cardInstanceId: "opponent-unit",
+      rowId: "close",
+    });
+
+    expect(state.board.rows.opponent.close.cards).toContain("opponent-unit");
+    expect(state.board.rows.player.close.cards).not.toContain("opponent-unit");
+    expect(state.cards["opponent-unit"].controllerId).toBe("opponent");
+  });
+
   it("revives a valid unit with Medic and emits revive events", () => {
     let state = createAbilityState();
     state = addCard(state, {

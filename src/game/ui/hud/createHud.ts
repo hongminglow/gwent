@@ -78,6 +78,13 @@ type CardDetail = {
   zone?: string;
 };
 
+type RoundSummary = {
+  cardsPlayed: Record<PlayerId, number>;
+  roundNumber: number;
+  scores: Record<PlayerId, number>;
+  winnerIds: PlayerId[];
+};
+
 export function createHud(root: HTMLElement, state: MatchState, options: HudOptions): Hud {
   let audioSettings: AudioSettings = {
     ...DEFAULT_AUDIO_SETTINGS,
@@ -316,7 +323,7 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
   });
 
   aiStepButton.addEventListener("click", () => {
-    const action = getSuggestedAction(latestState);
+    const action = getAiStepAction(latestState);
 
     if (action && !latestInputBlocked) {
       options.onIntent(action);
@@ -360,6 +367,7 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
 
   const renderSettingsDrawer = () => {
     settingsDrawer.root.hidden = !settingsOpen;
+    settingsButton.setAttribute("aria-expanded", String(settingsOpen));
     settingsDrawer.fastAnimationsInput.checked = debugFlags.fastAnimations;
     settingsDrawer.debugCameraInput.checked = debugFlags.debugCamera;
     settingsDrawer.showDebugInput.checked = debugFlags.showPerf;
@@ -370,11 +378,43 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
 
   const renderDebugToolsDrawer = () => {
     debugToolsDrawer.root.hidden = !debugToolsOpen;
+    debugButton.setAttribute("aria-expanded", String(debugToolsOpen));
     debugToolsDrawer.update(latestState, {
       aiAutoplayEnabled: debugAiAutoplayEnabled,
       placementZonesVisible: debugFlags.showPlacementZones,
     });
   };
+
+  const closeDrawersOnOutsidePointer = (event: PointerEvent) => {
+    const target = event.target;
+
+    if (!(target instanceof Node)) {
+      return;
+    }
+
+    let changed = false;
+
+    if (settingsOpen && !settingsDrawer.root.contains(target) && !settingsButton.contains(target)) {
+      settingsOpen = false;
+      changed = true;
+    }
+
+    if (debugToolsOpen && !debugToolsDrawer.root.contains(target) && !debugButton.contains(target)) {
+      debugToolsOpen = false;
+      changed = true;
+    }
+
+    if (changed) {
+      renderSettingsDrawer();
+      renderDebugToolsDrawer();
+
+      if (!controls.contains(target)) {
+        event.stopPropagation();
+      }
+    }
+  };
+
+  window.addEventListener("pointerdown", closeDrawersOnOutsidePointer, true);
 
   const renderDebugOverlay = (
     nextState: MatchState,
@@ -412,6 +452,7 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     const activePlayer = nextState.round.activePlayerId;
     const activeFaction = nextState.players[activePlayer].factionId;
     const suggestedAction = getSuggestedAction(nextState);
+    const aiStepAction = getAiStepAction(nextState);
     const leaderAction = getLeaderAction(nextState);
     const redrawPlayer = getNextRedrawPlayer(nextState);
 
@@ -459,7 +500,9 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     leaderButton.disabled = inputBlocked || !leaderAction;
     leaderButton.textContent = getLeaderButtonLabel(nextState);
     passButton.disabled = inputBlocked || nextState.phase !== "playing" || nextState.players[activePlayer].hasPassed;
-    aiStepButton.disabled = inputBlocked || !suggestedAction;
+    aiStepButton.disabled = inputBlocked || !aiStepAction;
+    aiStepButton.textContent = getAiStepButtonLabel(nextState);
+    aiStepButton.title = getAiStepButtonTitle(nextState, aiStepAction);
     menuButton.disabled = inputBlocked && nextState.phase !== "match-complete";
     settingsButton.setAttribute("aria-expanded", String(settingsOpen));
     debugButton.setAttribute("aria-expanded", String(debugToolsOpen));
@@ -472,6 +515,7 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
 
   return {
     dispose() {
+      window.removeEventListener("pointerdown", closeDrawersOnOutsidePointer, true);
       rulesOverlay.dispose();
       shell.remove();
     },
@@ -996,8 +1040,11 @@ function renderModal(
           onClick: () => options.onExitToMenu?.(),
         },
       ],
-      meta: winnerId === "player" ? "Victory secured." : "Opponent takes the match.",
+      content: createMatchSummaryContent(state, winnerId),
+      eyebrow: winnerId === "player" ? "Victory Ledger" : "Match Ledger",
+      meta: createMatchFinalMeta(state, winnerId),
       title: `${formatWinner(winnerId ? [winnerId] : [])} wins the match`,
+      variant: winnerId === "player" ? "victory" : "defeat",
     });
     return;
   }
@@ -1037,13 +1084,22 @@ function renderResultPanel(
   root: HTMLElement,
   options: {
     actions: { label: string; onClick: () => void }[];
+    content?: HTMLElement[];
+    eyebrow?: string;
     meta: string;
     title: string;
+    variant?: "defeat" | "victory";
   },
 ) {
   root.hidden = false;
   const panel = document.createElement("div");
   panel.className = "hud__modal-panel";
+  if (options.variant) {
+    panel.classList.add(`hud__modal-panel--${options.variant}`);
+  }
+  const eyebrow = document.createElement("span");
+  eyebrow.className = "hud__modal-eyebrow";
+  eyebrow.textContent = options.eyebrow ?? "";
   const title = document.createElement("h2");
   title.textContent = options.title;
   const meta = document.createElement("p");
@@ -1057,8 +1113,71 @@ function renderResultPanel(
     actions.appendChild(button);
   }
 
-  panel.append(title, meta, actions);
+  if (options.eyebrow) {
+    panel.appendChild(eyebrow);
+  }
+
+  panel.append(title, meta, ...(options.content ?? []), actions);
   root.replaceChildren(panel);
+}
+
+function createMatchSummaryContent(state: MatchState, winnerId?: PlayerId): HTMLElement[] {
+  const summaries = getRoundSummaries(state);
+  const cardsPlayed = summaries.reduce<Record<PlayerId, number>>((total, summary) => ({
+    opponent: total.opponent + summary.cardsPlayed.opponent,
+    player: total.player + summary.cardsPlayed.player,
+  }), {
+    opponent: 0,
+    player: 0,
+  });
+  const destroyedCards = state.eventLog.filter((event) => event.type === "card.destroyed").length;
+  const revivedCards = state.eventLog.filter((event) => event.type === "card.revived").length;
+  const playerHighRound = Math.max(0, ...summaries.map((summary) => summary.scores.player));
+  const opponentHighRound = Math.max(0, ...summaries.map((summary) => summary.scores.opponent));
+  const metrics = document.createElement("div");
+  metrics.className = "hud__summary-metrics";
+  metrics.append(
+    createSummaryMetric("Final Score", `${state.players.player.roundWins}-${state.players.opponent.roundWins}`, "Rounds won"),
+    createSummaryMetric("Cards Placed", `${cardsPlayed.player}-${cardsPlayed.opponent}`, "Player / Opponent"),
+    createSummaryMetric("Best Round", `${playerHighRound}-${opponentHighRound}`, "Highest score"),
+    createSummaryMetric("Casualties", `${destroyedCards}`, `${revivedCards} revived`),
+  );
+
+  const rounds = document.createElement("div");
+  rounds.className = "hud__summary-rounds";
+  for (const summary of summaries) {
+    rounds.appendChild(createRoundSummaryRow(summary));
+  }
+
+  const closing = document.createElement("p");
+  closing.className = "hud__summary-note";
+  closing.textContent = winnerId === "player"
+    ? "Contract fulfilled. The board is yours, the ledger favors your command, and the final crown stays on your side."
+    : "The ledger is saved for review. Tighten card economy, force early passes, and watch for enemy Spy tempo next match.";
+
+  return [metrics, rounds, closing];
+}
+
+function createSummaryMetric(label: string, value: string, detail: string): HTMLElement {
+  const metric = document.createElement("div");
+  metric.className = "hud__summary-metric";
+  metric.innerHTML = `
+    <span>${label}</span>
+    <strong>${value}</strong>
+    <small>${detail}</small>
+  `;
+  return metric;
+}
+
+function createRoundSummaryRow(summary: RoundSummary): HTMLElement {
+  const row = document.createElement("div");
+  row.className = "hud__summary-round";
+  row.innerHTML = `
+    <span>Round ${summary.roundNumber}</span>
+    <strong>${summary.scores.player}-${summary.scores.opponent}</strong>
+    <small>${formatWinner(summary.winnerIds)} | cards ${summary.cardsPlayed.player}-${summary.cardsPlayed.opponent}</small>
+  `;
+  return row;
 }
 
 function updateInspection(
@@ -1308,6 +1427,48 @@ function getSuggestedAction(state: MatchState): GameAction | undefined {
   return chooseAiAction(state, state.round.activePlayerId)?.action;
 }
 
+function getAiStepAction(state: MatchState): GameAction | undefined {
+  if (state.phase === "redraw") {
+    return getNextRedrawPlayer(state) === "opponent"
+      ? chooseAiAction(state, "opponent")?.action
+      : undefined;
+  }
+
+  if (state.phase !== "playing" || state.round.activePlayerId !== "opponent") {
+    return undefined;
+  }
+
+  return chooseAiAction(state, "opponent")?.action;
+}
+
+function getAiStepButtonLabel(state: MatchState): string {
+  if (state.phase === "playing" && state.round.activePlayerId !== "opponent") {
+    return "AI Waiting";
+  }
+
+  if (state.phase === "redraw" && getNextRedrawPlayer(state) !== "opponent") {
+    return "AI Waiting";
+  }
+
+  return "AI Step";
+}
+
+function getAiStepButtonTitle(state: MatchState, action?: GameAction): string {
+  if (action) {
+    return "Resolve the opponent's next AI action.";
+  }
+
+  if (state.phase === "redraw") {
+    return "AI Step is available after your redraw is finished and the opponent redraw is pending.";
+  }
+
+  if (state.phase === "playing" && state.round.activePlayerId !== "opponent") {
+    return "AI Step is available only on the opponent's turn. Use Play Suggested for your own hint action.";
+  }
+
+  return "No opponent AI action is currently available.";
+}
+
 function getNextRedrawPlayer(state: MatchState): PlayerId | undefined {
   if (state.phase !== "redraw") {
     return undefined;
@@ -1412,6 +1573,68 @@ function getWinnerIds(event: GameEvent): PlayerId[] {
   return winnerIds.filter(isPlayerId);
 }
 
+function createMatchFinalMeta(state: MatchState, winnerId?: PlayerId): string {
+  const finalScore = `${state.players.player.roundWins}-${state.players.opponent.roundWins}`;
+
+  return winnerId === "player"
+    ? `Victory secured. Final score ${finalScore}.`
+    : `Opponent takes the match. Final score ${finalScore}.`;
+}
+
+function getRoundSummaries(state: MatchState): RoundSummary[] {
+  const roundEvents = state.eventLog
+    .filter((event) => event.type === "round.ended")
+    .sort((a, b) => a.sequence - b.sequence);
+  const summaries: RoundSummary[] = [];
+  let previousRoundSequence = 0;
+
+  for (const event of roundEvents) {
+    const scores = getRoundScores(event) ?? {
+      opponent: 0,
+      player: 0,
+    };
+    const roundNumber = typeof event.payload.roundNumber === "number"
+      ? event.payload.roundNumber
+      : summaries.length + 1;
+    const cardsPlayed = countCardPlaysBetween(state, previousRoundSequence, event.sequence);
+    summaries.push({
+      cardsPlayed,
+      roundNumber,
+      scores,
+      winnerIds: getWinnerIds(event),
+    });
+    previousRoundSequence = event.sequence;
+  }
+
+  return summaries;
+}
+
+function countCardPlaysBetween(
+  state: MatchState,
+  startExclusive: number,
+  endInclusive: number,
+): Record<PlayerId, number> {
+  return state.eventLog.reduce<Record<PlayerId, number>>((counts, event) => {
+    if (event.sequence <= startExclusive || event.sequence > endInclusive || event.type !== "card.played") {
+      return counts;
+    }
+
+    const playerId = getPlayerIdFromUnknown(event.payload.playerId);
+
+    if (!playerId) {
+      return counts;
+    }
+
+    return {
+      ...counts,
+      [playerId]: counts[playerId] + 1,
+    };
+  }, {
+    opponent: 0,
+    player: 0,
+  });
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
@@ -1421,6 +1644,10 @@ function isPlayerId(value: unknown): value is PlayerId {
 }
 
 function getPlayerId(value: string): PlayerId | undefined {
+  return isPlayerId(value) ? value : undefined;
+}
+
+function getPlayerIdFromUnknown(value: unknown): PlayerId | undefined {
   return isPlayerId(value) ? value : undefined;
 }
 

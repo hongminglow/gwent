@@ -80,7 +80,7 @@ export function createCardInteractionController(
     });
     options.onInteractionChange({
       feedback,
-      inspection: getInspection(options.simulationRenderer, selectedCardId ?? hoveredCardId),
+      inspection: getInspection(options.simulationRenderer, hoveredCardId ?? selectedCardId),
       pointer: pointerPosition,
       selectedCardId,
       validRows,

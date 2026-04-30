@@ -14,11 +14,18 @@ describe("audio engine cue routing", () => {
     const state = createAudioState();
 
     expect(getAudioCuesForGameEvent(createEvent(1, "card.drawn"), state)).toEqual(["card.draw"]);
+    expect(getAudioCuesForGameEvent(createEvent(1, "card.drawn", {
+      reason: "redraw",
+    }), state)).toEqual(["redraw", "card.draw"]);
     expect(getAudioCuesForGameEvent(createEvent(2, "player.passed"), state)).toEqual(["pass"]);
     expect(getAudioCuesForGameEvent(createEvent(3, "leader.used"), state)).toEqual(["leader"]);
     expect(getAudioCuesForGameEvent(createEvent(4, "weather.applied"), state)).toEqual(["weather"]);
     expect(getAudioCuesForGameEvent(createEvent(5, "weather.cleared"), state)).toEqual(["clear-weather"]);
     expect(getAudioCuesForGameEvent(createEvent(6, "row.buff.applied"), state)).toEqual(["horn"]);
+    expect(getAudioCuesForGameEvent(createEvent(7, "turn.changed"), state)).toEqual(["turn"]);
+    expect(getAudioCuesForGameEvent(createEvent(8, "phase.changed", {
+      phase: "playing",
+    }), state)).toEqual(["round.start"]);
   });
 
   it("maps card abilities and destruction to specialty cues", () => {
@@ -34,7 +41,7 @@ describe("audio engine cue routing", () => {
     expect(getAudioCuesForGameEvent(createEvent(3, "card.revived"), state)).toEqual(["medic"]);
     expect(getAudioCuesForGameEvent(createEvent(4, "card.destroyed", {
       reason: "scorch",
-    }), state)).toEqual(["scorch"]);
+    }), state)).toEqual(["card.destroy", "scorch"]);
   });
 
   it("maps round and match outcomes from the player perspective", () => {
@@ -42,13 +49,13 @@ describe("audio engine cue routing", () => {
 
     expect(getAudioCuesForGameEvent(createEvent(1, "round.ended", {
       winnerIds: ["player"],
-    }), state)).toEqual(["round.win"]);
+    }), state)).toEqual(["card.discard", "round.win"]);
     expect(getAudioCuesForGameEvent(createEvent(2, "round.ended", {
       winnerIds: ["opponent"],
-    }), state)).toEqual(["round.loss"]);
+    }), state)).toEqual(["card.discard", "round.loss"]);
     expect(getAudioCuesForGameEvent(createEvent(3, "round.ended", {
       winnerIds: [],
-    }), state)).toEqual(["round.draw"]);
+    }), state)).toEqual(["card.discard", "round.draw"]);
     expect(getAudioCuesForGameEvent(createEvent(4, "match.ended", {
       winnerId: "player",
     }), state)).toEqual(["match.win"]);
