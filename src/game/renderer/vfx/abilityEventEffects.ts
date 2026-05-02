@@ -12,7 +12,6 @@ export type AbilityEventEffectKind =
   | "medic-revive"
   | "morale-shimmer"
   | "muster-chain"
-  | "round-win"
   | "spy-shadow"
   | "tight-bond"
   | "weather-fog"
@@ -57,7 +56,7 @@ export function createAbilityEventEffect(
     case "leader.used":
       return createLeaderEffect(event, state, context);
     case "round.ended":
-      return createRoundWinEffect(event, context);
+      return undefined;
     case "match.ended":
       return createMatchWinEffect(event, context);
     case "card.destroyed":
@@ -433,37 +432,6 @@ function createLeaderEffect(
   });
 }
 
-function createRoundWinEffect(
-  event: GameEvent,
-  context: AbilityEventEffectContext,
-): AbilityEventEffect {
-  const winnerIds = getPayloadPlayerIds(event, "winnerIds");
-  const root = new THREE.Group();
-  root.name = "AbilityVfx:round-win";
-  context.boardRoot.add(root);
-  const players = winnerIds.length > 0 ? winnerIds : PLAYERS;
-
-  for (const playerId of players) {
-    const z = playerId === "player" ? 3.55 : -3.55;
-    const pulse = new THREE.Mesh(
-      new THREE.PlaneGeometry(12.2, 4.85),
-      createAdditiveMaterial("#f5d76f", 0),
-    );
-    pulse.name = `RoundWinBoardPulse:${playerId}`;
-    pulse.position.set(0, 0.34, z);
-    pulse.rotation.x = -Math.PI / 2;
-    root.add(pulse);
-  }
-
-  return createEffect(root, "round-win", (progress) => {
-    const p = clamp01(progress);
-    root.children.forEach((child) => {
-      child.scale.set(0.78 + easeOutCubic(p) * 0.42, 1, 1);
-      setMaterialOpacity(child, Math.sin(p * Math.PI) * 0.28);
-    });
-  });
-}
-
 function createMatchWinEffect(
   event: GameEvent,
   context: AbilityEventEffectContext,
@@ -632,16 +600,6 @@ function getPayloadString(event: GameEvent, key: string): string | undefined {
 function getPayloadPlayerId(event: GameEvent, key: string): PlayerId | undefined {
   const value = event.payload[key];
   return value === "player" || value === "opponent" ? value : undefined;
-}
-
-function getPayloadPlayerIds(event: GameEvent, key: string): PlayerId[] {
-  const value = event.payload[key];
-
-  if (!Array.isArray(value)) {
-    return [];
-  }
-
-  return value.filter((playerId): playerId is PlayerId => playerId === "player" || playerId === "opponent");
 }
 
 function getPayloadRowId(event: GameEvent, key: string): RowId | undefined {

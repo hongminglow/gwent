@@ -420,8 +420,9 @@ function scheduleCue(context: AudioContext, destination: AudioNode, cueName: Aud
       playTone(context, destination, 116, 0.18, 0.08, "sine", { endFrequency: 72 });
       break;
     case "card.discard":
-      playNoise(context, destination, 0.26, 0.042, { filterFrequency: 1120 });
-      playTone(context, destination, 180, 0.22, 0.035, "triangle", { delay: 0.04, endFrequency: 128 });
+      playNoise(context, destination, 0.2, 0.052, { filterFrequency: 820 });
+      playNoise(context, destination, 0.13, 0.038, { delay: 0.055, filterFrequency: 2600 });
+      playTone(context, destination, 164, 0.24, 0.04, "triangle", { delay: 0.035, endFrequency: 104 });
       break;
     case "card.destroy":
       playNoise(context, destination, 0.24, 0.07, { filterFrequency: 3100 });

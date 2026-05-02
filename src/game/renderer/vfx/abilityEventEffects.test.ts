@@ -72,7 +72,7 @@ describe("ability event effects", () => {
     expect(createAbilityEventEffect(cardPlayed("morale", "morale-card"), state, context)?.kind).toBe("morale-shimmer");
   });
 
-  it("creates leader, round win, and match win presentation effects", () => {
+  it("creates leader and match win presentation effects without round cleanup VFX", () => {
     const leader = definition("leader-card", "leader", ["weather"], 0, "northern-realms");
     const state = createState([leader]);
     const context = createContext(["leader"]);
@@ -89,13 +89,11 @@ describe("ability event effects", () => {
     }), state, context);
 
     expect(leaderEffect?.kind).toBe("leader-burst");
-    expect(roundWinEffect?.kind).toBe("round-win");
+    expect(roundWinEffect).toBeUndefined();
     expect(matchWinEffect?.kind).toBe("match-win");
     leaderEffect?.update(0.5);
-    roundWinEffect?.update(0.5);
     matchWinEffect?.update(0.5);
     leaderEffect?.dispose();
-    roundWinEffect?.dispose();
     matchWinEffect?.dispose();
   });
 });

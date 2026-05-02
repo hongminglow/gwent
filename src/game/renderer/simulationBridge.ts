@@ -2,7 +2,6 @@ import * as THREE from "three";
 import { assetManifest } from "../assets/manifest";
 import { FACTIONS } from "../data/factions";
 import { debugFlags } from "../diagnostics/debugFlags";
-import { calculateScores } from "../simulation/scoring";
 import type {
   CardDefinition,
   CardInstance,
@@ -109,12 +108,16 @@ export function createSimulationRenderer(
   return {
     applySnapshot(state, applyOptions = {}) {
       const previousPoses = snapshotRenderedCardPoses(renderedCards);
+      const animateEvents = applyOptions.animateEvents ?? true;
+      const hasRoundCleanup = animateEvents && hasNewRoundCleanup(state, lastEventSequence);
       latestState = state;
       ensureRenderedCards(root, renderedCards, state, rendererOptions);
       syncCardTargets(root, anchors, renderedCards, state);
+      if (hasRoundCleanup) {
+        snapCardsInZone(renderedCards, state, "discard");
+      }
       applyCardInteractionState(renderedCards, interactionState);
 
-      const animateEvents = applyOptions.animateEvents ?? true;
       if (animateEvents) {
         enqueueNewEvents(
           renderedCards,
@@ -383,17 +386,18 @@ function getDiscardPilePose(
     { x: 0.07, z: 0.42, turn: 0.08 },
     { x: -0.02, z: 0.02, turn: 0.02 },
   ];
-  const pose = fan[Math.max(0, displayIndex) % fan.length];
+  const visibleIndex = Math.max(0, displayIndex);
+  const pose = fan[visibleIndex % fan.length];
   const ownerRotation = playerId === "player" ? 0 : Math.PI;
 
   return {
     position: new THREE.Vector3(
       anchorPosition.x + pose.x,
-      anchorPosition.y + Math.max(displayIndex, 0) * 0.016,
+      anchorPosition.y + 0.085 + visibleIndex * 0.032,
       anchorPosition.z + pose.z,
     ),
     rotation: new THREE.Euler(CARD_ROTATION_X, 0, ownerRotation + pose.turn),
-    scale: 0.78,
+    scale: 0.82,
   };
 }
 
@@ -450,6 +454,22 @@ function setRenderedCardTarget(
 
 function snapRenderedCards(renderedCards: Map<CardInstanceId, RenderedCard>) {
   for (const renderedCard of renderedCards.values()) {
+    renderedCard.card.root.position.copy(renderedCard.targetPosition);
+    renderedCard.card.root.rotation.copy(renderedCard.targetRotation);
+    renderedCard.card.root.scale.setScalar(renderedCard.targetScale);
+  }
+}
+
+function snapCardsInZone(
+  renderedCards: Map<CardInstanceId, RenderedCard>,
+  state: MatchState,
+  zone: CardInstance["zone"],
+) {
+  for (const [cardInstanceId, renderedCard] of renderedCards) {
+    if (state.cards[cardInstanceId]?.zone !== zone) {
+      continue;
+    }
+
     renderedCard.card.root.position.copy(renderedCard.targetPosition);
     renderedCard.card.root.rotation.copy(renderedCard.targetRotation);
     renderedCard.card.root.scale.setScalar(renderedCard.targetScale);
@@ -617,7 +637,7 @@ function createEventAnimation(
       abilityEffect?.update(0);
     },
     onUpdate: (progress) => {
-      animateEvent(renderedCards, state, event, progress);
+      animateEvent(renderedCards, event, progress);
       abilityEffect?.update(progress);
     },
     onComplete: () => {
@@ -758,7 +778,6 @@ function completeSlainEvent(
 
 function animateEvent(
   renderedCards: Map<CardInstanceId, RenderedCard>,
-  state: MatchState,
   event: GameEvent,
   progress: number,
 ) {
@@ -773,22 +792,6 @@ function animateEvent(
       renderedCard.card.root.position.y = renderedCard.targetPosition.y + pulse * 0.22;
       renderedCard.card.root.scale.setScalar(renderedCard.targetScale + pulse * 0.12);
       return;
-    }
-  }
-
-  if (event.type === "round.ended") {
-    const scores = calculateScores(state);
-    const winningPlayer = scores.player > scores.opponent ? "player" : scores.opponent > scores.player ? "opponent" : undefined;
-
-    if (winningPlayer) {
-      for (const cardInstanceId of state.players[winningPlayer].hand.cards) {
-        const renderedCard = renderedCards.get(cardInstanceId);
-
-        if (renderedCard) {
-          const pulse = Math.sin(progress * Math.PI);
-          renderedCard.card.root.position.y = renderedCard.targetPosition.y + pulse * 0.08;
-        }
-      }
     }
   }
 }
@@ -829,7 +832,7 @@ function getEventDuration(event: GameEvent): number {
     case "row.buff.applied":
       return 0.68;
     case "round.ended":
-      return 0.9;
+      return 0.16;
     case "match.ended":
       return 1.18;
     case "phase.changed":
@@ -872,6 +875,10 @@ function getAnchorPosition(root: THREE.Group, anchor: THREE.Group): THREE.Vector
 
 function getLatestEventSequence(state: MatchState): number {
   return state.eventLog.reduce((latest, event) => Math.max(latest, event.sequence), lastInitialEventSequence());
+}
+
+function hasNewRoundCleanup(state: MatchState, lastEventSequence: number): boolean {
+  return state.eventLog.some((event) => event.sequence > lastEventSequence && event.type === "round.ended");
 }
 
 function lastInitialEventSequence(): number {
