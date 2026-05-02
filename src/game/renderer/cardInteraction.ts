@@ -183,6 +183,15 @@ export function createCardInteractionController(
     const state = options.getState();
     const cardInstanceId = getPublicCardId(state, pickCard(options.simulationRenderer, raycaster));
     const selectedId = draggedCardId ?? selectedCardId;
+    const immediateAction = selectedId ? createImmediateAction(state, selectedId) : undefined;
+
+    if (immediateAction && (cardInstanceId === selectedId || rowTarget)) {
+      options.onIntent(immediateAction);
+      clearSelection();
+      clearDrag();
+      syncVisualState();
+      return;
+    }
 
     if (selectedId && cardInstanceId && selectedId !== cardInstanceId && isCardTargetSelectionMode(state, selectedId)) {
       commitCardTarget(selectedId, cardInstanceId);
