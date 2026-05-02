@@ -91,7 +91,7 @@ describe("audio engine cue routing", () => {
       masterVolume: Number.NaN,
       muted: true,
     })).toEqual({
-      masterVolume: 0.72,
+      masterVolume: 0.84,
       muted: true,
     });
   });
