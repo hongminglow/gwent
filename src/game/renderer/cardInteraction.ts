@@ -89,7 +89,7 @@ export function createCardInteractionController(
     options.onInteractionChange({
       blockedCardTargets,
       feedback,
-      inspection: getInspection(options.simulationRenderer, hoveredCardId ?? selectedCardId),
+      inspection: getInspection(options.simulationRenderer, state, hoveredCardId ?? selectedCardId),
       pointer: pointerPosition,
       selectedCardId,
       validCardTargets,
@@ -135,7 +135,7 @@ export function createCardInteractionController(
       return;
     }
 
-    setHoveredCardId(pickCard(options.simulationRenderer, raycaster));
+    setHoveredCardId(getPublicCardId(options.getState(), pickCard(options.simulationRenderer, raycaster)));
     hoveredRow = selectedCardId ? pickRow(options.board, raycaster) : undefined;
     syncVisualState();
   };
@@ -150,7 +150,8 @@ export function createCardInteractionController(
       y: event.clientY,
     };
     updateRaycaster(event, options.domElement, pointer, raycaster, options.camera);
-    const cardInstanceId = pickCard(options.simulationRenderer, raycaster);
+    const state = options.getState();
+    const cardInstanceId = getPublicCardId(state, pickCard(options.simulationRenderer, raycaster));
     pointerDownState = {
       cardInstanceId,
       clientX: event.clientX,
@@ -179,10 +180,11 @@ export function createCardInteractionController(
 
     updateRaycaster(event, options.domElement, pointer, raycaster, options.camera);
     const rowTarget = pickRow(options.board, raycaster);
-    const cardInstanceId = pickCard(options.simulationRenderer, raycaster);
+    const state = options.getState();
+    const cardInstanceId = getPublicCardId(state, pickCard(options.simulationRenderer, raycaster));
     const selectedId = draggedCardId ?? selectedCardId;
 
-    if (selectedId && cardInstanceId && selectedId !== cardInstanceId && isCardTargetSelectionMode(options.getState(), selectedId)) {
+    if (selectedId && cardInstanceId && selectedId !== cardInstanceId && isCardTargetSelectionMode(state, selectedId)) {
       commitCardTarget(selectedId, cardInstanceId);
       clearDrag();
       syncVisualState();
@@ -197,7 +199,7 @@ export function createCardInteractionController(
     }
 
     if (cardInstanceId) {
-      const immediateAction = createImmediateAction(options.getState(), cardInstanceId);
+      const immediateAction = createImmediateAction(state, cardInstanceId);
 
       if (selectedCardId === cardInstanceId && immediateAction) {
         options.onIntent(immediateAction);
@@ -703,9 +705,16 @@ function pickRow(
 
 function getInspection(
   simulationRenderer: SimulationRenderer,
+  state: MatchState,
   cardInstanceId?: CardInstanceId,
 ): CardInspection | undefined {
-  return cardInstanceId ? simulationRenderer.getCardInspection(cardInstanceId) : undefined;
+  return cardInstanceId && !isPrivateCard(state, cardInstanceId)
+    ? simulationRenderer.getCardInspection(cardInstanceId)
+    : undefined;
+}
+
+function getPublicCardId(state: MatchState, cardInstanceId?: CardInstanceId): CardInstanceId | undefined {
+  return cardInstanceId && !isPrivateCard(state, cardInstanceId) ? cardInstanceId : undefined;
 }
 
 function getCursor(
@@ -753,6 +762,16 @@ function isSelectableCard(state: MatchState, cardInstanceId: CardInstanceId): bo
   }
 
   return (card.zone === "hand" || card.zone === "leader") && card.ownerId === state.round.activePlayerId;
+}
+
+function isPrivateCard(state: MatchState, cardInstanceId: CardInstanceId): boolean {
+  const card = state.cards[cardInstanceId];
+
+  if (!card) {
+    return true;
+  }
+
+  return card.ownerId === "opponent" && (card.zone === "hand" || card.zone === "deck");
 }
 
 function getDefaultMedicTarget(

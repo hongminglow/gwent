@@ -867,23 +867,11 @@ function formatBattleLogEvent(state: MatchState, event: GameEvent): BattleLogEnt
 
   switch (event.type) {
     case "match.created":
-      return {
-        meta,
-        text: "Match created.",
-        tone: "info",
-      };
+      return undefined;
     case "phase.changed":
-      return formatPhaseChangedLog(event, meta);
-    case "turn.changed": {
-      const playerId = getPlayerIdFromUnknown(event.payload.activePlayerId);
-      return playerId
-        ? {
-            meta,
-            text: `${formatPlayer(playerId)} takes the turn.`,
-            tone: "info",
-          }
-        : undefined;
-    }
+      return undefined;
+    case "turn.changed":
+      return undefined;
     case "player.passed": {
       const playerId = getPlayerIdFromUnknown(event.payload.playerId);
       return playerId
@@ -897,13 +885,19 @@ function formatBattleLogEvent(state: MatchState, event: GameEvent): BattleLogEnt
     case "card.drawn": {
       const playerId = getPlayerIdFromUnknown(event.payload.playerId);
       const reason = typeof event.payload.reason === "string" ? event.payload.reason : undefined;
-      return playerId
-        ? {
-            meta,
-            text: `${formatPlayer(playerId)} drew a card${reason ? ` (${formatLogReason(reason)})` : ""}.`,
-            tone: "info",
-          }
-        : undefined;
+      const cardName = playerId === "player" ? getEventCardName(state, event) : undefined;
+
+      if (!playerId || isOpeningDrawReason(reason)) {
+        return undefined;
+      }
+
+      return {
+        meta,
+        text: cardName
+          ? `${formatPlayer(playerId)} drew ${cardName}${reason ? ` (${formatLogReason(reason)})` : ""}.`
+          : `${formatPlayer(playerId)} drew a card${reason ? ` (${formatLogReason(reason)})` : ""}.`,
+        tone: "info",
+      };
     }
     case "card.played":
       return formatCardPlayedLog(state, event, meta);
@@ -912,7 +906,7 @@ function formatBattleLogEvent(state: MatchState, event: GameEvent): BattleLogEnt
       return cardName
         ? {
             meta,
-            text: `${cardName} was destroyed${formatOptionalReason(event)}.`,
+            text: `${cardName} was discarded${formatOptionalReason(event)}.`,
             tone: "danger",
           }
         : undefined;
@@ -989,31 +983,6 @@ function formatBattleLogEvent(state: MatchState, event: GameEvent): BattleLogEnt
     default:
       return assertNever(event.type);
   }
-}
-
-function formatPhaseChangedLog(event: GameEvent, meta: string): BattleLogEntry | undefined {
-  if (event.payload.redrawComplete === true) {
-    const playerId = getPlayerIdFromUnknown(event.payload.playerId);
-    return playerId
-      ? {
-          meta,
-          text: `${formatPlayer(playerId)} finished redraw.`,
-          tone: "info",
-        }
-      : undefined;
-  }
-
-  const phase = typeof event.payload.phase === "string" ? event.payload.phase : undefined;
-
-  if (!phase) {
-    return undefined;
-  }
-
-  return {
-    meta,
-    text: `${formatPhase(phase as MatchState["phase"])} started.`,
-    tone: "info",
-  };
 }
 
 function formatCardPlayedLog(
@@ -1106,6 +1075,10 @@ function formatLogReason(reason: string): string {
     .filter(Boolean)
     .map((part) => part[0].toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function isOpeningDrawReason(reason?: string): boolean {
+  return reason === "opening-hand" || reason === "redraw";
 }
 
 function getPayloadString(event: GameEvent, key: string): string | undefined {
@@ -1285,6 +1258,9 @@ function renderRedrawPanel(
   inputBlocked: boolean,
   onIntent: (action: GameAction) => void,
 ) {
+  const previousCards = root.querySelector<HTMLElement>(".hud__redraw-cards");
+  const previousScrollTop = previousCards?.scrollTop ?? 0;
+  const previousScrollLeft = previousCards?.scrollLeft ?? 0;
   root.hidden = state.phase !== "redraw";
 
   if (state.phase !== "redraw") {
@@ -1365,6 +1341,8 @@ function renderRedrawPanel(
 
   redrawBody.append(cards, redrawDetail);
   root.replaceChildren(header, meta, redrawBody);
+  cards.scrollTop = previousScrollTop;
+  cards.scrollLeft = previousScrollLeft;
 }
 
 function renderModal(
