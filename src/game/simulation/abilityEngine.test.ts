@@ -107,6 +107,56 @@ describe("ability engine", () => {
     expect(state.eventLog.some((event) => event.type === "card.revived")).toBe(true);
   });
 
+  it("revives Spy units onto the opponent row and draws for the medic owner", () => {
+    let state = createAbilityState();
+    state = addCard(state, {
+      id: "medic",
+      ownerId: "player",
+      zone: "hand",
+      rowId: "ranged",
+      basePower: 5,
+      abilities: ["medic"],
+    });
+    state = addCard(state, {
+      id: "fallen-spy",
+      ownerId: "player",
+      zone: "discard",
+      rowId: "close",
+      basePower: 4,
+      abilities: ["spy"],
+    });
+    state = addCard(state, {
+      id: "draw-one",
+      ownerId: "player",
+      zone: "deck",
+      rowId: "close",
+      basePower: 1,
+    });
+    state = addCard(state, {
+      id: "draw-two",
+      ownerId: "player",
+      zone: "deck",
+      rowId: "close",
+      basePower: 1,
+    });
+
+    state = resolveCardPlay(state, {
+      playerId: "player",
+      cardInstanceId: "medic",
+      rowId: "ranged",
+      targetCardInstanceId: "fallen-spy",
+    });
+
+    expect(state.board.rows.opponent.close.cards).toContain("fallen-spy");
+    expect(state.board.rows.player.close.cards).not.toContain("fallen-spy");
+    expect(state.cards["fallen-spy"].controllerId).toBe("opponent");
+    expect(state.players.player.hand.cards).toEqual(expect.arrayContaining(["draw-one", "draw-two"]));
+    expect(calculateScores(state)).toEqual({
+      player: 5,
+      opponent: 4,
+    });
+  });
+
   it("rejects Medic targets that are heroes or special cards", () => {
     let state = createAbilityState();
     state = addCard(state, {

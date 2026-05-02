@@ -406,12 +406,24 @@ export function createRowTargetAction(
     };
   }
 
-  return {
+  const definition = state.cardDefinitions[card.definitionId];
+
+  const targetCardInstanceId = definition.abilities.includes("medic")
+    ? getDefaultMedicTarget(state, state.round.activePlayerId)
+    : undefined;
+  const action: GameAction = {
     type: "play-card",
     playerId: state.round.activePlayerId,
     cardInstanceId,
     rowId: rowTarget.rowId,
   };
+
+  return targetCardInstanceId
+    ? {
+        ...action,
+        targetCardInstanceId,
+      }
+    : action;
 }
 
 export function createImmediateAction(
@@ -643,6 +655,23 @@ function isSelectableCard(state: MatchState, cardInstanceId: CardInstanceId): bo
   }
 
   return (card.zone === "hand" || card.zone === "leader") && card.ownerId === state.round.activePlayerId;
+}
+
+function getDefaultMedicTarget(
+  state: MatchState,
+  playerId: PlayerId,
+): CardInstanceId | undefined {
+  return state.players[playerId].discard.cards
+    .filter((cardInstanceId) => {
+      const definition = state.cardDefinitions[state.cards[cardInstanceId].definitionId];
+      return definition.type === "unit" && !definition.abilities.includes("hero");
+    })
+    .sort((firstId, secondId) => {
+      const first = state.cardDefinitions[state.cards[firstId].definitionId];
+      const second = state.cardDefinitions[state.cards[secondId].definitionId];
+
+      return second.basePower - first.basePower;
+    })[0];
 }
 
 function rowTargetsForRows(rows: RowId[]): RowInteractionTarget[] {

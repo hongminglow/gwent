@@ -202,6 +202,10 @@ function resolveMedic(
     throw new Error(`${targetDefinition.name} has no legal revive row.`);
   }
 
+  const targetControllerId = targetDefinition.abilities.includes("spy")
+    ? getOpponentId(playerId)
+    : playerId;
+
   let nextState: MatchState = {
     ...state,
     cards: {
@@ -209,7 +213,7 @@ function resolveMedic(
       [targetCardInstanceId]: {
         ...state.cards[targetCardInstanceId],
         ownerId: playerId,
-        controllerId: playerId,
+        controllerId: targetControllerId,
         rowId,
         zone: "board",
       },
@@ -223,7 +227,7 @@ function resolveMedic(
         },
       },
     },
-    board: addCardToBoardRow(state.board, playerId, rowId, targetCardInstanceId),
+    board: addCardToBoardRow(state.board, targetControllerId, rowId, targetCardInstanceId),
   };
 
   nextState = appendEvent(

@@ -46,6 +46,24 @@ describe("card interaction helpers", () => {
     expect(createRowTargetAction(state, cardId, { playerId: "player", rowId: "siege" })).toBeUndefined();
   });
 
+  it("adds the strongest eligible discard target when playing Medic", () => {
+    const medic = readyMatchWithActiveCard("medic-row-targets", "nr-dun-banner-medic");
+    const weakTargetId = findOwnedCardByDefinition(medic.state, "player", "nr-thaler");
+    const strongTargetId = findOwnedCardByDefinition(medic.state, "player", "nr-catapult");
+    const ineligibleHeroId = findOwnedCardByDefinition(medic.state, "player", "nr-vernon-roche");
+    let state = putCardInDiscard(medic.state, "player", weakTargetId);
+    state = putCardInDiscard(state, "player", ineligibleHeroId);
+    state = putCardInDiscard(state, "player", strongTargetId);
+
+    expect(createRowTargetAction(state, medic.cardId, { playerId: "player", rowId: "siege" })).toEqual({
+      type: "play-card",
+      playerId: "player",
+      cardInstanceId: medic.cardId,
+      rowId: "siege",
+      targetCardInstanceId: strongTargetId,
+    });
+  });
+
   it("shows weather specials as row targets for both sides", () => {
     const { cardId, state } = readyMatchWithActiveCard("weather-row-targets", "neutral-biting-frost");
 
@@ -205,6 +223,44 @@ function putCardInActiveHand(
         hand: {
           ...state.players[playerId].hand,
           cards: [cardInstanceId, ...state.players[playerId].hand.cards.filter((id) => id !== cardInstanceId)],
+        },
+      },
+    },
+  };
+}
+
+function putCardInDiscard(
+  state: MatchState,
+  playerId: PlayerId,
+  cardInstanceId: CardInstanceId,
+): MatchState {
+  return {
+    ...state,
+    cards: {
+      ...state.cards,
+      [cardInstanceId]: {
+        ...state.cards[cardInstanceId],
+        controllerId: playerId,
+        rowId: undefined,
+        zone: "discard",
+      },
+    },
+    players: {
+      ...state.players,
+      [playerId]: {
+        ...state.players[playerId],
+        deck: {
+          cards: state.players[playerId].deck.cards.filter((id) => id !== cardInstanceId),
+        },
+        hand: {
+          ...state.players[playerId].hand,
+          cards: state.players[playerId].hand.cards.filter((id) => id !== cardInstanceId),
+        },
+        discard: {
+          cards: [
+            ...state.players[playerId].discard.cards.filter((id) => id !== cardInstanceId),
+            cardInstanceId,
+          ],
         },
       },
     },
