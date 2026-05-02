@@ -152,14 +152,29 @@ export function createCardInteractionController(
     updateRaycaster(event, options.domElement, pointer, raycaster, options.camera);
     const state = options.getState();
     const cardInstanceId = getPublicCardId(state, pickCard(options.simulationRenderer, raycaster));
+    const clickedCard = cardInstanceId ? state.cards[cardInstanceId] : undefined;
+    const keepSelectedCardTarget = Boolean(
+      selectedCardId
+      && cardInstanceId
+      && clickedCard?.zone === "board"
+      && selectedCardId !== cardInstanceId
+      && isCardTargetSelectionMode(state, selectedCardId),
+    );
     pointerDownState = {
-      cardInstanceId,
+      cardInstanceId: keepSelectedCardTarget ? undefined : cardInstanceId,
       clientX: event.clientX,
       clientY: event.clientY,
     };
 
-    if (cardInstanceId) {
+    if (cardInstanceId && !keepSelectedCardTarget) {
       selectedCardId = cardInstanceId;
+      setHoveredCardId(cardInstanceId, false);
+      clearRejection();
+      syncVisualState();
+      return;
+    }
+
+    if (cardInstanceId) {
       setHoveredCardId(cardInstanceId, false);
       clearRejection();
       syncVisualState();

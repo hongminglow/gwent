@@ -349,8 +349,8 @@ export function getAudioCueFromRendererCue(cue: RendererAudioCue | CardHoverAudi
     return undefined;
   }
 
-  if (cue.cue === "slain-slash" && cue.reason !== "scorch") {
-    return "slain-slash";
+  if (cue.cue === "slain-slash") {
+    return cue.reason === "scorch" ? "card.destroy" : "slain-slash";
   }
 
   if (cue.cue === "card.hover") {

@@ -600,7 +600,6 @@ function enqueueNewEvents(
     if (slainContract) {
       queue.enqueue(createSlainAnimation(
         renderedCards,
-        root,
         event,
         slainContract,
         previousPoses,
@@ -649,7 +648,6 @@ function createEventAnimation(
 
 function createSlainAnimation(
   renderedCards: Map<CardInstanceId, RenderedCard>,
-  root: THREE.Group,
   event: GameEvent,
   contract: SlainAnimationContract,
   previousPoses: Map<CardInstanceId, RenderedCardPose>,
@@ -681,10 +679,6 @@ function createSlainAnimation(
         renderedCard.slainEffect.update(0);
       }
 
-      options.onCameraFocus?.(
-        root.localToWorld(startPose.position.clone()),
-        contract.major ? 1 : 0.72,
-      );
       options.onAudioCue?.({
         cardInstanceId: contract.cardInstanceId,
         cue: "slain-slash",
@@ -721,21 +715,12 @@ function animateSlainEvent(
     return;
   }
 
-  const cutProgress = clamp01(progress / 0.72);
   const travelProgress = clamp01((progress - 0.72) / 0.28);
-  const shake = Math.sin(progress * Math.PI * 18) * (1 - cutProgress) * 0.035;
-  const recoil = Math.sin(progress * Math.PI) * 0.2;
 
   if (travelProgress <= 0) {
-    renderedCard.card.root.position.set(
-      startPose.position.x + shake,
-      startPose.position.y + recoil,
-      startPose.position.z,
-    );
-    renderedCard.card.root.rotation.x = startPose.rotation.x + shake * 0.12;
-    renderedCard.card.root.rotation.y = startPose.rotation.y;
-    renderedCard.card.root.rotation.z = startPose.rotation.z + Math.sin(progress * Math.PI * 6) * (1 - cutProgress) * 0.035;
-    renderedCard.card.root.scale.setScalar(startPose.scale + Math.sin(progress * Math.PI) * 0.12);
+    renderedCard.card.root.position.copy(startPose.position);
+    renderedCard.card.root.rotation.copy(startPose.rotation);
+    renderedCard.card.root.scale.setScalar(startPose.scale);
   } else {
     const easedTravel = easeInOutCubic(travelProgress);
     renderedCard.card.root.position.lerpVectors(startPose.position, renderedCard.targetPosition, easedTravel);

@@ -74,7 +74,7 @@ describe("audio engine cue routing", () => {
     expect(getAudioCueFromRendererCue({
       cue: "slain-slash",
       reason: "scorch",
-    })).toBeUndefined();
+    })).toBe("card.destroy");
     expect(getAudioCueFromRendererCue({
       cardInstanceId: "card-1",
       cue: "card.hover",

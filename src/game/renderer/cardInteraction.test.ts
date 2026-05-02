@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createMatchFromFaction } from "../simulation/matchFlow";
 import { matchReducer } from "../simulation/reducer";
-import type { CardId, CardInstanceId, MatchState, PlayerId, RowId } from "../simulation/types";
+import type { CardId, CardInstanceId, FactionId, MatchState, PlayerId, RowId } from "../simulation/types";
 import {
   createCardTargetAction,
   createImmediateAction,
@@ -115,6 +115,25 @@ describe("card interaction helpers", () => {
     expect(createCardTargetAction(state, decoy.cardId, heroId)).toBeUndefined();
   });
 
+  it("allows Decoy to target an opponent Spy on the player's battlefield", () => {
+    const decoy = readyMatchWithActiveCard(
+      "decoy-opponent-spy-targets",
+      "neutral-decoy",
+      "northern-realms",
+      "nilfgaardian-empire",
+    );
+    const opponentSpyId = findOwnedCardByDefinition(decoy.state, "opponent", "ng-vattier-de-rideaux");
+    const state = putCardOnBoard(decoy.state, "player", opponentSpyId, "close");
+
+    expect(getValidCardTargets(state, decoy.cardId)).toContain(opponentSpyId);
+    expect(createCardTargetAction(state, decoy.cardId, opponentSpyId)).toEqual({
+      type: "play-card",
+      playerId: "player",
+      cardInstanceId: decoy.cardId,
+      targetCardInstanceId: opponentSpyId,
+    });
+  });
+
   it("explains rejected row targets with the concrete rule", () => {
     const spy = readyMatchWithActiveCard("spy-rejection", "nr-thaler");
     expect(getPlacementRejectionReason(spy.state, spy.cardId, { playerId: "player", rowId: "siege" }))
@@ -166,8 +185,13 @@ describe("card interaction helpers", () => {
   });
 });
 
-function readyMatchWithActiveCard(id: string, definitionId: CardId) {
-  let state = readyMatch(id);
+function readyMatchWithActiveCard(
+  id: string,
+  definitionId: CardId,
+  playerFactionId?: FactionId,
+  opponentFactionId?: FactionId,
+) {
+  let state = readyMatch(id, playerFactionId, opponentFactionId);
   const cardId = findOwnedCardByDefinition(state, "player", definitionId);
   state = putCardInActiveHand(state, "player", cardId);
 
@@ -179,10 +203,12 @@ function readyMatchWithActiveCard(id: string, definitionId: CardId) {
 
 function readyMatch(
   id: string,
-  playerFactionId: MatchState["players"]["player"]["factionId"] = "northern-realms",
+  playerFactionId: FactionId = "northern-realms",
+  opponentFactionId?: FactionId,
 ): MatchState {
   let state = createMatchFromFaction({
     id,
+    opponentFactionId,
     seed: id,
     playerFactionId,
   });

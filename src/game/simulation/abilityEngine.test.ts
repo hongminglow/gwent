@@ -363,6 +363,41 @@ describe("ability engine", () => {
     expect(state.board.rows.player.ranged.cards).toEqual(["decoy"]);
   });
 
+  it("lets Decoy recover an opponent Spy from the player's battlefield", () => {
+    let state = createAbilityState();
+    state = addCard(state, {
+      id: "decoy",
+      ownerId: "player",
+      zone: "hand",
+      type: "special",
+      basePower: 0,
+      abilities: ["decoy"],
+    });
+    state = addCard(state, {
+      id: "enemy-spy",
+      ownerId: "opponent",
+      zone: "board",
+      rowId: "close",
+      basePower: 4,
+      abilities: ["spy"],
+    });
+    state = moveBoardCardToController(state, "enemy-spy", "opponent", "player", "close");
+
+    state = resolveCardPlay(state, {
+      playerId: "player",
+      cardInstanceId: "decoy",
+      targetCardInstanceId: "enemy-spy",
+    });
+
+    expect(state.players.player.hand.cards).toContain("enemy-spy");
+    expect(state.cards["enemy-spy"]).toMatchObject({
+      controllerId: "player",
+      ownerId: "player",
+      zone: "hand",
+    });
+    expect(state.board.rows.player.close.cards).toEqual(["decoy"]);
+  });
+
   it("rejects Decoy on hero cards", () => {
     let state = createAbilityState();
     state = addCard(state, {
@@ -554,4 +589,45 @@ function addCard(
   }
 
   return nextState;
+}
+
+function moveBoardCardToController(
+  state: MatchState,
+  cardInstanceId: CardInstanceId,
+  fromPlayerId: PlayerId,
+  toPlayerId: PlayerId,
+  rowId: RowId,
+): MatchState {
+  return {
+    ...state,
+    cards: {
+      ...state.cards,
+      [cardInstanceId]: {
+        ...state.cards[cardInstanceId],
+        controllerId: toPlayerId,
+        rowId,
+        zone: "board",
+      },
+    },
+    board: {
+      ...state.board,
+      rows: {
+        ...state.board.rows,
+        [fromPlayerId]: {
+          ...state.board.rows[fromPlayerId],
+          [rowId]: {
+            ...state.board.rows[fromPlayerId][rowId],
+            cards: state.board.rows[fromPlayerId][rowId].cards.filter((id) => id !== cardInstanceId),
+          },
+        },
+        [toPlayerId]: {
+          ...state.board.rows[toPlayerId],
+          [rowId]: {
+            ...state.board.rows[toPlayerId][rowId],
+            cards: [...state.board.rows[toPlayerId][rowId].cards, cardInstanceId],
+          },
+        },
+      },
+    },
+  };
 }
