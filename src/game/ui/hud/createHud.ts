@@ -85,6 +85,12 @@ type RoundSummary = {
   winnerIds: PlayerId[];
 };
 
+type BattleLogEntry = {
+  meta: string;
+  text: string;
+  tone: "danger" | "effect" | "info" | "play" | "round";
+};
+
 export function createHud(root: HTMLElement, state: MatchState, options: HudOptions): Hud {
   let audioSettings: AudioSettings = {
     ...DEFAULT_AUDIO_SETTINGS,
@@ -122,6 +128,8 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
   const rulesButton = createButton("Rules");
   rulesButton.setAttribute("aria-expanded", "false");
   rulesButton.setAttribute("aria-haspopup", "dialog");
+  const logButton = createButton("Log");
+  logButton.setAttribute("aria-expanded", "false");
   const settingsButton = createButton("Settings");
   const debugButton = createButton("Debug");
   const menuButton = createButton("Menu");
@@ -132,6 +140,7 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     passButton,
     aiStepButton,
     rulesButton,
+    logButton,
     settingsButton,
     debugButton,
     menuButton,
@@ -250,6 +259,7 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
       renderDebugToolsDrawer();
     },
   });
+  const battleLogDrawer = createBattleLogDrawer();
 
   const debugOverlay = document.createElement("aside");
   debugOverlay.className = "hud__debug";
@@ -268,6 +278,7 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     hint,
     modal,
     rulesOverlay.root,
+    battleLogDrawer.root,
     settingsDrawer.root,
     debugToolsDrawer.root,
     debugOverlay,
@@ -278,9 +289,12 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
   let latestState = state;
   let latestInputBlocked = false;
   let latestInteraction: CardInteractionHudState = {
+    blockedCardTargets: [],
+    validCardTargets: [],
     validRows: [],
   };
   let dismissedRoundSequence = -1;
+  let logOpen = false;
   let settingsOpen = false;
   let debugToolsOpen = false;
   let debugAiAutoplayEnabled = false;
@@ -331,20 +345,37 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
   });
 
   rulesButton.addEventListener("click", () => {
+    logOpen = false;
     settingsOpen = false;
     debugToolsOpen = false;
+    renderBattleLogDrawer();
     renderSettingsDrawer();
     renderDebugToolsDrawer();
     rulesOverlay.toggle();
     rulesButton.setAttribute("aria-expanded", String(rulesOverlay.isOpen()));
   });
 
-  settingsButton.addEventListener("click", () => {
-    settingsOpen = !settingsOpen;
-    if (settingsOpen) {
+  logButton.addEventListener("click", () => {
+    logOpen = !logOpen;
+    if (logOpen) {
+      settingsOpen = false;
       debugToolsOpen = false;
       rulesOverlay.hide();
     }
+    renderBattleLogDrawer();
+    renderSettingsDrawer();
+    renderDebugToolsDrawer();
+    rulesButton.setAttribute("aria-expanded", "false");
+  });
+
+  settingsButton.addEventListener("click", () => {
+    settingsOpen = !settingsOpen;
+    if (settingsOpen) {
+      logOpen = false;
+      debugToolsOpen = false;
+      rulesOverlay.hide();
+    }
+    renderBattleLogDrawer();
     renderSettingsDrawer();
     renderDebugToolsDrawer();
     rulesButton.setAttribute("aria-expanded", "false");
@@ -353,9 +384,11 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
   debugButton.addEventListener("click", () => {
     debugToolsOpen = !debugToolsOpen;
     if (debugToolsOpen) {
+      logOpen = false;
       settingsOpen = false;
       rulesOverlay.hide();
     }
+    renderBattleLogDrawer();
     renderSettingsDrawer();
     renderDebugToolsDrawer();
     rulesButton.setAttribute("aria-expanded", "false");
@@ -364,6 +397,12 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
   menuButton.addEventListener("click", () => {
     options.onExitToMenu?.();
   });
+
+  const renderBattleLogDrawer = () => {
+    battleLogDrawer.root.hidden = !logOpen;
+    logButton.setAttribute("aria-expanded", String(logOpen));
+    battleLogDrawer.update(latestState);
+  };
 
   const renderSettingsDrawer = () => {
     settingsDrawer.root.hidden = !settingsOpen;
@@ -394,6 +433,11 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
 
     let changed = false;
 
+    if (logOpen && !battleLogDrawer.root.contains(target) && !logButton.contains(target)) {
+      logOpen = false;
+      changed = true;
+    }
+
     if (settingsOpen && !settingsDrawer.root.contains(target) && !settingsButton.contains(target)) {
       settingsOpen = false;
       changed = true;
@@ -405,6 +449,7 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     }
 
     if (changed) {
+      renderBattleLogDrawer();
       renderSettingsDrawer();
       renderDebugToolsDrawer();
 
@@ -506,6 +551,7 @@ export function createHud(root: HTMLElement, state: MatchState, options: HudOpti
     menuButton.disabled = inputBlocked && nextState.phase !== "match-complete";
     settingsButton.setAttribute("aria-expanded", String(settingsOpen));
     debugButton.setAttribute("aria-expanded", String(debugToolsOpen));
+    renderBattleLogDrawer();
     renderSettingsDrawer();
     renderDebugToolsDrawer();
     renderDebugOverlay(nextState, inputBlocked, latestInteraction);
@@ -764,6 +810,307 @@ function createDebugToolsDrawer(options: {
         : formatScoreBreakdown(state);
     },
   };
+}
+
+function createBattleLogDrawer() {
+  const root = document.createElement("aside");
+  root.className = "hud__battle-log";
+  root.hidden = true;
+  root.setAttribute("aria-label", "Battle log");
+
+  const title = document.createElement("h2");
+  title.className = "hud__drawer-title";
+  title.textContent = "Battle Log";
+  const list = document.createElement("ol");
+  list.className = "hud__battle-log-list";
+  root.append(title, list);
+
+  return {
+    root,
+    update(state: MatchState) {
+      const entries = createBattleLogEntries(state);
+
+      if (entries.length === 0) {
+        const empty = document.createElement("li");
+        empty.className = "hud__battle-log-empty";
+        empty.textContent = "No actions recorded yet.";
+        list.replaceChildren(empty);
+        return;
+      }
+
+      list.replaceChildren(...entries.map(createBattleLogItem));
+    },
+  };
+}
+
+function createBattleLogItem(entry: BattleLogEntry): HTMLElement {
+  const item = document.createElement("li");
+  item.className = `hud__battle-log-item hud__battle-log-item--${entry.tone}`;
+  const meta = document.createElement("span");
+  meta.textContent = entry.meta;
+  const text = document.createElement("strong");
+  text.textContent = entry.text;
+  item.append(meta, text);
+  return item;
+}
+
+function createBattleLogEntries(state: MatchState): BattleLogEntry[] {
+  return state.eventLog
+    .map((event) => formatBattleLogEvent(state, event))
+    .filter((entry): entry is BattleLogEntry => Boolean(entry))
+    .slice(-80)
+    .reverse();
+}
+
+function formatBattleLogEvent(state: MatchState, event: GameEvent): BattleLogEntry | undefined {
+  const meta = `#${event.sequence}`;
+
+  switch (event.type) {
+    case "match.created":
+      return {
+        meta,
+        text: "Match created.",
+        tone: "info",
+      };
+    case "phase.changed":
+      return formatPhaseChangedLog(event, meta);
+    case "turn.changed": {
+      const playerId = getPlayerIdFromUnknown(event.payload.activePlayerId);
+      return playerId
+        ? {
+            meta,
+            text: `${formatPlayer(playerId)} takes the turn.`,
+            tone: "info",
+          }
+        : undefined;
+    }
+    case "player.passed": {
+      const playerId = getPlayerIdFromUnknown(event.payload.playerId);
+      return playerId
+        ? {
+            meta,
+            text: `${formatPlayer(playerId)} passed.`,
+            tone: "play",
+          }
+        : undefined;
+    }
+    case "card.drawn": {
+      const playerId = getPlayerIdFromUnknown(event.payload.playerId);
+      const reason = typeof event.payload.reason === "string" ? event.payload.reason : undefined;
+      return playerId
+        ? {
+            meta,
+            text: `${formatPlayer(playerId)} drew a card${reason ? ` (${formatLogReason(reason)})` : ""}.`,
+            tone: "info",
+          }
+        : undefined;
+    }
+    case "card.played":
+      return formatCardPlayedLog(state, event, meta);
+    case "card.destroyed": {
+      const cardName = getEventCardName(state, event);
+      return cardName
+        ? {
+            meta,
+            text: `${cardName} was destroyed${formatOptionalReason(event)}.`,
+            tone: "danger",
+          }
+        : undefined;
+    }
+    case "card.revived": {
+      const playerId = getPlayerIdFromUnknown(event.payload.playerId);
+      const cardName = getEventCardName(state, event);
+      return playerId && cardName
+        ? {
+            meta,
+            text: `${formatPlayer(playerId)} revived ${cardName}.`,
+            tone: "effect",
+          }
+        : undefined;
+    }
+    case "leader.used": {
+      const playerId = getPlayerIdFromUnknown(event.payload.playerId);
+      const leaderCardInstanceId = getPayloadString(event, "leaderCardInstanceId");
+      const leaderName = leaderCardInstanceId ? getCardName(state, leaderCardInstanceId) : undefined;
+      return playerId
+        ? {
+            meta,
+            text: `${formatPlayer(playerId)} used ${leaderName ?? "their leader"}.`,
+            tone: "effect",
+          }
+        : undefined;
+    }
+    case "weather.applied": {
+      const rowId = getRowIdFromUnknown(event.payload.rowId);
+      const sourceName = getSourceCardName(state, event);
+      return rowId
+        ? {
+            meta,
+            text: `${sourceName ?? "Weather"} applied to ${formatRow(rowId)}.`,
+            tone: "effect",
+          }
+        : undefined;
+    }
+    case "weather.cleared":
+      return {
+        meta,
+        text: "Weather cleared from the battlefield.",
+        tone: "effect",
+      };
+    case "row.buff.applied": {
+      const playerId = getPlayerIdFromUnknown(event.payload.playerId);
+      const rowId = getRowIdFromUnknown(event.payload.rowId);
+      return playerId && rowId
+        ? {
+            meta,
+            text: `${formatPlayer(playerId)} ${formatRow(rowId)} gained ${formatLogReason(getPayloadString(event, "buff") ?? "buff")}.`,
+            tone: "effect",
+          }
+        : undefined;
+    }
+    case "round.ended": {
+      const roundNumber = typeof event.payload.roundNumber === "number" ? event.payload.roundNumber : undefined;
+      const scores = getRoundScores(event);
+      const scoreText = scores ? ` ${scores.player}-${scores.opponent}` : "";
+      return {
+        meta,
+        text: `Round ${roundNumber ?? "?"} ended: ${formatWinner(getWinnerIds(event))}.${scoreText}`,
+        tone: "round",
+      };
+    }
+    case "match.ended": {
+      const winnerId = getPlayerIdFromUnknown(event.payload.winnerId);
+      return {
+        meta,
+        text: winnerId === "player" ? "Player won the match." : winnerId === "opponent" ? "Opponent won the match." : "Match ended.",
+        tone: "round",
+      };
+    }
+    default:
+      return assertNever(event.type);
+  }
+}
+
+function formatPhaseChangedLog(event: GameEvent, meta: string): BattleLogEntry | undefined {
+  if (event.payload.redrawComplete === true) {
+    const playerId = getPlayerIdFromUnknown(event.payload.playerId);
+    return playerId
+      ? {
+          meta,
+          text: `${formatPlayer(playerId)} finished redraw.`,
+          tone: "info",
+        }
+      : undefined;
+  }
+
+  const phase = typeof event.payload.phase === "string" ? event.payload.phase : undefined;
+
+  if (!phase) {
+    return undefined;
+  }
+
+  return {
+    meta,
+    text: `${formatPhase(phase as MatchState["phase"])} started.`,
+    tone: "info",
+  };
+}
+
+function formatCardPlayedLog(
+  state: MatchState,
+  event: GameEvent,
+  meta: string,
+): BattleLogEntry | undefined {
+  const playerId = getPlayerIdFromUnknown(event.payload.playerId);
+  const cardName = getEventCardName(state, event);
+
+  if (!playerId || !cardName) {
+    return undefined;
+  }
+
+  const rowId = getRowIdFromUnknown(event.payload.rowId);
+  const targetCardInstanceId = getPayloadString(event, "targetCardInstanceId");
+  const reason = typeof event.payload.reason === "string" ? event.payload.reason : undefined;
+  const controllerId = getPlayerIdFromUnknown(event.payload.controllerId);
+  const rowText = rowId ? ` to ${controllerId && controllerId !== playerId ? `${formatPlayer(controllerId)} ` : ""}${formatRow(rowId)}` : "";
+
+  if (reason === "decoy") {
+    const targetName = targetCardInstanceId ? getCardName(state, targetCardInstanceId) : undefined;
+    return {
+      meta,
+      text: `${formatPlayer(playerId)} used Decoy${targetName ? ` to recover ${targetName}` : ""}.`,
+      tone: "effect",
+    };
+  }
+
+  if (reason === "medic") {
+    return {
+      meta,
+      text: `${formatPlayer(playerId)} returned ${cardName} from discard${rowText}.`,
+      tone: "effect",
+    };
+  }
+
+  if (reason === "muster") {
+    return {
+      meta,
+      text: `${cardName} mustered${rowText}.`,
+      tone: "effect",
+    };
+  }
+
+  if (reason === "spy") {
+    return {
+      meta,
+      text: `${formatPlayer(playerId)} played ${cardName}${rowText} and drew cards.`,
+      tone: "play",
+    };
+  }
+
+  return {
+    meta,
+    text: `${formatPlayer(playerId)} played ${cardName}${rowText}.`,
+    tone: event.payload.special === true ? "effect" : "play",
+  };
+}
+
+function getEventCardName(state: MatchState, event: GameEvent): string | undefined {
+  const cardInstanceId = getPayloadString(event, "cardInstanceId");
+  return cardInstanceId ? getCardName(state, cardInstanceId) : undefined;
+}
+
+function getCardName(state: MatchState, cardInstanceId: CardInstanceId): string | undefined {
+  const card = state.cards[cardInstanceId];
+  return card ? state.cardDefinitions[card.definitionId]?.name : undefined;
+}
+
+function getSourceCardName(state: MatchState, event: GameEvent): string | undefined {
+  const sourceCardId = getPayloadString(event, "sourceCardId");
+
+  if (!sourceCardId) {
+    return undefined;
+  }
+
+  return state.cardDefinitions[sourceCardId]?.name ?? sourceCardId;
+}
+
+function formatOptionalReason(event: GameEvent): string {
+  const reason = typeof event.payload.reason === "string" ? event.payload.reason : undefined;
+  return reason ? ` by ${formatLogReason(reason)}` : "";
+}
+
+function formatLogReason(reason: string): string {
+  return reason
+    .replace(/^faction:/, "")
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part[0].toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function getPayloadString(event: GameEvent, key: string): string | undefined {
+  const value = event.payload[key];
+  return typeof value === "string" ? value : undefined;
 }
 
 function createToggle(label: string, checked: boolean): { input: HTMLInputElement; root: HTMLLabelElement } {
@@ -1321,6 +1668,10 @@ function getHintText(inputBlocked: boolean, interaction: CardInteractionHudState
     return `Playable targets are highlighted: ${formatTargets(interaction.validRows)}.`;
   }
 
+  if (interaction.selectedCardId && interaction.validCardTargets.length > 0) {
+    return `${interaction.validCardTargets.length} eligible battlefield card${interaction.validCardTargets.length === 1 ? "" : "s"} highlighted for targeting.`;
+  }
+
   if (interaction.selectedCardId && interaction.validRows.length === 0) {
     return getNoTargetHint(state, interaction);
   }
@@ -1661,6 +2012,10 @@ function getRowId(value: string): RowId | undefined {
   return value === "close" || value === "ranged" || value === "siege" ? value : undefined;
 }
 
+function getRowIdFromUnknown(value: unknown): RowId | undefined {
+  return typeof value === "string" ? getRowId(value) : undefined;
+}
+
 function getAbilityId(value: string): AbilityId | undefined {
   return ABILITIES.includes(value as AbilityId) ? value as AbilityId : undefined;
 }
@@ -1727,4 +2082,8 @@ function formatAbility(ability: string): string {
 
 function formatLeaderShortName(name: string): string {
   return name.split(":")[0].trim().split(" ")[0] ?? name;
+}
+
+function assertNever(value: never): never {
+  throw new Error(`Unhandled HUD value: ${String(value)}`);
 }

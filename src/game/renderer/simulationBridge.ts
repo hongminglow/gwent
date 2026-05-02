@@ -60,11 +60,13 @@ export type CardInspection = {
 };
 
 export type RenderInteractionState = {
+  blockedTargetCardIds?: CardInstanceId[];
   hoveredCardId?: CardInstanceId;
   selectedCardId?: CardInstanceId;
   draggedCardId?: CardInstanceId;
   rejectedCardId?: CardInstanceId;
   dragPreviewPosition?: THREE.Vector3;
+  validTargetCardIds?: CardInstanceId[];
 };
 
 type RenderedCard = {
@@ -326,11 +328,25 @@ function syncPileTargets(
 ) {
   const pileCards = state.players[playerId][pile].cards;
   const anchorPosition = getAnchorPosition(root, anchors.piles[playerId][pile]);
+  const visibleDiscardStart = pile === "discard" ? Math.max(0, pileCards.length - 7) : 0;
 
   pileCards.forEach((cardInstanceId, index) => {
     const renderedCard = renderedCards.get(cardInstanceId);
 
     if (!renderedCard) {
+      return;
+    }
+
+    if (pile === "discard") {
+      const displayIndex = index - visibleDiscardStart;
+      const discardPose = getDiscardPilePose(anchorPosition, playerId, displayIndex);
+      setRenderedCardTarget(renderedCard, {
+        position: discardPose.position,
+        rotation: discardPose.rotation,
+        scale: discardPose.scale,
+        visible: displayIndex >= 0,
+      });
+      assignedCards.add(cardInstanceId);
       return;
     }
 
@@ -347,6 +363,38 @@ function syncPileTargets(
     });
     assignedCards.add(cardInstanceId);
   });
+}
+
+function getDiscardPilePose(
+  anchorPosition: THREE.Vector3,
+  playerId: PlayerId,
+  displayIndex: number,
+): {
+  position: THREE.Vector3;
+  rotation: THREE.Euler;
+  scale: number;
+} {
+  const fan = [
+    { x: -0.23, z: -0.34, turn: -0.26 },
+    { x: 0.18, z: -0.22, turn: 0.18 },
+    { x: -0.08, z: -0.04, turn: -0.08 },
+    { x: 0.24, z: 0.12, turn: 0.28 },
+    { x: -0.18, z: 0.28, turn: -0.18 },
+    { x: 0.07, z: 0.42, turn: 0.08 },
+    { x: -0.02, z: 0.02, turn: 0.02 },
+  ];
+  const pose = fan[Math.max(0, displayIndex) % fan.length];
+  const ownerRotation = playerId === "player" ? 0 : Math.PI;
+
+  return {
+    position: new THREE.Vector3(
+      anchorPosition.x + pose.x,
+      anchorPosition.y + Math.max(displayIndex, 0) * 0.016,
+      anchorPosition.z + pose.z,
+    ),
+    rotation: new THREE.Euler(CARD_ROTATION_X, 0, ownerRotation + pose.turn),
+    scale: 0.78,
+  };
 }
 
 function syncRowTargets(
@@ -494,12 +542,17 @@ function applyCardInteractionState(
   renderedCards: Map<CardInstanceId, RenderedCard>,
   interactionState: RenderInteractionState,
 ) {
+  const validTargets = new Set(interactionState.validTargetCardIds ?? []);
+  const blockedTargets = new Set(interactionState.blockedTargetCardIds ?? []);
+
   for (const [cardInstanceId, renderedCard] of renderedCards) {
     renderedCard.card.setInteractionState({
+      blockedTarget: blockedTargets.has(cardInstanceId),
       hovered: interactionState.hoveredCardId === cardInstanceId,
       selected: interactionState.selectedCardId === cardInstanceId,
       dragging: interactionState.draggedCardId === cardInstanceId,
       rejected: interactionState.rejectedCardId === cardInstanceId,
+      validTarget: validTargets.has(cardInstanceId),
     });
   }
 }

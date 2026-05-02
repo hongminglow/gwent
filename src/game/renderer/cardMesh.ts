@@ -20,10 +20,12 @@ export type CardMesh = {
 };
 
 export type CardMeshInteractionState = {
+  blockedTarget?: boolean;
   hovered?: boolean;
   selected?: boolean;
   dragging?: boolean;
   rejected?: boolean;
+  validTarget?: boolean;
 };
 
 const CARD_WIDTH = 1.42;
@@ -148,13 +150,25 @@ export function createCardMesh(options: CardMeshOptions): CardMesh {
           ? 0.34
           : state.selected
             ? 0.28
-            : state.hovered
-              ? 0.18
-              : 0;
+            : state.validTarget
+              ? 0.3
+              : state.blockedTarget
+                ? 0.16
+                : state.hovered
+                  ? 0.18
+                  : 0;
 
       highlight.visible = opacity > 0;
       highlightMaterial.opacity = opacity;
-      highlightMaterial.color.set(state.rejected ? "#e55d4f" : state.dragging ? "#f0d290" : "#f8e6bb");
+      highlightMaterial.color.set(
+        state.rejected || state.blockedTarget
+          ? "#e55d4f"
+          : state.validTarget
+            ? "#8dffce"
+            : state.dragging
+              ? "#f0d290"
+              : "#f8e6bb",
+      );
     },
     dispose() {
       faceTexture.release();

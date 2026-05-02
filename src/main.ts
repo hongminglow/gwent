@@ -63,6 +63,8 @@ function startMatch(playerFactionId: FactionId, opponentFactionId?: FactionId) {
   const store = createMatchStore(initialState);
   const session: Partial<GameSession> = {
     interactionState: {
+      blockedCardTargets: [],
+      validCardTargets: [],
       validRows: [],
     },
     store,

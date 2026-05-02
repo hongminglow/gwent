@@ -587,6 +587,7 @@ input:focus-visible {
 .hud__card-tooltip,
 .hud__hint,
 .hud__drawer,
+.hud__battle-log,
 .hud__debug-tools,
 .hud__debug,
 .hud__modal-panel {
@@ -1075,6 +1076,97 @@ input:focus-visible {
 
 .hud__drawer[hidden] {
   display: none;
+}
+
+.hud__battle-log {
+  position: absolute;
+  top: 132px;
+  right: 18px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 10px;
+  width: min(420px, calc(100vw - 36px));
+  max-height: calc(100vh - 168px);
+  overflow: hidden;
+  padding: 12px;
+  pointer-events: auto;
+}
+
+.hud__battle-log[hidden] {
+  display: none;
+}
+
+.hud__battle-log-list {
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  min-height: 0;
+  margin: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 0 4px 0 0;
+  list-style: none;
+  scrollbar-gutter: stable;
+}
+
+.hud__battle-log-item,
+.hud__battle-log-empty {
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left-width: 3px;
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent),
+    rgba(0, 0, 0, 0.24);
+}
+
+.hud__battle-log-item {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+  padding: 8px 9px;
+}
+
+.hud__battle-log-empty {
+  padding: 10px;
+  color: var(--ui-muted);
+  font-size: 12px;
+}
+
+.hud__battle-log-item span {
+  color: rgba(247, 239, 225, 0.48);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.hud__battle-log-item strong {
+  min-width: 0;
+  color: rgba(247, 239, 225, 0.88);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.hud__battle-log-item--play {
+  border-left-color: rgba(242, 207, 123, 0.72);
+}
+
+.hud__battle-log-item--effect {
+  border-left-color: rgba(141, 255, 206, 0.68);
+}
+
+.hud__battle-log-item--danger {
+  border-left-color: rgba(229, 93, 79, 0.78);
+}
+
+.hud__battle-log-item--round {
+  border-left-color: rgba(121, 169, 255, 0.72);
+}
+
+.hud__battle-log-item--info {
+  border-left-color: rgba(255, 255, 255, 0.24);
 }
 
 .hud__debug-tools {
@@ -1716,6 +1808,7 @@ input:focus-visible {
     width: min(236px, calc(100vw - 24px));
   }
 
+  .hud__battle-log,
   .hud__debug-tools {
     top: 318px;
     right: 12px;
@@ -1818,6 +1911,7 @@ input:focus-visible {
   }
 
   .hud__drawer,
+  .hud__battle-log,
   .hud__debug-tools {
     top: 292px;
   }
@@ -1864,6 +1958,7 @@ input:focus-visible {
     max-width: 310px;
   }
 
+  .hud__battle-log,
   .hud__debug-tools {
     top: 116px;
     max-height: calc(100vh - 140px);

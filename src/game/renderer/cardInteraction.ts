@@ -10,6 +10,7 @@ export type InteractionAudioCue = {
 };
 
 export type CardInteractionHudState = {
+  blockedCardTargets: CardInstanceId[];
   feedback?: string;
   inspection?: CardInspection;
   pointer?: {
@@ -17,6 +18,7 @@ export type CardInteractionHudState = {
     y: number;
   };
   selectedCardId?: CardInstanceId;
+  validCardTargets: CardInstanceId[];
   validRows: RowInteractionTarget[];
 };
 
@@ -66,6 +68,10 @@ export function createCardInteractionController(
   const syncVisualState = () => {
     const state = options.getState();
     const validRows = selectedCardId ? getValidRowTargets(state, selectedCardId) : [];
+    const validCardTargets = selectedCardId ? getValidCardTargets(state, selectedCardId) : [];
+    const blockedCardTargets = selectedCardId
+      ? getBlockedCardTargets(state, selectedCardId, validCardTargets)
+      : [];
     options.board.setRowHighlights({
       validRows,
       hoveredRow,
@@ -77,12 +83,16 @@ export function createCardInteractionController(
       draggedCardId,
       rejectedCardId,
       dragPreviewPosition: getDragPreviewPosition(),
+      validTargetCardIds: validCardTargets,
+      blockedTargetCardIds: blockedCardTargets,
     });
     options.onInteractionChange({
+      blockedCardTargets,
       feedback,
       inspection: getInspection(options.simulationRenderer, hoveredCardId ?? selectedCardId),
       pointer: pointerPosition,
       selectedCardId,
+      validCardTargets,
       validRows,
     });
     options.domElement.style.cursor = getCursor(state, {
@@ -90,6 +100,7 @@ export function createCardInteractionController(
       selectedCardId,
       draggedCardId,
       hoveredRow,
+      validCardTargets,
       validRows,
     });
   };
@@ -171,6 +182,13 @@ export function createCardInteractionController(
     const cardInstanceId = pickCard(options.simulationRenderer, raycaster);
     const selectedId = draggedCardId ?? selectedCardId;
 
+    if (selectedId && cardInstanceId && selectedId !== cardInstanceId && isCardTargetSelectionMode(options.getState(), selectedId)) {
+      commitCardTarget(selectedId, cardInstanceId);
+      clearDrag();
+      syncVisualState();
+      return;
+    }
+
     if (selectedId && rowTarget) {
       commitRowTarget(selectedId, rowTarget);
       clearDrag();
@@ -237,6 +255,25 @@ export function createCardInteractionController(
     }
   };
 
+  const commitCardTarget = (cardInstanceId: CardInstanceId, targetCardInstanceId: CardInstanceId) => {
+    const state = options.getState();
+    const action = createCardTargetAction(state, cardInstanceId, targetCardInstanceId);
+
+    if (!action) {
+      rejectCardTarget(targetCardInstanceId, getCardTargetRejectionReason(state, cardInstanceId, targetCardInstanceId));
+      return;
+    }
+
+    try {
+      options.onIntent(action);
+      clearSelection();
+    } catch (error) {
+      rejectCardTarget(targetCardInstanceId, error instanceof Error
+        ? error.message
+        : "The match rejected that target.");
+    }
+  };
+
   const rejectInteraction = (
     cardInstanceId: CardInstanceId,
     rowTarget: RowInteractionTarget,
@@ -245,6 +282,19 @@ export function createCardInteractionController(
     clearRejection();
     rejectedCardId = cardInstanceId;
     rejectedRow = rowTarget;
+    feedback = message;
+    rejectTimeoutId = window.setTimeout(() => {
+      clearRejection();
+      syncVisualState();
+    }, 850);
+  };
+
+  const rejectCardTarget = (
+    cardInstanceId: CardInstanceId,
+    message: string,
+  ) => {
+    clearRejection();
+    rejectedCardId = cardInstanceId;
     feedback = message;
     rejectTimeoutId = window.setTimeout(() => {
       clearRejection();
@@ -379,6 +429,44 @@ export function getValidRowTargets(
     playerId: targetPlayerId,
     rowId,
   }));
+}
+
+export function getValidCardTargets(
+  state: MatchState,
+  cardInstanceId: CardInstanceId,
+): CardInstanceId[] {
+  if (!isCardTargetSelectionMode(state, cardInstanceId)) {
+    return [];
+  }
+
+  const activePlayerId = state.round.activePlayerId;
+  const definition = getDefinition(state, cardInstanceId);
+
+  if (definition.abilities.includes("decoy")) {
+    return getBattlefieldCards(state, activePlayerId).filter((targetCardInstanceId) => {
+      const targetDefinition = getDefinition(state, targetCardInstanceId);
+      return !isHeroDefinition(targetDefinition);
+    });
+  }
+
+  return [];
+}
+
+export function createCardTargetAction(
+  state: MatchState,
+  cardInstanceId: CardInstanceId,
+  targetCardInstanceId: CardInstanceId,
+): GameAction | undefined {
+  if (!getValidCardTargets(state, cardInstanceId).includes(targetCardInstanceId)) {
+    return undefined;
+  }
+
+  return {
+    type: "play-card",
+    playerId: state.round.activePlayerId,
+    cardInstanceId,
+    targetCardInstanceId,
+  };
 }
 
 export function createRowTargetAction(
@@ -627,11 +715,21 @@ function getCursor(
     selectedCardId?: CardInstanceId;
     draggedCardId?: CardInstanceId;
     hoveredRow?: RowInteractionTarget;
+    validCardTargets: CardInstanceId[];
     validRows: RowInteractionTarget[];
   },
 ): string {
   if (options.draggedCardId) {
     return "grabbing";
+  }
+
+  if (
+    options.selectedCardId
+    && options.hoveredCardId
+    && options.hoveredCardId !== options.selectedCardId
+    && isCardTargetSelectionMode(state, options.selectedCardId)
+  ) {
+    return options.validCardTargets.includes(options.hoveredCardId) ? "copy" : "not-allowed";
   }
 
   const hoveredRow = options.hoveredRow;
@@ -672,6 +770,70 @@ function getDefaultMedicTarget(
 
       return second.basePower - first.basePower;
     })[0];
+}
+
+function getBlockedCardTargets(
+  state: MatchState,
+  cardInstanceId: CardInstanceId,
+  validCardTargets: CardInstanceId[],
+): CardInstanceId[] {
+  if (!isCardTargetSelectionMode(state, cardInstanceId)) {
+    return [];
+  }
+
+  const activePlayerId = state.round.activePlayerId;
+  const validTargetSet = new Set(validCardTargets);
+  return getBattlefieldCards(state, activePlayerId).filter((targetCardInstanceId) =>
+    !validTargetSet.has(targetCardInstanceId),
+  );
+}
+
+function getCardTargetRejectionReason(
+  state: MatchState,
+  cardInstanceId: CardInstanceId,
+  targetCardInstanceId: CardInstanceId,
+): string {
+  const definition = getDefinition(state, cardInstanceId);
+  const targetCard = state.cards[targetCardInstanceId];
+
+  if (definition.abilities.includes("decoy")) {
+    if (!targetCard || targetCard.zone !== "board" || targetCard.controllerId !== state.round.activePlayerId) {
+      return "Decoy targets only your battlefield units.";
+    }
+
+    if (isHeroDefinition(getDefinition(state, targetCardInstanceId))) {
+      return "Decoy cannot target hero cards.";
+    }
+  }
+
+  return `${definition.name} cannot target that card.`;
+}
+
+function isCardTargetSelectionMode(state: MatchState, cardInstanceId: CardInstanceId): boolean {
+  if (state.phase !== "playing") {
+    return false;
+  }
+
+  const card = state.cards[cardInstanceId];
+
+  if (!card || card.zone !== "hand" || card.ownerId !== state.round.activePlayerId) {
+    return false;
+  }
+
+  const definition = getDefinition(state, cardInstanceId);
+  return definition.abilities.includes("decoy");
+}
+
+function getBattlefieldCards(state: MatchState, playerId: PlayerId): CardInstanceId[] {
+  return ROWS.flatMap((rowId) => state.board.rows[playerId][rowId].cards);
+}
+
+function getDefinition(state: MatchState, cardInstanceId: CardInstanceId): CardDefinition {
+  return state.cardDefinitions[state.cards[cardInstanceId].definitionId];
+}
+
+function isHeroDefinition(definition: CardDefinition): boolean {
+  return definition.type === "hero" || definition.abilities.includes("hero");
 }
 
 function rowTargetsForRows(rows: RowId[]): RowInteractionTarget[] {

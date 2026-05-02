@@ -350,8 +350,9 @@ function createPileAnchors(playerId: PlayerId): {
   const root = new THREE.Group();
   root.name = `PileAnchors:${playerId}`;
   const z = playerId === "player" ? 6.95 : -6.95;
+  const discardZ = playerId === "player" ? 3.55 : -3.55;
   const deck = createPileAnchor(playerId, "deck", new THREE.Vector3(5.55, 0.26, z));
-  const discard = createPileAnchor(playerId, "discard", new THREE.Vector3(3.8, 0.26, z));
+  const discard = createPileAnchor(playerId, "discard", new THREE.Vector3(6.22, 0.26, discardZ));
   const leader = createPileAnchor(playerId, "leader", new THREE.Vector3(-5.55, 0.26, playerId === "player" ? 4.85 : -4.85));
 
   root.add(deck.root, discard.root, leader.root);
@@ -374,25 +375,29 @@ function createPileAnchor(
   const root = new THREE.Group();
   root.name = `PileAnchor:${playerId}:${pile}`;
   root.position.copy(position);
+  const style = getPileStyle(pile);
 
   const base = new THREE.Mesh(
     new THREE.BoxGeometry(1.48, 0.045, 2.1),
     new THREE.MeshStandardMaterial({
-      color: pile === "leader" ? "#332416" : "#1d1711",
-      emissive: pile === "leader" ? "#5a3c18" : "#17110d",
-      emissiveIntensity: pile === "leader" ? 0.14 : 0.05,
+      color: style.baseColor,
+      emissive: style.emissiveColor,
+      emissiveIntensity: style.emissiveIntensity,
       roughness: 0.82,
-      metalness: 0.05,
+      metalness: pile === "leader" ? 0.18 : 0.08,
     }),
   );
   base.name = "PilePlate";
   base.receiveShadow = true;
   root.add(base);
 
-  const label = createTextPlate(pile.toUpperCase(), "#f1d39a", 1.1, 0.23);
-  label.position.set(0, 0.05, 0);
-  label.rotation.x = -Math.PI / 2;
-  root.add(label);
+  const rim = createPileRim(style.accentColor);
+  rim.position.y = 0.046;
+  root.add(rim);
+
+  const icon = createPileIcon(pile, style);
+  icon.position.y = 0.072;
+  root.add(icon);
 
   const anchor = createAnchor(`anchor:pile:${playerId}:${pile}`, new THREE.Vector3(0, 0.12, 0));
   root.add(anchor);
@@ -401,6 +406,208 @@ function createPileAnchor(
     root,
     anchor,
   };
+}
+
+function getPileStyle(pile: "deck" | "discard" | "leader"): {
+  accentColor: string;
+  baseColor: string;
+  emissiveColor: string;
+  emissiveIntensity: number;
+  iconColor: string;
+  shadowColor: string;
+} {
+  switch (pile) {
+    case "deck":
+      return {
+        accentColor: "#78d8ff",
+        baseColor: "#10212b",
+        emissiveColor: "#123f55",
+        emissiveIntensity: 0.2,
+        iconColor: "#b4f0ff",
+        shadowColor: "#06141b",
+      };
+    case "discard":
+      return {
+        accentColor: "#e0715f",
+        baseColor: "#2b1714",
+        emissiveColor: "#6b211b",
+        emissiveIntensity: 0.22,
+        iconColor: "#f0a08b",
+        shadowColor: "#160806",
+      };
+    case "leader":
+      return {
+        accentColor: "#f0c96c",
+        baseColor: "#332416",
+        emissiveColor: "#5a3c18",
+        emissiveIntensity: 0.18,
+        iconColor: "#ffe0a2",
+        shadowColor: "#160f08",
+      };
+    default:
+      return assertNever(pile);
+  }
+}
+
+function createPileRim(color: string): THREE.Group {
+  const group = new THREE.Group();
+  group.name = "PileVisualRim";
+  const material = new THREE.MeshBasicMaterial({
+    color,
+    transparent: true,
+    opacity: 0.62,
+  });
+  const horizontalGeometry = new THREE.BoxGeometry(1.34, 0.018, 0.028);
+  const verticalGeometry = new THREE.BoxGeometry(0.028, 0.018, 1.94);
+  const top = new THREE.Mesh(horizontalGeometry, material);
+  const bottom = new THREE.Mesh(horizontalGeometry.clone(), material);
+  const left = new THREE.Mesh(verticalGeometry, material);
+  const right = new THREE.Mesh(verticalGeometry.clone(), material);
+
+  top.position.z = -0.96;
+  bottom.position.z = 0.96;
+  left.position.x = -0.67;
+  right.position.x = 0.67;
+  group.add(top, bottom, left, right);
+  return group;
+}
+
+function createPileIcon(
+  pile: "deck" | "discard" | "leader",
+  style: ReturnType<typeof getPileStyle>,
+): THREE.Group {
+  switch (pile) {
+    case "deck":
+      return createDeckPileIcon(style);
+    case "discard":
+      return createDiscardPileIcon(style);
+    case "leader":
+      return createLeaderPileIcon(style);
+    default:
+      return assertNever(pile);
+  }
+}
+
+function createDeckPileIcon(style: ReturnType<typeof getPileStyle>): THREE.Group {
+  const group = new THREE.Group();
+  group.name = "DeckPileIcon";
+  const stackMaterial = new THREE.MeshStandardMaterial({
+    color: style.shadowColor,
+    emissive: style.emissiveColor,
+    emissiveIntensity: 0.24,
+    roughness: 0.72,
+    metalness: 0.08,
+  });
+  const faceMaterial = new THREE.MeshStandardMaterial({
+    color: "#d5f6ff",
+    emissive: style.accentColor,
+    emissiveIntensity: 0.18,
+    roughness: 0.6,
+    metalness: 0.1,
+  });
+
+  for (let index = 0; index < 4; index += 1) {
+    const card = new THREE.Mesh(new THREE.BoxGeometry(0.78, 0.026, 1.1), index === 3 ? faceMaterial : stackMaterial);
+    card.name = "DeckPileStackCard";
+    card.position.set(index * 0.035 - 0.055, index * 0.022, index * -0.035 + 0.05);
+    card.rotation.y = -0.05;
+    group.add(card);
+  }
+
+  const seal = new THREE.Mesh(
+    new THREE.BoxGeometry(0.44, 0.012, 0.055),
+    new THREE.MeshBasicMaterial({
+      color: style.accentColor,
+      transparent: true,
+      opacity: 0.82,
+    }),
+  );
+  seal.name = "DeckPileSeal";
+  seal.position.set(0.07, 0.098, 0.05);
+  group.add(seal);
+  return group;
+}
+
+function createDiscardPileIcon(style: ReturnType<typeof getPileStyle>): THREE.Group {
+  const group = new THREE.Group();
+  group.name = "DiscardPileIcon";
+  const tray = new THREE.Mesh(
+    new THREE.BoxGeometry(1, 0.025, 1.36),
+    new THREE.MeshStandardMaterial({
+      color: style.shadowColor,
+      emissive: style.emissiveColor,
+      emissiveIntensity: 0.12,
+      roughness: 0.9,
+      metalness: 0.04,
+    }),
+  );
+  tray.name = "DiscardPileTray";
+  tray.position.y = -0.01;
+  group.add(tray);
+
+  const cardMaterial = new THREE.MeshStandardMaterial({
+    color: "#3f2a22",
+    emissive: style.emissiveColor,
+    emissiveIntensity: 0.22,
+    roughness: 0.78,
+    metalness: 0.04,
+  });
+
+  [
+    { x: -0.16, z: -0.08, rotation: -0.34 },
+    { x: 0.11, z: 0.03, rotation: 0.18 },
+    { x: 0.01, z: 0.14, rotation: -0.08 },
+  ].forEach((pose, index) => {
+    const card = new THREE.Mesh(new THREE.BoxGeometry(0.74, 0.02, 1.02), cardMaterial);
+    card.name = "DiscardPileLooseCard";
+    card.position.set(pose.x, index * 0.018 + 0.02, pose.z);
+    card.rotation.y = pose.rotation;
+    group.add(card);
+  });
+
+  const ember = new THREE.Mesh(
+    new THREE.BoxGeometry(0.72, 0.012, 0.035),
+    new THREE.MeshBasicMaterial({
+      color: style.accentColor,
+      transparent: true,
+      opacity: 0.78,
+    }),
+  );
+  ember.name = "DiscardPileEmber";
+  ember.position.set(0, 0.088, 0.48);
+  group.add(ember);
+  return group;
+}
+
+function createLeaderPileIcon(style: ReturnType<typeof getPileStyle>): THREE.Group {
+  const group = new THREE.Group();
+  group.name = "LeaderPileIcon";
+  const pedestal = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.38, 0.48, 0.08, 6),
+    new THREE.MeshStandardMaterial({
+      color: style.shadowColor,
+      emissive: style.emissiveColor,
+      emissiveIntensity: 0.18,
+      roughness: 0.72,
+      metalness: 0.16,
+    }),
+  );
+  pedestal.name = "LeaderPilePedestal";
+  pedestal.rotation.y = Math.PI / 6;
+  group.add(pedestal);
+
+  const crest = new THREE.Mesh(
+    new THREE.BoxGeometry(0.52, 0.024, 0.12),
+    new THREE.MeshBasicMaterial({
+      color: style.iconColor,
+      transparent: true,
+      opacity: 0.8,
+    }),
+  );
+  crest.name = "LeaderPileCrest";
+  crest.position.y = 0.072;
+  group.add(crest);
+  return group;
 }
 
 function createScorePlate(playerId: PlayerId): { root: THREE.Group; anchor: THREE.Group } {
@@ -551,4 +758,8 @@ function roundedRect(
   context.lineTo(x, y + radius);
   context.quadraticCurveTo(x, y, x + radius, y);
   context.closePath();
+}
+
+function assertNever(value: never): never {
+  throw new Error(`Unhandled board value: ${String(value)}`);
 }

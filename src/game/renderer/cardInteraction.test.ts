@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { createMatchFromFaction } from "../simulation/matchFlow";
 import { matchReducer } from "../simulation/reducer";
-import type { CardId, CardInstanceId, MatchState, PlayerId } from "../simulation/types";
+import type { CardId, CardInstanceId, MatchState, PlayerId, RowId } from "../simulation/types";
 import {
+  createCardTargetAction,
   createImmediateAction,
   createRowTargetAction,
+  getValidCardTargets,
   getPlacementRejectionReason,
   getValidRowTargets,
 } from "./cardInteraction";
@@ -94,6 +96,23 @@ describe("card interaction helpers", () => {
       playerId: "player",
       cardInstanceId: cardId,
     });
+  });
+
+  it("uses Decoy as a highlighted card-target ability", () => {
+    const decoy = readyMatchWithActiveCard("decoy-card-targets", "neutral-decoy");
+    const targetId = findOwnedCardByDefinition(decoy.state, "player", "nr-blue-stripes-commando");
+    const heroId = findOwnedCardByDefinition(decoy.state, "player", "nr-vernon-roche");
+    let state = putCardOnBoard(decoy.state, "player", targetId, "close");
+    state = putCardOnBoard(state, "player", heroId, "close");
+
+    expect(getValidCardTargets(state, decoy.cardId)).toEqual([targetId]);
+    expect(createCardTargetAction(state, decoy.cardId, targetId)).toEqual({
+      type: "play-card",
+      playerId: "player",
+      cardInstanceId: decoy.cardId,
+      targetCardInstanceId: targetId,
+    });
+    expect(createCardTargetAction(state, decoy.cardId, heroId)).toBeUndefined();
   });
 
   it("explains rejected row targets with the concrete rule", () => {
@@ -261,6 +280,58 @@ function putCardInDiscard(
             ...state.players[playerId].discard.cards.filter((id) => id !== cardInstanceId),
             cardInstanceId,
           ],
+        },
+      },
+    },
+  };
+}
+
+function putCardOnBoard(
+  state: MatchState,
+  playerId: PlayerId,
+  cardInstanceId: CardInstanceId,
+  rowId: RowId,
+): MatchState {
+  return {
+    ...state,
+    cards: {
+      ...state.cards,
+      [cardInstanceId]: {
+        ...state.cards[cardInstanceId],
+        controllerId: playerId,
+        rowId,
+        zone: "board",
+      },
+    },
+    board: {
+      ...state.board,
+      rows: {
+        ...state.board.rows,
+        [playerId]: {
+          ...state.board.rows[playerId],
+          [rowId]: {
+            ...state.board.rows[playerId][rowId],
+            cards: [
+              ...state.board.rows[playerId][rowId].cards.filter((id) => id !== cardInstanceId),
+              cardInstanceId,
+            ],
+          },
+        },
+      },
+    },
+    players: {
+      ...state.players,
+      [playerId]: {
+        ...state.players[playerId],
+        deck: {
+          cards: state.players[playerId].deck.cards.filter((id) => id !== cardInstanceId),
+        },
+        hand: {
+          ...state.players[playerId].hand,
+          cards: state.players[playerId].hand.cards.filter((id) => id !== cardInstanceId),
+        },
+        discard: {
+          cards: state.players[playerId].discard.cards.filter((id) => id !== cardInstanceId),
         },
       },
     },
