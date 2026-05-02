@@ -1577,7 +1577,7 @@ function formatMatchResultTitle(winnerId?: PlayerId): string {
   }
 
   if (winnerId === "opponent") {
-    return "Opponent wins the match";
+    return "You lost the match";
   }
 
   return "Match complete";

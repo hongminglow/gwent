@@ -1279,7 +1279,8 @@ input:focus-visible {
     0 0 50px rgba(242, 207, 123, 0.14);
 }
 
-.hud__modal-panel--victory::before {
+.hud__modal-panel--victory::before,
+.hud__modal-panel--defeat::before {
   position: absolute;
   inset: -19px -24px;
   z-index: -1;
@@ -1294,7 +1295,26 @@ input:focus-visible {
 }
 
 .hud__modal-panel--defeat {
-  border-color: rgba(121, 169, 255, 0.26);
+  border-color: rgba(173, 68, 58, 0.5);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(173, 68, 58, 0.16), transparent 38%),
+    linear-gradient(180deg, rgba(23, 22, 22, 0.99), rgba(8, 9, 10, 0.99)),
+    var(--ui-panel-strong);
+  box-shadow:
+    0 0 0 1px rgba(173, 68, 58, 0.16),
+    0 24px 70px rgba(0, 0, 0, 0.6),
+    0 0 48px rgba(173, 68, 58, 0.12);
+}
+
+.hud__modal-panel--defeat::before {
+  filter:
+    grayscale(0.82)
+    sepia(0.52)
+    hue-rotate(315deg)
+    saturate(1.7)
+    brightness(0.72)
+    drop-shadow(0 16px 28px rgba(0, 0, 0, 0.6));
+  opacity: 0.86;
 }
 
 .hud__modal-panel > * {
