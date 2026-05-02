@@ -11,6 +11,7 @@ import {
   type InteractionAudioCue,
 } from "./cardInteraction";
 import { createCameraRig } from "./cameraRig";
+import { createEnvironmentBackdrop } from "./environmentBackdrop";
 import { createGameTextureLoader } from "./loaders/textureLoader";
 import { createSimulationRenderer, type RendererAudioCue } from "./simulationBridge";
 
@@ -49,6 +50,9 @@ export function createThreeApp(
   const cameraRig = createCameraRig(renderer.domElement);
   cameraRig.setDebugMode(debugFlags.debugCamera);
   scene.add(cameraRig.root);
+
+  const backdrop = createEnvironmentBackdrop();
+  scene.add(backdrop.root);
 
   const board = createBoardScene();
   scene.add(board.root);
@@ -111,6 +115,7 @@ export function createThreeApp(
       : Math.min((timestamp - lastFrameTimestamp) / 1000, 0.1);
     lastFrameTimestamp = timestamp;
     cameraRig.update(delta);
+    backdrop.update(delta);
     board.update(delta);
     simulationRenderer.update(delta);
     syncInputBlocked();
@@ -225,6 +230,7 @@ export function createThreeApp(
       cameraRig.dispose();
       simulationRenderer.dispose();
       board.dispose();
+      backdrop.dispose();
       textureLoader.dispose();
       renderer.dispose();
       sceneLayer.remove();
@@ -234,8 +240,8 @@ export function createThreeApp(
 
 function createScene(): THREE.Scene {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color("#080807");
-  scene.fog = new THREE.Fog("#080807", 22, 52);
+  scene.background = new THREE.Color("#100504");
+  scene.fog = new THREE.Fog("#100504", 14, 44);
   return scene;
 }
 

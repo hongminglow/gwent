@@ -55,10 +55,12 @@ const ROW_Z: Record<PlayerId, Record<RowId, number>> = {
     siege: 5.35,
   },
 };
+const BOARD_RENDER_ORDER = 20;
 
 export function createBoardScene(): BoardScene {
   const root = new THREE.Group();
   root.name = "OathboundBoardFoundation";
+  root.renderOrder = BOARD_RENDER_ORDER;
   const anchors = createEmptyAnchors();
   const rowHighlightState = {
     validRows: [] as RowInteractionTarget[],
@@ -96,6 +98,7 @@ export function createBoardScene(): BoardScene {
     anchors.hands[playerId] = handAnchor;
     root.add(handAnchor);
   }
+  applyBoardRenderPriority(root);
 
   const update = (deltaSeconds: number) => {
     const elapsed = performance.now() / 1000;
@@ -151,6 +154,12 @@ export function createBoardScene(): BoardScene {
       });
     },
   };
+}
+
+function applyBoardRenderPriority(root: THREE.Group) {
+  root.traverse((object) => {
+    object.renderOrder = BOARD_RENDER_ORDER;
+  });
 }
 
 function createTable(): THREE.Group {

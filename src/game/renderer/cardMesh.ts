@@ -50,6 +50,7 @@ const CARD_HIGHLIGHT_GEOMETRY = new THREE.PlaneGeometry(1.38, 1.96);
 const CARD_POWER_GEM_GEOMETRY = new THREE.CircleGeometry(0.18, 28);
 const CARD_POWER_LABEL_GEOMETRY = new THREE.PlaneGeometry(0.31, 0.2);
 const CARD_CAPTION_GEOMETRY = new THREE.PlaneGeometry(1.12, 0.32);
+const CARD_RENDER_ORDER = 40;
 
 const faceTextureCache = new Map<string, TextureCacheEntry>();
 const captionTextureCache = new Map<string, TextureCacheEntry>();
@@ -59,6 +60,7 @@ export function createCardMesh(options: CardMeshOptions): CardMesh {
   const root = new THREE.Group();
   const position = options.position ?? new THREE.Vector3();
   root.name = `CardMesh:${options.label}`;
+  root.renderOrder = CARD_RENDER_ORDER;
   root.position.copy(position);
   root.rotation.set(-Math.PI / 2 + 0.06, options.rotationY ?? 0, 0);
 
@@ -139,6 +141,7 @@ export function createCardMesh(options: CardMeshOptions): CardMesh {
   caption.name = "CardCaption";
   caption.position.set(0, -0.62, 0.042);
   root.add(caption);
+  applyCardRenderPriority(root);
 
   return {
     root,
@@ -180,6 +183,12 @@ export function createCardMesh(options: CardMeshOptions): CardMesh {
       powerMaterial.dispose();
     },
   };
+}
+
+function applyCardRenderPriority(root: THREE.Group) {
+  root.traverse((object) => {
+    object.renderOrder = CARD_RENDER_ORDER;
+  });
 }
 
 function createCardFrameMaterial(accentColor: string): THREE.MeshBasicMaterial {
