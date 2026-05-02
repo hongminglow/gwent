@@ -61,10 +61,10 @@ type MatchMusic = {
   step: number;
 };
 
-const MUSIC_TEMPO_BPM = 136;
+const MUSIC_TEMPO_BPM = 78;
 const MUSIC_STEP_SECONDS = 60 / MUSIC_TEMPO_BPM / 4;
-const MUSIC_LOOKAHEAD_SECONDS = 0.34;
-const MUSIC_GAIN_TARGET = 0.84;
+const MUSIC_LOOKAHEAD_SECONDS = 0.48;
+const MUSIC_GAIN_TARGET = 0.88;
 export const DEFAULT_AUDIO_SETTINGS: AudioSettings = {
   masterVolume: 0.84,
   muted: false,
@@ -500,105 +500,71 @@ function scheduleMusicStep(
 ) {
   const position = step % 64;
   const beat = Math.floor(position / 4);
-  const bassLine = [73.42, 73.42, 55, 65.41, 73.42, 87.31, 65.41, 55];
+  const bar = Math.floor(position / 16);
+  const bassLine = [73.42, 65.41, 58.27, 65.41];
   const warChords = [
     [146.83, 220, 293.66],
-    [116.54, 174.61, 233.08],
     [130.81, 196, 261.63],
+    [116.54, 174.61, 233.08],
     [110, 164.81, 220],
   ];
-  const stringPulse = [293.66, 329.63, 349.23, 392, 349.23, 329.63, 293.66, 261.63];
-  const reedLine = [587.33, 523.25, 440, 392, 440, 523.25, 440, 349.23];
+  const tensionLine = [293.66, 261.63, 233.08, 220, 261.63, 233.08, 196, 220];
 
   if (position % 16 === 0) {
-    playWarDrone(context, destination, startAt, bassLine[(beat / 4) % bassLine.length], position === 0);
+    playWarDrone(context, destination, startAt, bassLine[bar % bassLine.length], position === 0 || position === 32);
+    playLowStringSwell(context, destination, startAt + 0.04, warChords[bar % warChords.length], position === 0);
   }
 
-  if (position % 4 === 0) {
+  if (position % 16 === 0 || position % 16 === 8) {
     const accented = position % 16 === 0;
-    playPercussionHit(context, destination, startAt, accented ? 0.2 : 0.15, accented ? 118 : 96, 36);
-    playScheduledNoise(context, destination, accented ? 0.18 : 0.12, accented ? 0.052 : 0.036, startAt, {
-      filterFrequency: 520,
+    playPercussionHit(context, destination, startAt, accented ? 0.24 : 0.17, accented ? 92 : 78, 32);
+    playScheduledNoise(context, destination, accented ? 0.32 : 0.22, accented ? 0.072 : 0.045, startAt, {
+      filterFrequency: 360,
       type: "lowpass",
     });
   }
 
-  if (position % 4 === 2) {
-    playPercussionHit(context, destination, startAt, position % 8 === 6 ? 0.11 : 0.08, 178, 74);
-    playScheduledNoise(context, destination, 0.075, 0.04, startAt + 0.006, {
-      filterFrequency: 2300,
-      type: "bandpass",
-    });
-  }
-
-  if (position % 2 === 1) {
-    playMetalTick(context, destination, startAt, position % 8 === 7 ? 0.045 : 0.032);
-  }
-
-  if (position % 4 === 0) {
-    const bassNote = bassLine[beat % bassLine.length];
-    playScheduledTone(context, destination, bassNote, 0.38, 0.09, "sawtooth", startAt, {
-      endFrequency: bassLine[(beat + 1) % bassLine.length],
-    });
-  }
-
-  if (position % 2 === 0) {
-    playPizzicatoString(
-      context,
-      destination,
-      startAt + 0.008,
-      stringPulse[Math.floor(position / 2) % stringPulse.length],
-      position % 8 === 0,
-    );
-  }
-
-  if (position % 4 === 1 || position % 4 === 3) {
-    playAcousticStrum(
-      context,
-      destination,
-      startAt + 0.006,
-      warChords[Math.floor(position / 16) % warChords.length],
-      position % 16 === 1,
-    );
-  }
-
-  if (position === 0 || position === 16 || position === 32 || position === 48) {
-    playWarHorn(
-      context,
-      destination,
-      startAt + 0.015,
-      [146.83, 174.61, 196, 164.81][Math.floor(position / 16)],
-      position === 0 || position === 32,
-    );
-  }
-
-  if (position === 10 || position === 26 || position === 42 || position === 58) {
-    playWarHorn(
-      context,
-      destination,
-      startAt,
-      [220, 196, 261.63, 220][Math.floor(position / 16)],
-      false,
-    );
-  }
-
-  if (position % 8 === 6) {
-    playWoodwindNote(
-      context,
-      destination,
-      startAt + 0.02,
-      reedLine[Math.floor(position / 8) % reedLine.length],
-      "square",
-      0.026,
-      0.16,
-    );
+  if (position % 16 === 12) {
+    playPercussionHit(context, destination, startAt, 0.09, 126, 58);
   }
 
   if (position === 14 || position === 30 || position === 46 || position === 62) {
-    playScheduledNoise(context, destination, 0.18, 0.045, startAt, {
-      filterFrequency: 4800,
-      type: "highpass",
+    playMetalTick(context, destination, startAt, 0.028);
+  }
+
+  if (position % 16 === 0 || position % 16 === 10) {
+    const bassNote = bassLine[beat % bassLine.length];
+    playScheduledTone(context, destination, bassNote, 0.78, 0.075, "sawtooth", startAt, {
+      endFrequency: bassNote * 0.995,
     });
+  }
+
+  if (position === 6 || position === 22 || position === 38 || position === 54) {
+    playTensionString(context, destination, startAt + 0.02, tensionLine[Math.floor(position / 8) % tensionLine.length]);
+  }
+
+  if (position === 24 || position === 56) {
+    playFrameDrumRoll(context, destination, startAt);
+  }
+
+  if (position === 0 || position === 32) {
+    playWarHorn(
+      context,
+      destination,
+      startAt + 0.04,
+      position === 0 ? 146.83 : 130.81,
+      true,
+    );
+  }
+
+  if (position === 18 || position === 50) {
+    playWarHorn(
+      context,
+      destination,
+      startAt + 0.02,
+      position === 18 ? 174.61 : 164.81,
+      false,
+    );
   }
 }
 
@@ -609,10 +575,10 @@ function playWarDrone(
   rootFrequency: number,
   accented: boolean,
 ) {
-  playScheduledTone(context, destination, rootFrequency / 2, accented ? 1.8 : 1.2, accented ? 0.072 : 0.052, "sawtooth", startAt, {
+  playScheduledTone(context, destination, rootFrequency / 2, accented ? 3.4 : 2.6, accented ? 0.082 : 0.058, "sawtooth", startAt, {
     endFrequency: rootFrequency / 2 * 0.996,
   });
-  playScheduledTone(context, destination, rootFrequency, accented ? 1.4 : 0.92, accented ? 0.042 : 0.03, "triangle", startAt + 0.025, {
+  playScheduledTone(context, destination, rootFrequency, accented ? 2.8 : 2.15, accented ? 0.046 : 0.032, "triangle", startAt + 0.025, {
     endFrequency: rootFrequency * 1.004,
   });
 }
@@ -624,8 +590,8 @@ function playWarHorn(
   rootFrequency: number,
   accented: boolean,
 ) {
-  const duration = accented ? 0.72 : 0.46;
-  const gain = accented ? 0.082 : 0.058;
+  const duration = accented ? 1.35 : 0.86;
+  const gain = accented ? 0.088 : 0.052;
   playScheduledTone(context, destination, rootFrequency, duration, gain, "sawtooth", startAt, {
     endFrequency: rootFrequency * 1.01,
   });
@@ -638,7 +604,7 @@ function playWarHorn(
   });
 }
 
-function playAcousticStrum(
+function playLowStringSwell(
   context: AudioContext,
   destination: AudioNode,
   startAt: number,
@@ -646,43 +612,74 @@ function playAcousticStrum(
   accented: boolean,
 ) {
   chord.forEach((frequency, index) => {
-    playScheduledTone(context, destination, frequency, 0.09, accented ? 0.028 : 0.019, "triangle", startAt + index * 0.012, {
-      endFrequency: frequency * 1.012,
+    playSustainedTone(context, destination, frequency, accented ? 3.2 : 2.8, accented ? 0.032 : 0.024, "triangle", startAt + index * 0.045, {
+      endFrequency: frequency * 0.998,
+      filterFrequency: 620 + index * 90,
+      slowAttack: 0.42,
     });
-    playScheduledTone(context, destination, frequency * 2, 0.055, accented ? 0.012 : 0.008, "sawtooth", startAt + index * 0.012, {
-      endFrequency: frequency * 2.02,
-    });
-  });
-  playScheduledNoise(context, destination, 0.04, accented ? 0.012 : 0.008, startAt, {
-    filterFrequency: 2800,
-    type: "highpass",
   });
 }
 
-function playPizzicatoString(
+function playTensionString(
   context: AudioContext,
   destination: AudioNode,
   startAt: number,
   frequency: number,
-  accented: boolean,
 ) {
-  playScheduledTone(context, destination, frequency, 0.07, accented ? 0.028 : 0.021, "triangle", startAt, {
-    endFrequency: frequency * 0.996,
+  playSustainedTone(context, destination, frequency, 1.55, 0.026, "sawtooth", startAt, {
+    endFrequency: frequency * 0.985,
+    filterFrequency: 760,
+    slowAttack: 0.18,
   });
 }
 
-function playWoodwindNote(
+function playFrameDrumRoll(
   context: AudioContext,
   destination: AudioNode,
   startAt: number,
+) {
+  [0, 0.18, 0.33].forEach((offset, index) => {
+    playPercussionHit(context, destination, startAt + offset, 0.052 - index * 0.008, 112 - index * 8, 46);
+  });
+}
+
+function playSustainedTone(
+  context: AudioContext,
+  destination: AudioNode,
   frequency: number,
-  oscillatorType: OscillatorType,
-  gain: number,
   duration: number,
+  gain: number,
+  oscillatorType: OscillatorType,
+  startAt: number,
+  options: {
+    endFrequency?: number;
+    filterFrequency?: number;
+    slowAttack?: number;
+  } = {},
 ) {
-  playScheduledTone(context, destination, frequency, duration, gain, oscillatorType, startAt, {
-    endFrequency: frequency * 1.006,
-  });
+  const oscillator = context.createOscillator();
+  const gainNode = context.createGain();
+  const filter = context.createBiquadFilter();
+
+  oscillator.type = oscillatorType;
+  oscillator.frequency.setValueAtTime(frequency, startAt);
+
+  if (options.endFrequency) {
+    oscillator.frequency.exponentialRampToValueAtTime(Math.max(1, options.endFrequency), startAt + duration);
+  }
+
+  filter.type = "lowpass";
+  filter.frequency.setValueAtTime(options.filterFrequency ?? 760, startAt);
+  filter.frequency.linearRampToValueAtTime((options.filterFrequency ?? 760) * 1.25, startAt + Math.min(0.8, duration * 0.5));
+  gainNode.gain.setValueAtTime(0.0001, startAt);
+  gainNode.gain.linearRampToValueAtTime(gain, startAt + (options.slowAttack ?? 0.24));
+  gainNode.gain.setTargetAtTime(gain * 0.68, startAt + duration * 0.52, duration * 0.22);
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+  oscillator.connect(filter);
+  filter.connect(gainNode);
+  gainNode.connect(destination);
+  oscillator.start(startAt);
+  oscillator.stop(startAt + duration + 0.08);
 }
 
 function playChord(
