@@ -39,3 +39,31 @@ Workspace asset target: `public/assets/cards/<card-id>.png`
 | 4 | Done | `mo-vampire-katakan` | Vampire: Katakan | `public/assets/cards/mo-vampire-katakan.png` | Generated in Monster batch 4 |
 | 4 | Done | `mo-werewolf` | Werewolf | `public/assets/cards/mo-werewolf.png` | Generated in Monster batch 4 |
 | 4 | Done | `mo-wyvern` | Wyvern | `public/assets/cards/mo-wyvern.png` | Generated in Monster batch 4 |
+
+## Northern Realms Deck
+
+| Batch | Status | Card ID | Card Name | Asset Path | Notes |
+|---|---|---|---|---|---|
+| 1 | Done | `nr-ballista` | Ballista | `public/assets/cards/nr-ballista.png` | Generated in Northern Realms batch 1 |
+| 1 | Done | `nr-blue-stripes-commando` | Blue Stripes Commando | `public/assets/cards/nr-blue-stripes-commando.png` | Generated in Northern Realms batch 1 |
+| 1 | Done | `nr-catapult` | Catapult | `public/assets/cards/nr-catapult.png` | Generated in Northern Realms batch 1 |
+| 1 | Done | `nr-crinfrid-reavers-dragon-hunter` | Crinfrid Reavers Dragon Hunter | `public/assets/cards/nr-crinfrid-reavers-dragon-hunter.png` | Generated in Northern Realms batch 1 |
+| 1 | Done | `nr-dethmold` | Dethmold | `public/assets/cards/nr-dethmold.png` | Generated in Northern Realms batch 1 |
+| 1 | Done | `nr-dun-banner-medic` | Dun Banner Medic | `public/assets/cards/nr-dun-banner-medic.png` | Generated in Northern Realms batch 1 |
+| 1 | Done | `nr-esterad-thyssen` | Esterad Thyssen | `public/assets/cards/nr-esterad-thyssen.png` | Generated in Northern Realms batch 1 |
+| 1 | Done | `nr-kaedweni-siege-expert` | Kaedweni Siege Expert | `public/assets/cards/nr-kaedweni-siege-expert.png` | Generated in Northern Realms batch 1 |
+| 1 | Done | `nr-keira-metz` | Keira Metz | `public/assets/cards/nr-keira-metz.png` | Generated in Northern Realms batch 1 |
+| 1 | Done | `nr-philippa-eilhart` | Philippa Eilhart | `public/assets/cards/nr-philippa-eilhart.png` | Generated in Northern Realms batch 1 |
+| 2 | Done | `nr-poor-infantry` | Poor Fucking Infantry | `public/assets/cards/nr-poor-infantry.png` | Generated in Northern Realms batch 2 |
+| 2 | Done | `nr-prince-stennis` | Prince Stennis | `public/assets/cards/nr-prince-stennis.png` | Generated in Northern Realms batch 2 |
+| 2 | Done | `nr-redanian-foot-soldier` | Redanian Foot Soldier | `public/assets/cards/nr-redanian-foot-soldier.png` | Generated in Northern Realms batch 2 |
+| 2 | Done | `nr-sabrina-glevissig` | Sabrina Glevissig | `public/assets/cards/nr-sabrina-glevissig.png` | Generated in Northern Realms batch 2 |
+| 2 | Done | `nr-sheala-de-tancarville` | Sheala de Tancarville | `public/assets/cards/nr-sheala-de-tancarville.png` | Generated in Northern Realms batch 2 |
+| 2 | Done | `nr-siege-tower` | Siege Tower | `public/assets/cards/nr-siege-tower.png` | Generated in Northern Realms batch 2 |
+| 2 | Done | `nr-siegfried-of-denesle` | Siegfried of Denesle | `public/assets/cards/nr-siegfried-of-denesle.png` | Generated in Northern Realms batch 2 |
+| 2 | Done | `nr-sigismund-dijkstra` | Sigismund Dijkstra | `public/assets/cards/nr-sigismund-dijkstra.png` | Generated in Northern Realms batch 2 |
+| 2 | Done | `nr-thaler` | Thaler | `public/assets/cards/nr-thaler.png` | Generated in Northern Realms batch 2 |
+| 2 | Done | `nr-trebuchet` | Trebuchet | `public/assets/cards/nr-trebuchet.png` | Generated in Northern Realms batch 2 |
+| 3 | Done | `nr-vernon-roche` | Vernon Roche | `public/assets/cards/nr-vernon-roche.png` | Generated in Northern Realms batch 3 |
+| 3 | Done | `nr-ves` | Ves | `public/assets/cards/nr-ves.png` | Generated in Northern Realms batch 3 |
+| 3 | Done | `nr-yarpen-zigrin` | Yarpen Zigrin | `public/assets/cards/nr-yarpen-zigrin.png` | Generated in Northern Realms batch 3 |
