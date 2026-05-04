@@ -67,3 +67,34 @@ Workspace asset target: `public/assets/cards/<card-id>.png`
 | 3 | Done | `nr-vernon-roche` | Vernon Roche | `public/assets/cards/nr-vernon-roche.png` | Generated in Northern Realms batch 3 |
 | 3 | Done | `nr-ves` | Ves | `public/assets/cards/nr-ves.png` | Generated in Northern Realms batch 3 |
 | 3 | Done | `nr-yarpen-zigrin` | Yarpen Zigrin | `public/assets/cards/nr-yarpen-zigrin.png` | Generated in Northern Realms batch 3 |
+
+## Nilfgaardian Empire Deck
+
+| Batch | Status | Card ID | Card Name | Asset Path | Notes |
+|---|---|---|---|---|---|
+| 1 | Done | `ng-albrich` | Albrich | `public/assets/cards/ng-albrich.png` | Generated in Nilfgaardian Empire batch 1 |
+| 1 | Done | `ng-assire-var-anahid` | Assire var Anahid | `public/assets/cards/ng-assire-var-anahid.png` | Generated in Nilfgaardian Empire batch 1 |
+| 1 | Done | `ng-black-infantry-archer` | Black Infantry Archer | `public/assets/cards/ng-black-infantry-archer.png` | Generated in Nilfgaardian Empire batch 1 |
+| 1 | Done | `ng-cahir` | Cahir Mawr Dyffryn aep Ceallach | `public/assets/cards/ng-cahir.png` | Generated in Nilfgaardian Empire batch 1 |
+| 1 | Done | `ng-cynthia` | Cynthia | `public/assets/cards/ng-cynthia.png` | Generated in Nilfgaardian Empire batch 1 |
+| 1 | Done | `ng-etolian-auxiliary-archers` | Etolian Auxiliary Archers | `public/assets/cards/ng-etolian-auxiliary-archers.png` | Generated in Nilfgaardian Empire batch 1 |
+| 1 | Done | `ng-fringilla-vigo` | Fringilla Vigo | `public/assets/cards/ng-fringilla-vigo.png` | Generated in Nilfgaardian Empire batch 1 |
+| 1 | Done | `ng-heavy-zerrikanian-fire-scorpion` | Heavy Zerrikanian Fire Scorpion | `public/assets/cards/ng-heavy-zerrikanian-fire-scorpion.png` | Generated in Nilfgaardian Empire batch 1 |
+| 1 | Done | `ng-impera-brigade-guard` | Impera Brigade Guard | `public/assets/cards/ng-impera-brigade-guard.png` | Generated in Nilfgaardian Empire batch 1 |
+| 1 | Done | `ng-letho` | Letho of Gulet | `public/assets/cards/ng-letho.png` | Generated in Nilfgaardian Empire batch 1 |
+| 2 | Done | `ng-menno-coehoorn` | Menno Coehoorn | `public/assets/cards/ng-menno-coehoorn.png` | Generated in Nilfgaardian Empire batch 2 |
+| 2 | Done | `ng-morteisen` | Morteisen | `public/assets/cards/ng-morteisen.png` | Generated in Nilfgaardian Empire batch 2 |
+| 2 | Done | `ng-morvran-voorhis` | Morvran Voorhis | `public/assets/cards/ng-morvran-voorhis.png` | Generated in Nilfgaardian Empire batch 2 |
+| 2 | Done | `ng-nausicaa-cavalry-rider` | Nausicaa Cavalry Rider | `public/assets/cards/ng-nausicaa-cavalry-rider.png` | Generated in Nilfgaardian Empire batch 2 |
+| 2 | Done | `ng-puttkammer` | Puttkammer | `public/assets/cards/ng-puttkammer.png` | Generated in Nilfgaardian Empire batch 2 |
+| 2 | Done | `ng-rainfarn` | Rainfarn | `public/assets/cards/ng-rainfarn.png` | Generated in Nilfgaardian Empire batch 2 |
+| 2 | Done | `ng-renuald-aep-matsen` | Renuald aep Matsen | `public/assets/cards/ng-renuald-aep-matsen.png` | Generated in Nilfgaardian Empire batch 2 |
+| 2 | Done | `ng-rotten-mangonel` | Rotten Mangonel | `public/assets/cards/ng-rotten-mangonel.png` | Generated in Nilfgaardian Empire batch 2 |
+| 2 | Done | `ng-shilard-fitz-oesterlen` | Shilard Fitz-Oesterlen | `public/assets/cards/ng-shilard-fitz-oesterlen.png` | Generated in Nilfgaardian Empire batch 2 |
+| 2 | Done | `ng-siege-engineer` | Siege Engineer | `public/assets/cards/ng-siege-engineer.png` | Generated in Nilfgaardian Empire batch 2 |
+| 3 | Done | `ng-stefan-skellen` | Stefan Skellen | `public/assets/cards/ng-stefan-skellen.png` | Generated in Nilfgaardian Empire batch 3 |
+| 3 | Done | `ng-sweers` | Sweers | `public/assets/cards/ng-sweers.png` | Generated in Nilfgaardian Empire batch 3 |
+| 3 | Done | `ng-tibor-eggebracht` | Tibor Eggebracht | `public/assets/cards/ng-tibor-eggebracht.png` | Generated in Nilfgaardian Empire batch 3 |
+| 3 | Done | `ng-vanhemar` | Vanhemar | `public/assets/cards/ng-vanhemar.png` | Generated in Nilfgaardian Empire batch 3 |
+| 3 | Done | `ng-vattier-de-rideaux` | Vattier de Rideaux | `public/assets/cards/ng-vattier-de-rideaux.png` | Generated in Nilfgaardian Empire batch 3 |
+| 3 | Done | `ng-vreemde` | Vreemde | `public/assets/cards/ng-vreemde.png` | Generated in Nilfgaardian Empire batch 3 |
