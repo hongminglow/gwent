@@ -884,6 +884,28 @@ input:focus-visible {
   cursor: pointer;
 }
 
+.hud__redraw-card--with-art {
+  grid-template-columns: 56px minmax(0, 1fr);
+  align-items: center;
+  min-height: 108px;
+  padding: 8px;
+}
+
+.hud__redraw-card-art {
+  width: 56px;
+  height: 84px;
+  border: 1px solid rgba(242, 207, 123, 0.34);
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.hud__redraw-card-copy {
+  display: grid;
+  align-content: center;
+  gap: 5px;
+  min-width: 0;
+}
+
 .hud__redraw-card:hover:not(:disabled):not([aria-disabled="true"]) {
   border-color: var(--ui-gold);
 }
@@ -898,7 +920,7 @@ input:focus-visible {
   opacity: 0.48;
 }
 
-.hud__redraw-card span,
+.hud__redraw-card-name,
 .hud__redraw-card small {
   min-width: 0;
   overflow: hidden;
@@ -906,7 +928,7 @@ input:focus-visible {
   white-space: nowrap;
 }
 
-.hud__redraw-card span {
+.hud__redraw-card-name {
   font-size: 13px;
   font-weight: 800;
 }
@@ -947,6 +969,15 @@ input:focus-visible {
   color: var(--ui-gold);
   font-size: 15px;
   line-height: 1.2;
+}
+
+.hud__redraw-detail-art {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  max-height: 220px;
+  border: 1px solid rgba(242, 207, 123, 0.28);
+  border-radius: 6px;
+  object-fit: cover;
 }
 
 .hud__redraw-detail-meta {

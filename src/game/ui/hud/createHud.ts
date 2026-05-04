@@ -1,3 +1,4 @@
+import { assetManifest } from "../../assets/manifest";
 import { ALL_CARD_DEFINITIONS } from "../../data/cards";
 import { FACTIONS } from "../../data/factions";
 import { DEFAULT_AUDIO_SETTINGS, type AudioSettings } from "../../audio/audioEngine";
@@ -71,6 +72,7 @@ const ABILITY_COPY: Record<AbilityId, string> = {
 
 type CardDetail = {
   abilities: AbilityId[];
+  artKey?: string;
   basePower: number;
   name: string;
   rows: RowId[];
@@ -1304,11 +1306,30 @@ function renderRedrawPanel(
     button.disabled = inputBlocked;
     button.setAttribute("aria-disabled", String(inputBlocked || !isPlayerRedrawOpen));
     button.setAttribute("aria-label", getCardDetailPlainText(definition));
-    button.innerHTML = `
-      <span>${definition.name}</span>
-      <strong>${definition.type === "special" ? "Special" : definition.basePower}</strong>
-      <small>${formatAbilities(definition.abilities)}</small>
-    `;
+    const artUrl = getCardArtUrl(definition);
+    const content = document.createElement("span");
+    content.className = "hud__redraw-card-copy";
+    const name = document.createElement("span");
+    name.className = "hud__redraw-card-name";
+    name.textContent = definition.name;
+    const power = document.createElement("strong");
+    power.textContent = definition.type === "special" ? "Special" : `${definition.basePower}`;
+    const abilities = document.createElement("small");
+    abilities.textContent = formatAbilities(definition.abilities);
+    content.append(name, power, abilities);
+
+    if (artUrl) {
+      const art = document.createElement("img");
+      art.className = "hud__redraw-card-art";
+      art.src = artUrl;
+      art.alt = "";
+      art.decoding = "async";
+      button.classList.add("hud__redraw-card--with-art");
+      button.append(art, content);
+    } else {
+      button.append(content);
+    }
+
     button.addEventListener("pointerenter", () => {
       renderCardDetail(redrawDetail, definition, {
         eyebrow: "Selected redraw card",
@@ -1571,10 +1592,24 @@ function renderCardDetail(
   const meta = document.createElement("p");
   meta.className = "hud__redraw-detail-meta";
   meta.textContent = formatCardMeta(detail);
+  const artUrl = getCardArtUrl(detail);
+  const art = artUrl ? document.createElement("img") : undefined;
+
+  if (art && artUrl) {
+    art.className = "hud__redraw-detail-art";
+    art.src = artUrl;
+    art.alt = "";
+    art.decoding = "async";
+  }
+
   const abilities = document.createElement("div");
   abilities.className = "hud__redraw-detail-abilities";
   renderAbilityDetails(abilities, detail.abilities);
-  root.replaceChildren(eyebrow, title, meta, abilities);
+  root.replaceChildren(...[eyebrow, art, title, meta, abilities].filter((element): element is HTMLElement => Boolean(element)));
+}
+
+function getCardArtUrl(detail: Pick<CardDetail, "artKey">): string | undefined {
+  return detail.artKey ? assetManifest.cards[detail.artKey] : undefined;
 }
 
 function renderAbilityDetails(root: HTMLElement, abilities: AbilityId[]) {

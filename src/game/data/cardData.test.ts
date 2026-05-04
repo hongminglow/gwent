@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { assetManifest } from "../assets/manifest";
+import { AVAILABLE_CARD_ART_IDS, assetManifest } from "../assets/manifest";
 import { ALL_CARD_DEFINITIONS } from "./cards";
 import { FACTIONS } from "./factions";
 import { STARTER_DECKS, getStarterDeckDefinitions } from "./starterDecks";
@@ -25,10 +25,14 @@ describe("card data", () => {
     }
   });
 
-  it("declares asset manifest keys for every card art and ability VFX hook", () => {
-    for (const card of ALL_CARD_DEFINITIONS) {
-      expect(assetManifest.cards[card.artKey]).toBe(`/assets/cards/${card.id}.png`);
+  it("declares asset manifest keys for generated card art and ability VFX hooks", () => {
+    for (const cardId of AVAILABLE_CARD_ART_IDS) {
+      expect(assetManifest.cards[`cards.${cardId}`]).toMatch(new RegExp(`/(public/)?assets/cards/${cardId}([.-].+)?\\.png$`));
+    }
 
+    expect(assetManifest.cards["cards.st-havekar-smuggler"]).toBeUndefined();
+
+    for (const card of ALL_CARD_DEFINITIONS) {
       if (card.vfxKey) {
         expect(assetManifest.fx[card.vfxKey]).toBeTruthy();
       }

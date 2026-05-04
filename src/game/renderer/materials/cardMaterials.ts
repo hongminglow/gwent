@@ -9,7 +9,7 @@ export type CardMaterialOptions = {
 
 export type CardMaterialSet = {
   body: THREE.MeshStandardMaterial;
-  face: THREE.MeshStandardMaterial;
+  face: THREE.MeshBasicMaterial;
   accent: THREE.MeshStandardMaterial;
   caption: THREE.MeshBasicMaterial;
   dispose: () => void;
@@ -22,14 +22,10 @@ export function createCardMaterialSet(options: CardMaterialOptions): CardMateria
     metalness: 0.18,
     envMapIntensity: 0.6,
   });
-  const face = new THREE.MeshStandardMaterial({
+  const face = new THREE.MeshBasicMaterial({
     color: options.faceColor ?? "#3b2a1d",
-    emissive: options.accentColor,
-    emissiveIntensity: 0.09,
     map: options.frontTexture,
-    roughness: 0.58,
-    metalness: 0.08,
-    envMapIntensity: 0.42,
+    toneMapped: false,
   });
   const accent = new THREE.MeshStandardMaterial({
     color: options.accentColor,

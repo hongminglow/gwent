@@ -82,7 +82,7 @@ Rules are documented in `docs/GAME_RULES.md`. The same rules are also available 
 
 Production builds split Three.js into a dedicated vendor chunk. Generated card textures are smaller and cached by card label/type/accent/power, card meshes share static geometries, and production rendering uses lower shadow/pixel-ratio settings than development.
 
-Card art loads from `public/assets/cards/<card-id>.png`. Missing images fall back to generated placeholder textures, so the art replacement pass can be completed card by card. The full art workflow is documented in `docs/CARD_ART_PIPELINE.md`.
+Generated card art loads from `public/assets/cards/<card-id>.png` through the asset manifest. Cards without generated art use a built-in canvas face, so the art replacement pass can be completed card by card without missing-asset request spam. The full art workflow is documented in `docs/CARD_ART_PIPELINE.md`.
 
 Latest package report:
 

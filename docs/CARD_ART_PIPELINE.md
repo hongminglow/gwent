@@ -5,9 +5,9 @@ Oathbound now supports real card artwork through static assets in `public/assets
 ## Runtime Contract
 
 - Every card definition has an `artKey` like `cards.mo-fiend`.
-- `src/game/assets/manifest.ts` maps that key to `/assets/cards/<card-id>.png`.
-- The Three.js renderer tries to load that PNG for the card face.
-- If an image is missing, the existing generated placeholder texture remains as a fallback, so the game still runs while the art set is incomplete.
+- `src/game/assets/manifest.ts` maps generated art keys to `/assets/cards/<card-id>.png`.
+- The Three.js renderer only requests PNGs listed in that manifest.
+- If an image has not been generated yet, the card uses the built-in canvas face, so the game does not spam missing local asset requests while the art set is incomplete.
 
 ## Current Seed Asset
 
