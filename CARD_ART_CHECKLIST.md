@@ -26,16 +26,16 @@ Workspace asset target: `public/assets/cards/<card-id>.png`
 | 2 | Done | `mo-ghoul` | Ghoul | `public/assets/cards/mo-ghoul.png` | Generated in Monster batch 2 |
 | 2 | Done | `mo-grave-hag` | Grave Hag | `public/assets/cards/mo-grave-hag.png` | Generated in Monster batch 2 |
 | 2 | Done | `mo-griffin` | Griffin | `public/assets/cards/mo-griffin.png` | Generated in Monster batch 2 |
-| 3 | Not started | `mo-harpy` | Harpy | `public/assets/cards/mo-harpy.png` | Monster continuation |
-| 3 | Not started | `mo-ice-giant` | Ice Giant | `public/assets/cards/mo-ice-giant.png` | Monster continuation |
-| 3 | Not started | `mo-imlerith` | Imlerith | `public/assets/cards/mo-imlerith.png` | Monster continuation |
-| 3 | Not started | `mo-kayran` | Kayran | `public/assets/cards/mo-kayran.png` | Monster continuation |
-| 3 | Not started | `mo-nekker` | Nekker | `public/assets/cards/mo-nekker.png` | Monster continuation |
-| 3 | Not started | `mo-plague-maiden` | Plague Maiden | `public/assets/cards/mo-plague-maiden.png` | Monster continuation |
-| 3 | Not started | `mo-vampire-bruxa` | Vampire: Bruxa | `public/assets/cards/mo-vampire-bruxa.png` | Monster continuation |
-| 3 | Not started | `mo-vampire-ekimmara` | Vampire: Ekimmara | `public/assets/cards/mo-vampire-ekimmara.png` | Monster continuation |
-| 3 | Not started | `mo-vampire-fleder` | Vampire: Fleder | `public/assets/cards/mo-vampire-fleder.png` | Monster continuation |
-| 3 | Not started | `mo-vampire-garkain` | Vampire: Garkain | `public/assets/cards/mo-vampire-garkain.png` | Monster continuation |
+| 3 | Done | `mo-harpy` | Harpy | `public/assets/cards/mo-harpy.png` | Generated in Monster batch 3 |
+| 3 | Done | `mo-ice-giant` | Ice Giant | `public/assets/cards/mo-ice-giant.png` | Generated in Monster batch 3 |
+| 3 | Done | `mo-imlerith` | Imlerith | `public/assets/cards/mo-imlerith.png` | Generated in Monster batch 3 |
+| 3 | Done | `mo-kayran` | Kayran | `public/assets/cards/mo-kayran.png` | Generated in Monster batch 3 |
+| 3 | Done | `mo-nekker` | Nekker | `public/assets/cards/mo-nekker.png` | Generated in Monster batch 3 |
+| 3 | Done | `mo-plague-maiden` | Plague Maiden | `public/assets/cards/mo-plague-maiden.png` | Generated in Monster batch 3 |
+| 3 | Done | `mo-vampire-bruxa` | Vampire: Bruxa | `public/assets/cards/mo-vampire-bruxa.png` | Generated in Monster batch 3 |
+| 3 | Done | `mo-vampire-ekimmara` | Vampire: Ekimmara | `public/assets/cards/mo-vampire-ekimmara.png` | Generated in Monster batch 3 |
+| 3 | Done | `mo-vampire-fleder` | Vampire: Fleder | `public/assets/cards/mo-vampire-fleder.png` | Generated in Monster batch 3 |
+| 3 | Done | `mo-vampire-garkain` | Vampire: Garkain | `public/assets/cards/mo-vampire-garkain.png` | Generated in Monster batch 3 |
 | 4 | Done | `mo-vampire-katakan` | Vampire: Katakan | `public/assets/cards/mo-vampire-katakan.png` | Generated in Monster batch 4 |
 | 4 | Done | `mo-werewolf` | Werewolf | `public/assets/cards/mo-werewolf.png` | Generated in Monster batch 4 |
 | 4 | Done | `mo-wyvern` | Wyvern | `public/assets/cards/mo-wyvern.png` | Generated in Monster batch 4 |
@@ -98,3 +98,30 @@ Workspace asset target: `public/assets/cards/<card-id>.png`
 | 3 | Done | `ng-vanhemar` | Vanhemar | `public/assets/cards/ng-vanhemar.png` | Generated in Nilfgaardian Empire batch 3 |
 | 3 | Done | `ng-vattier-de-rideaux` | Vattier de Rideaux | `public/assets/cards/ng-vattier-de-rideaux.png` | Generated in Nilfgaardian Empire batch 3 |
 | 3 | Done | `ng-vreemde` | Vreemde | `public/assets/cards/ng-vreemde.png` | Generated in Nilfgaardian Empire batch 3 |
+
+## Scoia'tael Deck
+
+| Batch | Status | Card ID | Card Name | Asset Path | Notes |
+|---|---|---|---|---|---|
+| 1 | Done | `st-barclay-els` | Barclay Els | `public/assets/cards/st-barclay-els.png` | Generated in Scoia'tael batch 1 |
+| 1 | Done | `st-ciaran` | Ciaran aep Easnillien | `public/assets/cards/st-ciaran.png` | Generated in Scoia'tael batch 1 |
+| 1 | Done | `st-dennis-cranmer` | Dennis Cranmer | `public/assets/cards/st-dennis-cranmer.png` | Generated in Scoia'tael batch 1 |
+| 1 | Done | `st-dol-blathanna-archer` | Dol Blathanna Archer | `public/assets/cards/st-dol-blathanna-archer.png` | Generated in Scoia'tael batch 1 |
+| 1 | Done | `st-dol-blathanna-scout` | Dol Blathanna Scout | `public/assets/cards/st-dol-blathanna-scout.png` | Generated in Scoia'tael batch 1 |
+| 1 | Done | `st-dwarven-skirmisher` | Dwarven Skirmisher | `public/assets/cards/st-dwarven-skirmisher.png` | Generated in Scoia'tael batch 1 |
+| 1 | Done | `st-eithne` | Eithne | `public/assets/cards/st-eithne.png` | Generated in Scoia'tael batch 1 |
+| 1 | Done | `st-elven-skirmisher` | Elven Skirmisher | `public/assets/cards/st-elven-skirmisher.png` | Generated in Scoia'tael batch 1 |
+| 1 | Done | `st-filavandrel` | Filavandrel aen Fidhail | `public/assets/cards/st-filavandrel.png` | Generated in Scoia'tael batch 1 |
+| 1 | Done | `st-havekar-healer` | Havekar Healer | `public/assets/cards/st-havekar-healer.png` | Generated in Scoia'tael batch 1 |
+| 2 | Done | `st-havekar-smuggler` | Havekar Smuggler | `public/assets/cards/st-havekar-smuggler.png` | Generated in Scoia'tael batch 2 |
+| 2 | Done | `st-ida-emean` | Ida Emean aep Sivney | `public/assets/cards/st-ida-emean.png` | Generated in Scoia'tael batch 2 |
+| 2 | Done | `st-iorveth` | Iorveth | `public/assets/cards/st-iorveth.png` | Generated in Scoia'tael batch 2 |
+| 2 | Done | `st-isengrim` | Isengrim Faoiltiarna | `public/assets/cards/st-isengrim.png` | Generated in Scoia'tael batch 2 |
+| 2 | Done | `st-mahakaman-defender` | Mahakaman Defender | `public/assets/cards/st-mahakaman-defender.png` | Generated in Scoia'tael batch 2 |
+| 2 | Done | `st-milva` | Milva | `public/assets/cards/st-milva.png` | Generated in Scoia'tael batch 2 |
+| 2 | Done | `st-riordain` | Riordain | `public/assets/cards/st-riordain.png` | Generated in Scoia'tael batch 2 |
+| 2 | Done | `st-saesenthessis` | Saesenthessis | `public/assets/cards/st-saesenthessis.png` | Generated in Scoia'tael batch 2 |
+| 2 | Done | `st-toruviel` | Toruviel | `public/assets/cards/st-toruviel.png` | Generated in Scoia'tael batch 2 |
+| 2 | Done | `st-vrihedd-brigade-recruit` | Vrihedd Brigade Recruit | `public/assets/cards/st-vrihedd-brigade-recruit.png` | Generated in Scoia'tael batch 2 |
+| 3 | Done | `st-vrihedd-brigade-veteran` | Vrihedd Brigade Veteran | `public/assets/cards/st-vrihedd-brigade-veteran.png` | Generated in Scoia'tael batch 3 |
+| 3 | Done | `st-yaevinn` | Yaevinn | `public/assets/cards/st-yaevinn.png` | Generated in Scoia'tael batch 3 |

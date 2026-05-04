@@ -30,7 +30,12 @@ describe("card data", () => {
       expect(assetManifest.cards[`cards.${cardId}`]).toMatch(new RegExp(`/(public/)?assets/cards/${cardId}([.-].+)?\\.png$`));
     }
 
-    expect(assetManifest.cards["cards.st-havekar-smuggler"]).toBeUndefined();
+    const generatedCardIds = new Set<string>(AVAILABLE_CARD_ART_IDS);
+    const cardWithoutGeneratedArt = ALL_CARD_DEFINITIONS.find((card) => !generatedCardIds.has(card.id));
+
+    if (cardWithoutGeneratedArt) {
+      expect(assetManifest.cards[cardWithoutGeneratedArt.artKey]).toBeUndefined();
+    }
 
     for (const card of ALL_CARD_DEFINITIONS) {
       if (card.vfxKey) {
