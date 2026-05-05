@@ -16,6 +16,13 @@ const VFX_KEYS = Array.from(
 ).sort();
 
 export const AVAILABLE_CARD_ART_IDS = [
+  "neutral-biting-frost",
+  "neutral-impenetrable-fog",
+  "neutral-torrential-rain",
+  "neutral-clear-weather",
+  "neutral-commanders-horn",
+  "neutral-decoy",
+  "neutral-scorch",
   "nr-ballista",
   "nr-blue-stripes-commando",
   "nr-catapult",

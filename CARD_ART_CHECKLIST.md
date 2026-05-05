@@ -2,6 +2,18 @@
 
 Workspace asset target: `public/assets/cards/<card-id>.png`
 
+## Neutral Special Cards
+
+| Batch | Status | Card ID | Card Name | Asset Path | Notes |
+|---|---|---|---|---|---|
+| Special | Done | `neutral-biting-frost` | Biting Frost | `public/assets/cards/neutral-biting-frost.png` | Generated in neutral special batch |
+| Special | Done | `neutral-impenetrable-fog` | Impenetrable Fog | `public/assets/cards/neutral-impenetrable-fog.png` | Generated in neutral special batch |
+| Special | Done | `neutral-torrential-rain` | Torrential Rain | `public/assets/cards/neutral-torrential-rain.png` | Generated in neutral special batch |
+| Special | Done | `neutral-clear-weather` | Clear Weather | `public/assets/cards/neutral-clear-weather.png` | Generated in neutral special batch |
+| Special | Done | `neutral-commanders-horn` | Commander's Horn | `public/assets/cards/neutral-commanders-horn.png` | Generated in neutral special batch |
+| Special | Done | `neutral-decoy` | Decoy | `public/assets/cards/neutral-decoy.png` | Generated in neutral special batch |
+| Special | Done | `neutral-scorch` | Scorch | `public/assets/cards/neutral-scorch.png` | Generated in neutral special batch |
+
 ## Monster Deck
 
 | Batch | Status | Card ID | Card Name | Asset Path | Notes |

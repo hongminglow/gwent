@@ -8,14 +8,15 @@ export type GameTextureLoader = {
 
 export function createGameTextureLoader(renderer: THREE.WebGLRenderer): GameTextureLoader {
   const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
+  const useMipmaps = renderer.capabilities.isWebGL2;
   const loader = new THREE.TextureLoader();
   const cache = new Map<string, THREE.Texture>();
 
   const configureTexture = (texture: THREE.Texture) => {
     texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = Math.min(maxAnisotropy, 8);
-    texture.generateMipmaps = false;
-    texture.minFilter = THREE.LinearFilter;
+    texture.anisotropy = Math.min(maxAnisotropy, 12);
+    texture.generateMipmaps = useMipmaps;
+    texture.minFilter = useMipmaps ? THREE.LinearMipmapLinearFilter : THREE.LinearFilter;
     texture.magFilter = THREE.LinearFilter;
     texture.wrapS = THREE.ClampToEdgeWrapping;
     texture.wrapT = THREE.ClampToEdgeWrapping;
