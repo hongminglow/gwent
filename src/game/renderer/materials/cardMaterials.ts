@@ -23,7 +23,7 @@ export function createCardMaterialSet(options: CardMaterialOptions): CardMateria
     envMapIntensity: 0.6,
   });
   const face = new THREE.MeshBasicMaterial({
-    color: options.faceColor ?? "#3b2a1d",
+    color: options.frontTexture ? "#ffffff" : options.faceColor ?? "#3b2a1d",
     map: options.frontTexture,
     toneMapped: false,
   });

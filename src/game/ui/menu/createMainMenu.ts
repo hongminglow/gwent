@@ -8,6 +8,7 @@ export type MainMenu = {
   hideError: () => void;
   hide: () => void;
   hideLoading: () => void;
+  setLoadingStatus: (label: string, progress: number) => void;
   setSelectedFaction: (factionId: FactionId) => void;
   show: () => void;
   showError: (message: string) => void;
@@ -186,6 +187,11 @@ export function createMainMenu(root: HTMLElement, options: MainMenuOptions): Mai
     }
   }
 
+  function setLoadingStatus(label: string, progress: number) {
+    loadingStep.textContent = label;
+    loadingBarFill.style.width = `${Math.max(0, Math.min(100, progress))}%`;
+  }
+
   function showError(message: string) {
     stopLoadingProgress();
     loading.hidden = true;
@@ -217,6 +223,7 @@ export function createMainMenu(root: HTMLElement, options: MainMenuOptions): Mai
       loading.hidden = true;
       shell.classList.remove("main-menu--loading");
     },
+    setLoadingStatus,
     setSelectedFaction,
     show() {
       shell.hidden = false;

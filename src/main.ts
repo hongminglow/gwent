@@ -1,4 +1,5 @@
 import "./style.css";
+import { preloadCardArtForMatch } from "./game/assets/cardArtPreloader";
 import { createAudioEngine } from "./game/audio/audioEngine";
 import type { CardInteractionHudState } from "./game/renderer/cardInteraction";
 import { createThreeApp, type ThreeApp } from "./game/renderer/threeApp";
@@ -40,16 +41,12 @@ const menu = createMainMenu(root, {
 
     startTimerId = window.setTimeout(() => {
       startTimerId = undefined;
-      try {
-        startMatch(factionId);
-      } catch (error) {
-        handleStartError(error);
-      }
+      startMatch(factionId).catch(handleStartError);
     }, 420);
   },
 });
 
-function startMatch(playerFactionId: FactionId, opponentFactionId?: FactionId) {
+async function startMatch(playerFactionId: FactionId, opponentFactionId?: FactionId) {
   disposeSession();
 
   const matchSeed = `${playerFactionId}-${Date.now()}`;
@@ -59,6 +56,15 @@ function startMatch(playerFactionId: FactionId, opponentFactionId?: FactionId) {
     playerFactionId,
     seed: matchSeed,
   });
+
+  await preloadCardArtForMatch(initialState, {
+    onProgress: ({ completed, total }) => {
+      const progress = total === 0 ? 96 : 86 + Math.round((completed / total) * 10);
+      menu.setLoadingStatus(`Loading card art ${completed}/${total}`, progress);
+    },
+  });
+  menu.setLoadingStatus("Building board", 98);
+
   audio.beginMatch(initialState);
   const store = createMatchStore(initialState);
   const session: Partial<GameSession> = {
