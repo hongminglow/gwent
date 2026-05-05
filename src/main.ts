@@ -100,17 +100,25 @@ async function startMatch(playerFactionId: FactionId, opponentFactionId?: Factio
     onToggleFastAnimations: (enabled) => session.threeApp?.setFastAnimations(enabled),
     onTogglePlacementZones: (enabled) => session.threeApp?.setPlacementZones(enabled),
   });
-  const threeApp = createThreeApp(root, initialState, {
-    onAudioCue: audio.playRendererCue,
-    onInputBlockedChange: (blocked) => {
-      hud.update(store.getState(), blocked, session.interactionState);
-    },
-    onInteractionChange: (nextInteractionState) => {
-      session.interactionState = nextInteractionState;
-      hud.setInteraction(nextInteractionState);
-    },
-    onIntent: dispatchIntent,
-  });
+  let threeApp: ThreeApp;
+
+  try {
+    threeApp = createThreeApp(root, initialState, {
+      onAudioCue: audio.playRendererCue,
+      onInputBlockedChange: (blocked) => {
+        hud.update(store.getState(), blocked, session.interactionState);
+      },
+      onInteractionChange: (nextInteractionState) => {
+        session.interactionState = nextInteractionState;
+        hud.setInteraction(nextInteractionState);
+      },
+      onIntent: dispatchIntent,
+    });
+  } catch (error) {
+    hud.dispose();
+    throw error;
+  }
+
   const unsubscribe = store.subscribe((state) => {
     threeApp.applyMatchState(state);
     hud.update(state, threeApp.isInputBlocked(), session.interactionState);

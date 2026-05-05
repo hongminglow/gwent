@@ -14,7 +14,7 @@ describe("card art preloader", () => {
     vi.unstubAllGlobals();
   });
 
-  it("loads hand and leader art before background match art", async () => {
+  it("loads hand and leader art as the blocking preload set", async () => {
     const loadedImages: LoadedImage[] = [];
 
     vi.stubGlobal("Image", createMockImageConstructor(loadedImages));
@@ -42,7 +42,6 @@ describe("card art preloader", () => {
         url,
       })),
     );
-    expect(loadedImages.slice(priorityUrls.length).every((entry) => entry.priority === "auto")).toBe(true);
   });
 });
 

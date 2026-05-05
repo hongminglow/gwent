@@ -11,16 +11,14 @@ export type CardArtPreloadOptions = {
 };
 
 const PLAYERS: PlayerId[] = ["player", "opponent"];
-const MAX_BACKGROUND_ART_LOADS = 4;
+const activePreloadImages = new Set<HTMLImageElement>();
 
 export async function preloadCardArtForMatch(
   state: MatchState,
   options: CardArtPreloadOptions = {},
 ): Promise<CardArtPreloadProgress> {
   const priorityUrls = getPriorityCardArtUrls(state);
-  const allUrls = getMatchCardArtUrls(state);
-  const backgroundUrls = allUrls.filter((url) => !priorityUrls.includes(url));
-  const total = allUrls.length;
+  const total = priorityUrls.length;
   let completed = 0;
 
   const report = () => options.onProgress?.({
@@ -35,7 +33,6 @@ export async function preloadCardArtForMatch(
 
   report();
   await Promise.all(priorityUrls.map((url) => loadUrl(url, "high")));
-  await preloadInBatches(backgroundUrls, MAX_BACKGROUND_ART_LOADS, (url) => loadUrl(url, "auto"));
 
   return {
     completed,
@@ -67,29 +64,23 @@ function uniqueUrls(urls: (string | undefined)[]): string[] {
   return [...new Set(urls.filter((url): url is string => Boolean(url)))];
 }
 
-async function preloadInBatches(
-  urls: string[],
-  batchSize: number,
-  load: (url: string) => Promise<void>,
-): Promise<void> {
-  for (let index = 0; index < urls.length; index += batchSize) {
-    await Promise.all(urls.slice(index, index + batchSize).map(load));
-  }
-}
-
 function preloadImage(url: string, priority: "high" | "auto"): Promise<void> {
   return new Promise((resolve, reject) => {
     const image = new Image();
+    const settle = (callback: () => void) => {
+      activePreloadImages.delete(image);
+      callback();
+    };
 
+    activePreloadImages.add(image);
     image.decoding = priority === "high" ? "sync" : "async";
     image.loading = "eager";
     image.setAttribute("fetchpriority", priority);
     image.onload = () => {
-      image.decode()
-        .then(resolve)
-        .catch(resolve);
+      void image.decode().catch(() => undefined);
+      settle(resolve);
     };
-    image.onerror = () => reject(new Error(`Unable to preload card art: ${url}`));
+    image.onerror = () => settle(() => reject(new Error(`Unable to preload card art: ${url}`)));
     image.src = url;
   });
 }

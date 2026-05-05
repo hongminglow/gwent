@@ -6,18 +6,20 @@ export type CardMeshOptions = {
   accentColor: string;
   faceColor?: string;
   frontTexture?: THREE.Texture;
-  powerLabel?: string;
   position?: THREE.Vector3;
   rotationY?: number;
-  typeLabel?: string;
 };
 
 export type CardMesh = {
   root: THREE.Group;
   baseY: number;
+  setDepthMode: (depthMode: CardDepthMode) => void;
+  setRenderOrder: (renderOrder: number) => void;
   setInteractionState: (state: CardMeshInteractionState) => void;
   dispose: () => void;
 };
+
+export type CardDepthMode = "scene" | "handOverlay";
 
 export type CardMeshInteractionState = {
   blockedTarget?: boolean;
@@ -31,6 +33,7 @@ export type CardMeshInteractionState = {
 const CARD_WIDTH = 1.42;
 const CARD_HEIGHT = 2.05;
 const CARD_THICKNESS = 0.065;
+const CARD_FRAME_LINE_WIDTH = 0.032;
 
 type TextureCacheEntry = {
   refs: number;
@@ -43,18 +46,21 @@ type TextureHandle = {
 };
 
 const CARD_BODY_GEOMETRY = new THREE.BoxGeometry(CARD_WIDTH, CARD_HEIGHT, CARD_THICKNESS);
-const CARD_FACE_GEOMETRY = new THREE.PlaneGeometry(1.26, 1.84);
-const CARD_FRAME_HORIZONTAL_GEOMETRY = new THREE.PlaneGeometry(1.18, 0.018);
-const CARD_FRAME_VERTICAL_GEOMETRY = new THREE.PlaneGeometry(0.018, 1.72);
+const CARD_FACE_GEOMETRY = new THREE.PlaneGeometry(1.34, 1.96);
+const CARD_FRAME_HORIZONTAL_GEOMETRY = new THREE.PlaneGeometry(CARD_WIDTH - CARD_FRAME_LINE_WIDTH, CARD_FRAME_LINE_WIDTH);
+const CARD_FRAME_VERTICAL_GEOMETRY = new THREE.PlaneGeometry(CARD_FRAME_LINE_WIDTH, CARD_HEIGHT - CARD_FRAME_LINE_WIDTH);
 const CARD_HIGHLIGHT_GEOMETRY = new THREE.PlaneGeometry(1.38, 1.96);
-const CARD_POWER_GEM_GEOMETRY = new THREE.CircleGeometry(0.18, 28);
-const CARD_POWER_LABEL_GEOMETRY = new THREE.PlaneGeometry(0.31, 0.2);
-const CARD_CAPTION_GEOMETRY = new THREE.PlaneGeometry(1.12, 0.32);
-const CARD_RENDER_ORDER = 40;
+export const CARD_RENDER_ORDER = 40;
 
 const faceTextureCache = new Map<string, TextureCacheEntry>();
-const captionTextureCache = new Map<string, TextureCacheEntry>();
-const powerTextureCache = new Map<string, TextureCacheEntry>();
+
+type ManagedMaterial = {
+  handBlending: THREE.Blending;
+  material: THREE.Material;
+  sceneBlending: THREE.Blending;
+  sceneDepthWrite: boolean;
+  sceneTransparent: boolean;
+};
 
 export function createCardMesh(options: CardMeshOptions): CardMesh {
   const root = new THREE.Group();
@@ -66,13 +72,10 @@ export function createCardMesh(options: CardMeshOptions): CardMesh {
 
   const faceTexture = options.frontTexture
     ? createExternalTextureHandle(options.frontTexture)
-    : acquireFaceTexture(options.label, options.accentColor, options.typeLabel);
-  const captionTexture = acquireCaptionTexture(options.label, options.typeLabel);
-  const powerTexture = acquirePowerTexture(options.powerLabel ?? "");
+    : acquireFaceTexture(options.label, options.accentColor);
   const materials = createCardMaterialSet({
     accentColor: options.accentColor,
     faceColor: options.faceColor,
-    captionTexture: captionTexture.texture,
     frontTexture: faceTexture.texture,
   });
 
@@ -114,38 +117,26 @@ export function createCardMesh(options: CardMeshOptions): CardMesh {
   highlight.visible = false;
   root.add(highlight);
 
-  const gem = new THREE.Mesh(
-    CARD_POWER_GEM_GEOMETRY,
-    materials.accent,
-  );
-  gem.name = "CardPowerGem";
-  gem.position.set(0, 0.68, 0.037);
-  root.add(gem);
+  const managedMaterials: ManagedMaterial[] = [
+    createManagedMaterial(materials.body, true, THREE.NoBlending),
+    createManagedMaterial(materials.face, true, THREE.NoBlending),
+    createManagedMaterial(materials.accent, true, THREE.NoBlending),
+    createManagedMaterial(frameMaterial, true, THREE.NoBlending),
+    createManagedMaterial(highlightMaterial, false, THREE.NormalBlending),
+  ];
 
-  const powerMaterial = new THREE.MeshBasicMaterial({
-    map: powerTexture.texture,
-    transparent: true,
-  });
-  const power = new THREE.Mesh(
-    CARD_POWER_LABEL_GEOMETRY,
-    powerMaterial,
-  );
-  power.name = "CardPowerLabel";
-  power.position.set(0, 0.68, 0.041);
-  root.add(power);
-
-  const caption = new THREE.Mesh(
-    CARD_CAPTION_GEOMETRY,
-    materials.caption,
-  );
-  caption.name = "CardCaption";
-  caption.position.set(0, -0.62, 0.042);
-  root.add(caption);
-  applyCardRenderPriority(root);
+  applyCardRenderPriority(root, CARD_RENDER_ORDER);
+  applyCardDepthMode(managedMaterials, "scene");
 
   return {
     root,
     baseY: position.y,
+    setDepthMode(depthMode) {
+      applyCardDepthMode(managedMaterials, depthMode);
+    },
+    setRenderOrder(renderOrder) {
+      applyCardRenderPriority(root, renderOrder);
+    },
     setInteractionState(state) {
       const opacity = state.rejected
         ? 0.38
@@ -175,27 +166,50 @@ export function createCardMesh(options: CardMeshOptions): CardMesh {
     },
     dispose() {
       faceTexture.release();
-      captionTexture.release();
-      powerTexture.release();
       materials.dispose();
       frameMaterial.dispose();
       highlightMaterial.dispose();
-      powerMaterial.dispose();
     },
   };
 }
 
-function applyCardRenderPriority(root: THREE.Group) {
+function applyCardRenderPriority(root: THREE.Group, renderOrder: number) {
   root.traverse((object) => {
-    object.renderOrder = CARD_RENDER_ORDER;
+    object.renderOrder = renderOrder;
   });
+}
+
+function applyCardDepthMode(materials: ManagedMaterial[], depthMode: CardDepthMode) {
+  const isHandOverlay = depthMode === "handOverlay";
+
+  for (const { handBlending, material, sceneBlending, sceneDepthWrite, sceneTransparent } of materials) {
+    material.blending = isHandOverlay ? handBlending : sceneBlending;
+    material.depthTest = !isHandOverlay;
+    material.depthWrite = isHandOverlay ? false : sceneDepthWrite;
+    material.transparent = isHandOverlay ? true : sceneTransparent;
+    material.needsUpdate = true;
+  }
+}
+
+function createManagedMaterial(
+  material: THREE.Material,
+  sceneDepthWrite: boolean,
+  handBlending: THREE.Blending,
+): ManagedMaterial {
+  return {
+    handBlending,
+    material,
+    sceneBlending: material.blending,
+    sceneDepthWrite,
+    sceneTransparent: material.transparent,
+  };
 }
 
 function createCardFrameMaterial(accentColor: string): THREE.MeshBasicMaterial {
   return new THREE.MeshBasicMaterial({
     color: accentColor,
-    transparent: true,
-    opacity: 0.82,
+    depthWrite: true,
+    toneMapped: false,
   });
 }
 
@@ -207,10 +221,10 @@ function createCardFrame(material: THREE.MeshBasicMaterial): THREE.Group {
   const left = new THREE.Mesh(CARD_FRAME_VERTICAL_GEOMETRY, material);
   const right = new THREE.Mesh(CARD_FRAME_VERTICAL_GEOMETRY, material);
 
-  top.position.y = 0.86;
-  bottom.position.y = -0.86;
-  left.position.x = -0.59;
-  right.position.x = 0.59;
+  top.position.y = CARD_HEIGHT / 2 - CARD_FRAME_LINE_WIDTH / 2;
+  bottom.position.y = -CARD_HEIGHT / 2 + CARD_FRAME_LINE_WIDTH / 2;
+  left.position.x = -CARD_WIDTH / 2 + CARD_FRAME_LINE_WIDTH / 2;
+  right.position.x = CARD_WIDTH / 2 - CARD_FRAME_LINE_WIDTH / 2;
   frame.add(top, bottom, left, right);
 
   return frame;
@@ -225,27 +239,11 @@ function createExternalTextureHandle(texture: THREE.Texture): TextureHandle {
   };
 }
 
-function acquireFaceTexture(label: string, accentColor: string, typeLabel?: string): TextureHandle {
+function acquireFaceTexture(label: string, accentColor: string): TextureHandle {
   return acquireCachedTexture(
     faceTextureCache,
-    `${label}|${accentColor}|${typeLabel ?? ""}`,
-    () => createFaceTexture(label, accentColor, typeLabel),
-  );
-}
-
-function acquireCaptionTexture(label: string, typeLabel?: string): TextureHandle {
-  return acquireCachedTexture(
-    captionTextureCache,
-    `${label}|${typeLabel ?? ""}`,
-    () => createCaptionTexture(label, typeLabel),
-  );
-}
-
-function acquirePowerTexture(powerLabel: string): TextureHandle {
-  return acquireCachedTexture(
-    powerTextureCache,
-    powerLabel,
-    () => createPowerTexture(powerLabel),
+    `${label}|${accentColor}`,
+    () => createFaceTexture(label, accentColor),
   );
 }
 
@@ -291,47 +289,7 @@ function releaseCachedTexture(cache: Map<string, TextureCacheEntry>, key: string
   }
 }
 
-function createCaptionTexture(label: string, typeLabel?: string): THREE.CanvasTexture {
-  const texture = new THREE.CanvasTexture(createCaptionCanvas(label, typeLabel));
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.anisotropy = 2;
-  return texture;
-}
-
-function createCaptionCanvas(label: string, typeLabel?: string): HTMLCanvasElement {
-  const canvas = document.createElement("canvas");
-  canvas.width = 384;
-  canvas.height = 96;
-
-  const context = canvas.getContext("2d");
-
-  if (!context) {
-    throw new Error("Unable to create card caption canvas.");
-  }
-
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = "rgba(10, 8, 6, 0.9)";
-  roundRect(context, 12, 12, 360, 72, 14);
-  context.fill();
-  context.strokeStyle = "rgba(247, 239, 225, 0.16)";
-  context.lineWidth = 2;
-  context.stroke();
-  context.fillStyle = "#f7efe1";
-  context.font = "800 23px system-ui, sans-serif";
-  context.textAlign = "center";
-  context.textBaseline = "alphabetic";
-  context.fillText(label, canvas.width / 2, typeLabel ? 44 : 56, 324);
-
-  if (typeLabel) {
-    context.fillStyle = "rgba(242, 207, 123, 0.84)";
-    context.font = "700 14px system-ui, sans-serif";
-    context.fillText(typeLabel, canvas.width / 2, 66, 316);
-  }
-
-  return canvas;
-}
-
-function createFaceTexture(label: string, accentColor: string, typeLabel?: string): THREE.CanvasTexture {
+function createFaceTexture(label: string, accentColor: string): THREE.CanvasTexture {
   const canvas = document.createElement("canvas");
   canvas.width = 384;
   canvas.height = 576;
@@ -363,88 +321,10 @@ function createFaceTexture(label: string, accentColor: string, typeLabel?: strin
   }
   context.globalAlpha = 1;
 
-  context.fillStyle = "rgba(247, 239, 225, 0.86)";
-  context.font = "800 34px system-ui, sans-serif";
-  context.textAlign = "center";
-  context.textBaseline = "middle";
-  drawWrappedText(context, label, 192, 250, 276, 39, 3);
-
-  if (typeLabel) {
-    context.fillStyle = "rgba(242, 207, 123, 0.84)";
-    context.font = "700 20px system-ui, sans-serif";
-    context.fillText(typeLabel, 192, 382, 285);
-  }
-
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 4;
   return texture;
-}
-
-function createPowerTexture(powerLabel: string): THREE.CanvasTexture {
-  const canvas = document.createElement("canvas");
-  canvas.width = 128;
-  canvas.height = 90;
-  const context = canvas.getContext("2d");
-
-  if (!context) {
-    throw new Error("Unable to create card power canvas.");
-  }
-
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  if (powerLabel) {
-    context.fillStyle = "#fff8df";
-    context.font = "900 50px system-ui, sans-serif";
-    context.textAlign = "center";
-    context.textBaseline = "middle";
-    context.shadowColor = "rgba(0, 0, 0, 0.75)";
-    context.shadowBlur = 8;
-    context.fillText(powerLabel, canvas.width / 2, canvas.height / 2 + 3, 104);
-  }
-
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.anisotropy = 2;
-  return texture;
-}
-
-function drawWrappedText(
-  context: CanvasRenderingContext2D,
-  text: string,
-  x: number,
-  y: number,
-  maxWidth: number,
-  lineHeight: number,
-  maxLines: number,
-) {
-  const words = text.split(" ");
-  const lines: string[] = [];
-  let line = "";
-
-  for (const word of words) {
-    const nextLine = line ? `${line} ${word}` : word;
-    if (context.measureText(nextLine).width <= maxWidth || line.length === 0) {
-      line = nextLine;
-      continue;
-    }
-
-    lines.push(line);
-    line = word;
-    if (lines.length === maxLines - 1) {
-      break;
-    }
-  }
-
-  if (line) {
-    lines.push(line);
-  }
-
-  const visibleLines = lines.slice(0, maxLines);
-  const startY = y - ((visibleLines.length - 1) * lineHeight) / 2;
-
-  visibleLines.forEach((visibleLine, index) => {
-    context.fillText(visibleLine, x, startY + index * lineHeight, maxWidth);
-  });
 }
 
 function roundRect(

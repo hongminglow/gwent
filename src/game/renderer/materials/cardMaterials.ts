@@ -3,7 +3,6 @@ import * as THREE from "three";
 export type CardMaterialOptions = {
   accentColor: string;
   faceColor?: string;
-  captionTexture?: THREE.Texture;
   frontTexture?: THREE.Texture;
 };
 
@@ -11,7 +10,6 @@ export type CardMaterialSet = {
   body: THREE.MeshStandardMaterial;
   face: THREE.MeshBasicMaterial;
   accent: THREE.MeshStandardMaterial;
-  caption: THREE.MeshBasicMaterial;
   dispose: () => void;
 };
 
@@ -35,22 +33,15 @@ export function createCardMaterialSet(options: CardMaterialOptions): CardMateria
     metalness: 0.32,
     envMapIntensity: 0.72,
   });
-  const caption = new THREE.MeshBasicMaterial({
-    map: options.captionTexture,
-    transparent: true,
-    opacity: options.captionTexture ? 1 : 0,
-  });
 
   return {
     body,
     face,
     accent,
-    caption,
     dispose() {
       body.dispose();
       face.dispose();
       accent.dispose();
-      caption.dispose();
     },
   };
 }

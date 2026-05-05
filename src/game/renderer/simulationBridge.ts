@@ -13,7 +13,7 @@ import type {
 } from "../simulation/types";
 import type { VisualAnimation, VisualAnimationQueue } from "./animationQueue";
 import type { BoardAnchors } from "./boardScene";
-import { createCardMesh, type CardMesh } from "./cardMesh";
+import { CARD_RENDER_ORDER, createCardMesh, type CardDepthMode, type CardMesh } from "./cardMesh";
 import {
   createSlainAnimationContract,
   createSlainCardEffect,
@@ -72,6 +72,7 @@ type RenderedCard = {
   card: CardMesh;
   slainEffect?: SlainCardEffect;
   targetPosition: THREE.Vector3;
+  targetRenderOrder: number;
   targetRotation: THREE.Euler;
   targetScale: number;
 };
@@ -89,6 +90,11 @@ const HAND_Z: Record<PlayerId, number> = {
   opponent: -7.15,
 };
 const CARD_ROTATION_X = -Math.PI / 2 + 0.06;
+const CLOSED_CARD_ROTATION_X = Math.PI / 2 - 0.06;
+const PLAYER_HAND_LAYER_STEP = 0.004;
+const OPPONENT_HAND_LAYER_STEP = 0.004;
+const HAND_RENDER_ORDER_BASE = CARD_RENDER_ORDER + 80;
+const HAND_INTERACTION_RENDER_ORDER = CARD_RENDER_ORDER + 360;
 const FACTION_ACCENTS = Object.fromEntries(
   FACTIONS.map((faction) => [faction.id, faction.accentColor]),
 );
@@ -210,14 +216,13 @@ function createRenderedCard(
     accentColor,
     faceColor: definition.type === "hero" ? "#41301c" : undefined,
     frontTexture: artUrl ? options.loadCardTexture?.(artUrl) : undefined,
-    powerLabel: definition.type === "special" || definition.type === "leader" ? "" : `${definition.basePower}`,
-    typeLabel: formatCardType(definition),
   });
   cardMesh.root.name = `Card:${card.id}:${definition.id}`;
 
   return {
     card: cardMesh,
     targetPosition: new THREE.Vector3(),
+    targetRenderOrder: CARD_RENDER_ORDER,
     targetRotation: new THREE.Euler(CARD_ROTATION_X, 0, 0),
     targetScale: definition.type === "leader" ? 1.04 : 1,
   };
@@ -289,9 +294,10 @@ function syncHandTargets(
 ) {
   const handCards = state.players[playerId].hand.cards;
   const spacing = playerId === "player"
-    ? Math.min(0.8, 8.7 / Math.max(handCards.length - 1, 1))
+    ? Math.min(0.68, 6.9 / Math.max(handCards.length - 1, 1))
     : Math.min(0.74, 8.4 / Math.max(handCards.length - 1, 1));
   const startX = -((handCards.length - 1) * spacing) / 2;
+  const layerStep = playerId === "player" ? PLAYER_HAND_LAYER_STEP : OPPONENT_HAND_LAYER_STEP;
 
   handCards.forEach((cardInstanceId, index) => {
     const renderedCard = renderedCards.get(cardInstanceId);
@@ -303,16 +309,18 @@ function syncHandTargets(
     setRenderedCardTarget(renderedCard, {
       position: new THREE.Vector3(
         startX + index * spacing,
-        0.42 + index * 0.004,
+        0.42 + index * layerStep,
         HAND_Z[playerId] + (playerId === "player" ? Math.sin((index / Math.max(handCards.length - 1, 1)) * Math.PI) * -0.08 : 0),
       ),
       rotation: new THREE.Euler(
-        CARD_ROTATION_X,
+        playerId === "player" ? CARD_ROTATION_X : CLOSED_CARD_ROTATION_X,
         0,
         playerId === "player"
-          ? (index - (handCards.length - 1) / 2) * -0.022
+          ? 0
           : Math.PI + (index - (handCards.length - 1) / 2) * 0.012,
       ),
+      depthMode: "handOverlay",
+      renderOrder: HAND_RENDER_ORDER_BASE + index,
       scale: playerId === "player" ? 0.92 : 0.86,
       visible: playerId === "player" || index < 10,
     });
@@ -440,7 +448,9 @@ function syncRowTargets(
 function setRenderedCardTarget(
   renderedCard: RenderedCard,
   options: {
+    depthMode?: CardDepthMode;
     position: THREE.Vector3;
+    renderOrder?: number;
     rotation: THREE.Euler;
     scale: number;
     visible: boolean;
@@ -449,6 +459,9 @@ function setRenderedCardTarget(
   renderedCard.targetPosition.copy(options.position);
   renderedCard.targetRotation.copy(options.rotation);
   renderedCard.targetScale = options.scale;
+  renderedCard.targetRenderOrder = options.renderOrder ?? CARD_RENDER_ORDER;
+  renderedCard.card.setDepthMode(options.depthMode ?? "scene");
+  renderedCard.card.setRenderOrder(renderedCard.targetRenderOrder);
   renderedCard.card.root.visible = options.visible;
 }
 
@@ -566,15 +579,58 @@ function applyCardInteractionState(
   const blockedTargets = new Set(interactionState.blockedTargetCardIds ?? []);
 
   for (const [cardInstanceId, renderedCard] of renderedCards) {
+    const isBlocked = blockedTargets.has(cardInstanceId);
+    const isDragged = interactionState.draggedCardId === cardInstanceId;
+    const isHovered = interactionState.hoveredCardId === cardInstanceId;
+    const isRejected = interactionState.rejectedCardId === cardInstanceId;
+    const isSelected = interactionState.selectedCardId === cardInstanceId;
+    const isValidTarget = validTargets.has(cardInstanceId);
+
+    renderedCard.card.setRenderOrder(getInteractionRenderOrder(renderedCard, {
+      dragged: isDragged,
+      hovered: isHovered,
+      rejected: isRejected,
+      selected: isSelected,
+    }));
     renderedCard.card.setInteractionState({
-      blockedTarget: blockedTargets.has(cardInstanceId),
-      hovered: interactionState.hoveredCardId === cardInstanceId,
-      selected: interactionState.selectedCardId === cardInstanceId,
-      dragging: interactionState.draggedCardId === cardInstanceId,
-      rejected: interactionState.rejectedCardId === cardInstanceId,
-      validTarget: validTargets.has(cardInstanceId),
+      blockedTarget: isBlocked,
+      hovered: isHovered,
+      selected: isSelected,
+      dragging: isDragged,
+      rejected: isRejected,
+      validTarget: isValidTarget,
     });
   }
+}
+
+function getInteractionRenderOrder(
+  renderedCard: RenderedCard,
+  state: {
+    dragged: boolean;
+    hovered: boolean;
+    rejected: boolean;
+    selected: boolean;
+  },
+): number {
+  const isHandCard = renderedCard.targetRenderOrder >= HAND_RENDER_ORDER_BASE;
+
+  if (!isHandCard) {
+    return renderedCard.targetRenderOrder;
+  }
+
+  if (state.dragged) {
+    return HAND_INTERACTION_RENDER_ORDER + 3;
+  }
+
+  if (state.selected || state.rejected) {
+    return HAND_INTERACTION_RENDER_ORDER + 2;
+  }
+
+  if (state.hovered) {
+    return HAND_INTERACTION_RENDER_ORDER + 1;
+  }
+
+  return renderedCard.targetRenderOrder;
 }
 
 function enqueueNewEvents(
@@ -828,29 +884,6 @@ function getEventDuration(event: GameEvent): number {
     default:
       return assertNever(event.type);
   }
-}
-
-function formatCardType(definition: CardDefinition): string {
-  if (definition.type === "special") {
-    return definition.abilities.length > 0
-      ? definition.abilities.map(formatAbility).join(" / ")
-      : "Special";
-  }
-
-  if (definition.type === "leader") {
-    return "Leader";
-  }
-
-  return definition.abilities.length > 0
-    ? definition.abilities.map(formatAbility).join(" / ")
-    : definition.type === "hero" ? "Hero" : "Unit";
-}
-
-function formatAbility(ability: string): string {
-  return ability
-    .split("-")
-    .map((part) => `${part[0]?.toUpperCase() ?? ""}${part.slice(1)}`)
-    .join(" ");
 }
 
 function getAnchorPosition(root: THREE.Group, anchor: THREE.Group): THREE.Vector3 {

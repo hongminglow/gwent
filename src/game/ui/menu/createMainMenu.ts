@@ -188,6 +188,7 @@ export function createMainMenu(root: HTMLElement, options: MainMenuOptions): Mai
   }
 
   function setLoadingStatus(label: string, progress: number) {
+    stopLoadingProgress();
     loadingStep.textContent = label;
     loadingBarFill.style.width = `${Math.max(0, Math.min(100, progress))}%`;
   }
